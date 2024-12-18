@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados de la Encuesta: {{ encuesta.titulo }}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            width: 80%;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h2 class="mb-3 text-center">Resultados de la Encuesta: "{{ encuesta.titulo }}"</h2>
+        <p class="lead text-center">{{ encuesta.descripcion }}</p>
+
+        {% for resultado in resultados_por_pregunta %}
+            <hr class="my-4">
+            <h4 class="mb-3">Pregunta: {{ resultado.pregunta.pregunta }}</h4>
+
+            <div class="chart-container">
+                <canvas id="chart-{{ forloop.counter }}"></canvas>
+            </div>
+            
+            <ul class="list-group mt-3">
+                {% for opcion_resultado in resultado.resultados %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Opción: <strong>{{ opcion_resultado.opcion.opcion }}</strong>
+                        <div>
+                            <span class="badge badge-primary badge-pill">{{ opcion_resultado.votos }} votos</span>
+                            <span class="badge badge-secondary badge-pill">{{ opcion_resultado.porcentaje }}%</span>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const ctx{{ forloop.counter }} = document.getElementById('chart-{{ forloop.counter }}').getContext('2d');
+                    const chart{{ forloop.counter }} = new Chart(ctx{{ forloop.counter }}, {
+                        type: 'bar',
+                        data: {
+                            labels: [{% for opcion_resultado in resultado.resultados %}"{{ opcion_resultado.opcion.opcion }}",{% endfor %}],
+                            datasets: [{
+                                label: 'Votos',
+                                data: [{% for opcion_resultado in resultado.resultados %}{{ opcion_resultado.votos }},{% endfor %}],
+                                backgroundColor: [
+                                    'rgba(54, 162, 235, 0.8)',
+                                    'rgba(255, 99, 132, 0.8)',
+                                    'rgba(75, 192, 192, 0.8)',
+                                    'rgba(255, 206, 86, 0.8)',
+                                    'rgba(153, 102, 255, 0.8)',
+                                    'rgba(255, 159, 64, 0.8)',
+                                ],
+                                borderColor: [
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)',
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    precision: 0
+                                }
+                            },
+                            responsive: true,
+                            maintainAspectRatio: false
+                        }
+                    });
+                });
+            </script>
+        {% endfor %}
+
+        <div class="text-center mt-4">
+            <a href="{% url 'lista_encuestas' %}" class="btn btn-secondary">Volver a la lista de encuestas</a>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

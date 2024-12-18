@@ -1,0 +1,10 @@
+<h2>Añadir Opción a {{ pregunta.pregunta }}</h2>
+        
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Guardar Opción</button>
+</form>
+
+<hr>
+ <a href="{% url 'crear_media' pregunta_id=pregunta.id %}" class="btn btn-primary">Añadir Media</a>

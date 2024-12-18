@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votaciones</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Estilos Globales */
+        body {
+            background-color: #f8f9fa;
+        }
+        h1, h2, h4 {
+            color: #343a40;
+        }
+
+        /* Tarjetas */
+        .custom-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .custom-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Sección de Medios */
+        .media-section {
+            margin-top: 20px;
+        }
+
+        .media-container img,
+        .media-container video {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        /* Videos embebidos de YouTube centrados */
+        .youtube-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+        }
+
+        .youtube-container iframe {
+            width: 80%;
+            max-width: 800px; /* Máximo tamaño */
+            aspect-ratio: 16 / 9;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Formulario */
+        .form-container {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        button {
+            width: 50%;
+            display: block;
+            margin: auto;
+        }
+
+        .alert {
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Contenedor Principal -->
+    <main class="container mt-5">
+        <h1 class="mb-4 text-primary fw-bold text-center">¡Participa en las Votaciones!</h1>
+
+        <!-- Mensajes de éxito o error -->
+        {% if mensaje %}
+            <div class="alert alert-success text-center" role="alert">
+                {{ mensaje }}
+            </div>
+        {% endif %}
+
+        {% if error %}
+            <div class="alert alert-danger text-center" role="alert">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <!-- Tarjeta de Pregunta -->
+        <div class="card custom-card mx-auto" style="max-width: 900px;">
+            <div class="card-header bg-primary text-white">
+                <h2 class="text-center mb-0">{{ pregunta.pregunta }}</h2>
+            </div>
+            <div class="card-body">
+                <!-- Opciones -->
+
+                <div class="card-body">
+                    <!-- Sección de Medios -->
+                    {% if opcion.medias.all %}
+                        <div class="media-section">
+                            <h5 class="mb-3 text-center fw-bold text-secondary">Contenido relacionado</h5>
+                            <div class="row g-4 justify-content-center">
+                                {% for media in opcion.medias.all %}
+                                    <div class="col-md-12 media-container">
+                                        <!-- Imágenes -->
+                                        {% if media.tipo_media == 'LOCAL' %}
+                                            {% if media.archivo.name|lower|slice:"-3:" in 'jpg,png,jpeg' or media.archivo.name|lower|slice:"-4:" == '.svg' %}
+                                                <img src="{{ media.archivo.url }}"
+                                                     alt="Imagen"
+                                                     class="img-fluid shadow-sm mb-3">
+                                            <!-- Videos Locales -->
+                                            {% elif media.archivo.name|lower|slice:"-3:" == 'mp4' %}
+                                                <video controls class="shadow-sm mb-3">
+                                                    <source src="{{ media.archivo.url }}" type="video/mp4">
+                                                    Tu navegador no soporta el elemento de video.
+                                                </video>
+                                            {% endif %}
+                                        <!-- Video de YouTube -->
+                                        {% elif media.tipo_media == 'YOUTUBE' %}
+                                            <div class="youtube-container">
+                                                <iframe class="shadow-sm"
+                                                        src="{{ media.get_youtube_embed_url }}"
+                                                        title="YouTube video player"
+                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                        allowfullscreen>
+                                                </iframe>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+    
+                <!-- Formulario -->
+                <div class="form-container mt-4 mx-auto" style="max-width: 600px; background-color: {{ formulario.color }};">
+                    <h4 class="text-center mb-4">Ingrese su Nombre de Twitch y Vote</h4>
+                    <form method="POST" novalidate>
+                        {% csrf_token %}
+                        <!-- Nombre de Twitch -->
+                        <div class="mb-3">
+                            <label for="{{ form.nombre_twitch.id_for_label }}" class="form-label">
+                                {{ form.nombre_twitch.label }}
+                            </label>
+                            {{ form.nombre_twitch }}
+                        </div>
+        
+                        <!-- Campos Ocultos -->
+                        {{ form.pregunta }}
+                        {{ form.opcion }}
+        
+                        <!-- Botón de envío -->
+                        <button type="submit" class="btn btn-primary btn-lg shadow-sm" style="background-color: {{ opcion.color }};">
+                            Votar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
