@@ -100,29 +100,27 @@ def crear_opcion(request, pregunta_id):
 def votaciones(request, pregunta_id, opcion_id):
     pregunta = get_object_or_404(Pregunta, pk=pregunta_id)
     opcion = get_object_or_404(Opcion, pk=opcion_id)
-
+    
     if request.method == 'POST':
         form = FormularioForm(request.POST)
         if form.is_valid():
             try:
-                # Crear instancia sin guardar aún
                 voto = form.save(commit=False)
-                voto.clean()  # Validar usando el modelo
+                voto.usuario = request.POST['nombre_twitch']
+                voto.clean()
                 voto.save()
                 return render(
                     request,
                     'core/votacion.html',
-                    {'form': FormularioForm(), 'mensaje': '¡Gracias por tu voto!', 'pregunta': pregunta, 'opcion': opcion}
+                    {'form': FormularioForm(), 'mensaje': '¡Gracias por tu voto!', 'pregunta': pregunta, 'opcion': opcion, 'formulario':opcion}
                 )
             except ValidationError as e:
-                form.add_error(None, e.message)
+                 form.add_error(None, e.message)
     else:
         initial_data = {'pregunta': pregunta, 'opcion': opcion}
         form = FormularioForm(initial=initial_data)
 
-    return render(request, 'core/votacion.html', {'form': form, 'pregunta': pregunta, 'opcion': opcion})
-
-
+    return render(request, 'core/votacion.html', {'form': form, 'pregunta': pregunta, 'opcion': opcion, 'formulario':opcion})
 def resultados(request, encuesta_id):
     encuesta = get_object_or_404(Encuesta, id=encuesta_id)
     preguntas = encuesta.preguntas.all()

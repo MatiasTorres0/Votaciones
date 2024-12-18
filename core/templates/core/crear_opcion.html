@@ -1,10 +1,42 @@
-<h2>Añadir Opción a {{ pregunta.pregunta }}</h2>
-        
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Guardar Opción</button>
-</form>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Añadir Opción a {{ pregunta.pregunta }}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2 class="mb-4 text-center">Añadir Opción a</h2>
+        <h4 class="mb-3 text-center">{{ pregunta.pregunta }}</h4>
 
-<hr>
- <a href="{% url 'crear_media' pregunta_id=pregunta.id %}" class="btn btn-primary">Añadir Media</a>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="POST">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <div class="mt-4 text-center">
+                                <button type="submit" class="btn btn-primary mr-2">Guardar Opción</button>
+                                 <a href="{% url 'lista_opciones' pregunta_id=pregunta.id %}" class="btn btn-secondary">Volver</a>
+                            </div>
+                        </form>
+                        <hr class="my-4">
+                        <div class="text-center">
+                           <a href="{% url 'crear_media' pregunta_id=pregunta.id %}" class="btn btn-primary">
+                                <i class="fas fa-upload mr-1"></i> Añadir Media
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+   <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -11,6 +11,13 @@ class Encuesta(models.Model):
     def __str__(self):
         return self.titulo
 
+    def get_color(self):
+        if self.preguntas.exists():
+           for pregunta in self.preguntas.all():
+               if pregunta.formulario_set.exists():
+                  return pregunta.formulario_set.first().color
+        return "#ffffff"
+
 class Pregunta(models.Model):
     encuesta = models.ForeignKey(Encuesta, on_delete=models.CASCADE, related_name='preguntas', null=True)
     pregunta = models.TextField(null=True)
@@ -60,12 +67,14 @@ class Opcion(models.Model):
         return self.opcion
 
 class Formulario(models.Model):
+    nombre_twitch = models.CharField(max_length=100)
     pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE, null=True)
     opcion = models.ForeignKey(Opcion, on_delete=models.CASCADE, null=True)
-    nombre_twitch = models.CharField(max_length=200, blank=True)
-    color = models.CharField(max_length=7, blank=True, default="#ffffff", validators=[
-        RegexValidator(r'^#[0-9A-Fa-f]{6}$', message="El color debe ser un código hexadecimal válido.")
-    ])
+    fecha_votacion = models.DateTimeField(auto_now_add=True, null=True)
+    usuario = models.CharField(max_length=100, blank=True, null=True)
 
-    def __str__(self):
-        return f'Voto en {self.pregunta} por {self.opcion}'
+    def clean(self):
+      if self.pregunta and self.opcion:
+          usuario = self.usuario
+          if Formulario.objects.filter(pregunta=self.pregunta, usuario=usuario).exists():
+            raise ValidationError('Ya has votado en esta pregunta.')

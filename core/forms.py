@@ -66,18 +66,11 @@ class OpcionForm(forms.ModelForm):
 
 # Formulario para Registrar Voto
 class FormularioForm(forms.ModelForm):
+    nombre_twitch = forms.CharField(label='Nombre de Twitch', widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese su Nombre de Twitch'}))
     class Meta:
         model = Formulario
-        fields = ['pregunta', 'opcion', 'nombre_twitch', 'color']
+        fields = ['nombre_twitch', 'pregunta', 'opcion']
         widgets = {
-            'nombre_twitch': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Tu nombre de Twitch'}),
-            'pregunta': forms.HiddenInput(),
-            'opcion': forms.HiddenInput(),
-            'color': forms.TextInput(attrs={'class': 'form-control', 'type': 'color'}),
-        }
-        labels = {
-            'pregunta': 'Pregunta',
-            'opcion': 'Opción',
-            'nombre_twitch': 'Tu nombre de Twitch',
-            'color': 'Color del formulario',
+             'pregunta': forms.HiddenInput(),
+            'opcion': forms.HiddenInput()
         }

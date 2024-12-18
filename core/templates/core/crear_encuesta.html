@@ -1,15 +1,47 @@
-<h2>Crear Encuesta</h2>
-        
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Guardar Encuesta</button>
-</form>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Encuesta</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2 class="mb-4 text-center">Crear Encuesta</h2>
 
-<hr>
-{% if pregunta %}
-    <a href="{% url 'crear_pregunta' encuesta_id=pregunta.id %}" class="btn btn-primary">Añadir Media</a>
-{% else %}
-    <!-- Mensaje de alerta -->
-    <p class="text-danger">Debes crear una encuesta primero para añadir una pregunta.</p>
-{% endif %}
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="POST">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <div class="mt-4 text-center">
+                                <button type="submit" class="btn btn-primary mr-2">Guardar Encuesta</button>
+                                <a href="{% url 'lista_encuestas' %}" class="btn btn-secondary">Cancelar</a>
+                             </div>
+                        </form>
+                        <hr class="my-4">
+                         {% if form.instance.id %}
+                            <div class="text-center">
+                             <a href="{% url 'lista_preguntas' encuesta_id=form.instance.id %}" class="btn btn-primary">
+                              <i class="fas fa-plus-circle mr-1"></i>  Añadir Pregunta
+                              </a>
+                            </div>
+                         {% else %}
+                            <div class="alert alert-info text-center" role="alert">
+                                Debes crear una encuesta primero para añadir una pregunta.
+                           </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+   <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
