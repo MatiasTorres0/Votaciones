@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Votaciones</title>
+    {% load static %}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
@@ -77,66 +78,162 @@
             color: #6c757d;
             font-style: italic;
         }
+        .twitch-form {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .twitch-form input[type="text"] {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+            width: 200px;
+        }
+
+        .twitch-form button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .twitch-form button:hover {
+             background-color: #0056b3;
+        }
     </style>
+
+        <!-- Favicon -->
+        <link href="{% static 'core/img/favicon.ico' %}" rel="icon">
+
+        <!-- Google Web Fonts -->
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+        <!-- Font Awesome -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    
+        <!-- Libraries Stylesheet -->
+        <link href="{% static 'core/lib/owlcarousel/assets/owl.carousel.min.css' %}" rel="stylesheet">
+        <link href="{% static 'core/lib/lightbox/css/lightbox.min.css' %}" rel="stylesheet">
+    
+
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="{% url 'inicio' %}">Mi Aplicación</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'inicio' %}">Inicio</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'lista_encuestas' %}">Encuestas</a>
-                    </li>
-                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'crear_encuesta' %}">Crear Encuesta</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Admin
-                      </a>
-                      <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                         <a class="dropdown-item" href="#">Usuarios</a>
-                        <a class="dropdown-item" href="#">Configuraciones</a>
-                      </div>
-                    </li>
-    
-                </ul>
-            </div>
-        </div>
-    </nav>
-    <div class="container">
-        <h1>Bienvenido a las Votaciones</h1>
+
+    <!-- Navbar Start -->
+    <div class="container-fluid position-relative nav-bar p-0">
+        <div class="container-lg position-relative p-0 px-lg-3" style="z-index: 9;">
+
+        <!-- Propuesta 3: Diseño Centrado con Elementos Flotantes -->
+            <style>
+                .nav-centered {
+                    background-color: white;
+                    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+                    padding: 0.5rem 0;
+                }
+                .nav-centered .navbar-brand {
+                    position: absolute;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    font-size: 2.2rem;
+                    font-weight: 800;
+                }
+                .nav-centered .navbar-nav {
+                    flex: 1;
+                }
+                .nav-centered .nav-left {
+                    justify-content: flex-end;
+                    margin-right: 120px;
+                }
+                .nav-centered .nav-right {
+                    justify-content: flex-start;
+                    margin-left: 120px;
+                }
+                .nav-centered .nav-link {
+                    color: #374151;
+                    font-weight: 500;
+                    padding: 1rem 1.5rem;
+                    transition: all 0.3s ease;
+                }
+                .nav-centered .nav-link:hover {
+                    color: #3b82f6;
+                    transform: translateY(-2px);
+                }
+                .nav-centered .nav-link.active {
+                    color: #2563eb;
+                    font-weight: 600;
+                }
+            </style>
         
-        {% if error %}
-            <div class="error">{{ error }}</div>
-        {% endif %}
-        
-        {% if preguntas %}
-            {% for pregunta in preguntas %}
-                <div class="card">
-                    <div class="card-header">{{ pregunta.pregunta }}</div>
-                    <div class="card-body">
-                        <ul class="options">
-                            {% for opcion in pregunta.opciones.all %}
-                                <li>
-                                    <a href="{% url 'votaciones' pregunta_id=pregunta.id opcion_id=opcion.id %}" class="option-btn">
-                                        {{ opcion.opcion }}
-                                    </a>
-                                </li>
-                            {% endfor %}
+            <nav class="navbar navbar-expand-lg nav-centered">
+                <div class="container">
+                    <a class="navbar-brand" href="">
+                        <span class="text-primary">i</span>CREAM
+                    </a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav3">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav3">
+                        <ul class="navbar-nav nav-left">
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="">Votaciones</a>
+                            </li>
+                        </ul>
+                        <ul class="navbar-nav nav-right">
+                            <li class="nav-item">
+                                <a class="nav-link" href="">Resultados</a>
+                            </li>
                         </ul>
                     </div>
                 </div>
-            {% endfor %}
+            </nav>
+        </div>
+    </div>
+    <!-- Navbar End -->
+
+    <div class="container">
+        <h1>Bienvenido a las Votaciones</h1>
+
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+
+        {% if completed %}
+            <p style="text-align:center;">Ya has votado en todas las categorías. ¡Gracias por participar! Los resultados se mostrarán el 27 de diciembre de 2024</p>
+        {% elif twitch_name %}
+             {% if preguntas %}
+                {% for pregunta in preguntas %}
+                    <div class="card">
+                        <div class="card-header">{{ pregunta.pregunta }}</div>
+                        <div class="card-body">
+                            <ul class="options">
+                                {% for opcion in pregunta.opciones.all %}
+                                    <li>
+                                        <a href="{% url 'votaciones' pregunta_id=pregunta.id opcion_id=opcion.id %}" class="option-btn">
+                                            {{ opcion.opcion }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                 {% endfor %}
+            {% else %}
+                <p class="no-questions">No hay preguntas disponibles.</p>
+            {% endif %}
         {% else %}
-            <p class="no-questions">No hay preguntas disponibles.</p>
+           <div class="twitch-form">
+                <p>Para comenzar las votaciones por favor agrega tu nombre de twitch</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="text" name="nombre_twitch" placeholder="Nombre de Twitch" required>
+                    <button type="submit">Entrar</button>
+                </form>
+            </div>
         {% endif %}
     </div>
 </body>

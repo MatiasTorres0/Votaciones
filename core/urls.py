@@ -4,6 +4,7 @@ from django.conf.urls.static import static
 from . import views
 
 urlpatterns = [
+    path('mantenimiento', views.mantenimiento, name="mantenimiento"),
     path('', views.inicio, name='inicio'), # Pagina de Inicio
     path('crear_encuesta/', views.crear_encuesta, name='crear_encuesta'),  # Form para crear una encuesta
     path('lista_encuestas/', views.lista_encuestas, name='lista_encuestas'), # Muestra la lista de encuestas
@@ -17,6 +18,8 @@ urlpatterns = [
     path('crear_media/<int:pregunta_id>/', views.crear_media, name='crear_media'),
     path('lista_opciones/<int:pregunta_id>/', views.lista_opciones, name='lista_opciones'),
     path('editar_opcion/<int:opcion_id>/', views.editar_opcion, name='editar_opcion'),
+    path('home/', views.home, name='home'),
+    
 ]
 # Sirve archivos de media en modo DEBUG
 if settings.DEBUG:

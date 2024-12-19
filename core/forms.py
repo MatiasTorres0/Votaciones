@@ -71,6 +71,14 @@ class FormularioForm(forms.ModelForm):
         model = Formulario
         fields = ['nombre_twitch', 'pregunta', 'opcion']
         widgets = {
-             'pregunta': forms.HiddenInput(),
-            'opcion': forms.HiddenInput()
+            'pregunta': forms.HiddenInput(),
+            'opcion': forms.RadioSelect()
         }
+    
+    def __init__(self, *args, **kwargs):
+          pregunta_id = kwargs.pop('pregunta_id', None) #getting the question id
+          super().__init__(*args, **kwargs)
+          if pregunta_id:
+              self.fields['pregunta'].initial = pregunta_id # setting the initial value based on the url
+              pregunta_object = Pregunta.objects.get(pk=pregunta_id)  # Get the Pregunta object
+              self.fields['opcion'].queryset = pregunta_object.opciones.all()
