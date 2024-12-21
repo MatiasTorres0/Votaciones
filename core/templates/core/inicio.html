@@ -6,106 +6,520 @@
     <title>Votaciones</title>
     {% load static %}
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  
     <style>
+        :root {
+            --gradient-start: #2d1b69;
+            --gradient-end: #1a103f;
+            --accent-purple: #9333ea;
+            --light-purple: #c084fc;
+            --text-primary: #9148df;
+            --card-bg: rgba(45, 27, 105, 0.6);
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #e9ecef;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+            color: var(--text-primary);
             margin: 0;
             padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            min-height: 100vh;
+            background-attachment: fixed;
         }
+
+        .navbar {
+            background: rgba(45, 27, 105, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+        }
+
+        .navbar-brand {
+            background: linear-gradient(45deg, var(--accent-purple), var(--light-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent !important;
+            font-weight: 800;
+            font-size: 1.8rem;
+        }
+
+        .nav-link {
+            color: var(--text-primary) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            margin: 0 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(15, 12, 18, 0.2);
+        }
+
         .container {
-            width: 100%;
-            max-width: 600px;
+            max-width: 800px;
         }
+
         h1 {
-            color: #343a40;
+            background: linear-gradient(45deg, var(--accent-purple), var(--light-purple));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+            font-weight: 700;
+            font-size: 2.5rem;
         }
-        .error {
-            background-color: #f8d7da;
-            color: #721c24;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
+
         .card {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(147, 51, 234, 0.2);
+            border-radius: 20px;
+            margin-bottom: 30px;
             overflow: hidden;
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
         }
-        .card:hover {
-            transform: scale(1.02);
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-purple), var(--light-purple));
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
         .card-header {
-            background-color: #007bff;
-            color: white;
-            padding: 15px;
-            font-weight: bold;
-        }
-        .card-body {
+            background: rgba(147, 51, 234, 0.1);
+            color: var(--light-purple);
+            border-bottom: 1px solid rgba(147, 51, 234, 0.2);
+            font-weight: 600;
             padding: 20px;
         }
-        .options {
-            list-style-type: none;
-            padding: 0;
-        }
-        .options li {
-            margin-bottom: 10px;
-        }
+
         .option-btn {
-            display: block;
-            background-color: #28a745;
+            background: linear-gradient(45deg, var(--accent-purple), var(--light-purple));
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 300px;
+            margin: 8px 0;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 500;
+        }
+
+        .option-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(147, 51, 234, 0.4);
             color: white;
             text-decoration: none;
-            padding: 12px;
-            border-radius: 5px;
-            text-align: center;
-            transition: background-color 0.3s ease;
         }
-        .option-btn:hover {
-            background-color: #218838;
-        }
-        .no-questions {
-            text-align: center;
-            color: #6c757d;
-            font-style: italic;
-        }
+
         .twitch-form {
-            margin-bottom: 20px;
-            text-align: center;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(147, 51, 234, 0.2);
         }
 
         .twitch-form input[type="text"] {
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            margin-right: 10px;
-            width: 200px;
+            background: rgba(45, 27, 105, 0.3);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            color: var(--text-primary);
+            padding: 15px 20px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 300px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .twitch-form input[type="text"]:focus {
+            outline: none;
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.2);
         }
 
         .twitch-form button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: #007bff;
+            background: linear-gradient(45deg, var(--accent-purple), var(--light-purple));
             color: white;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
 
         .twitch-form button:hover {
-             background-color: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(147, 51, 234, 0.4);
+        }
+
+        .completed-message {
+            background: var(--card-bg);
+            border: 1px solid rgba(147, 51, 234, 0.2);
+            color: var(--text-primary);
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+            backdrop-filter: blur(20px);
+        }
+
+        .error {
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            color: #fca5a5;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+            backdrop-filter: blur(20px);
         }
     </style>
 
+    
+<style>
+    /* Base Container Styles */
+    .voting-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+        color: #e2e8f0;
+    }
+    
+    /* Title Styles */
+    .page-title {
+        text-align: center;
+        margin-bottom: 3rem;
+        position: relative;
+    }
+    
+    .animate-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #a855f7, #7c3aed);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        animation: fadeSlideDown 0.8s ease-out;
+    }
+    
+    .title-decoration {
+        width: 100px;
+        height: 4px;
+        background: linear-gradient(90deg, #a855f7, #7c3aed);
+        margin: 1rem auto;
+        border-radius: 2px;
+    }
+    
+    /* Alert Styles */
+    .alert {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+    }
+    
+    .alert-error {
+        background: rgba(220, 38, 38, 0.1);
+        border: 1px solid rgba(220, 38, 38, 0.2);
+        color: #fca5a5;
+    }
+    
+    .alert-icon {
+        flex-shrink: 0;
+    }
+    
+    /* Completion Card Styles */
+    .completion-card {
+        background: rgba(139, 92, 246, 0.1);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        border-radius: 16px;
+        padding: 2rem;
+        text-align: center;
+        backdrop-filter: blur(12px);
+    }
+    
+    .completion-icon {
+        color: #a855f7;
+        margin-bottom: 1.5rem;
+    }
+    
+    .completion-text h3 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: #e2e8f0;
+    }
+    
+    .results-date {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background: rgba(139, 92, 246, 0.05);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    /* Questions Grid Styles */
+    .questions-grid {
+        display: grid;
+        gap: 2rem;
+    }
+    
+    .question-card {
+        background: rgba(30, 41, 59, 0.5);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        border-radius: 16px;
+        overflow: hidden;
+        backdrop-filter: blur(12px);
+        transition: transform 0.3s ease;
+    }
+    
+    .question-card:hover {
+        transform: translateY(-4px);
+    }
+    
+    .question-header {
+        background: rgba(139, 92, 246, 0.1);
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .question-number {
+        background: #7c3aed;
+        color: white;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    
+    .question-body {
+        padding: 1.5rem;
+    }
+    
+    /* Option Button Styles */
+    .options-list {
+        display: grid;
+        gap: 1rem;
+    }
+    
+    .option-button {
+        background: rgba(139, 92, 246, 0.1);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        color: #e2e8f0;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: all 0.3s ease;
+        animation: fadeSlideUp 0.5s ease-out forwards;
+        animation-delay: var(--option-delay);
+        opacity: 0;
+    }
+    
+    .option-button:hover {
+        background: rgba(139, 92, 246, 0.2);
+        transform: translateX(8px);
+        color: white;
+        text-decoration: none;
+    }
+    
+    .option-arrow {
+        opacity: 0;
+        transform: translateX(-10px);
+        transition: all 0.3s ease;
+    }
+    
+    .option-button:hover .option-arrow {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    
+    /* Twitch Login Card Styles */
+    .twitch-login-card {
+        background: rgba(30, 41, 59, 0.5);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        border-radius: 16px;
+        padding: 2rem;
+        backdrop-filter: blur(12px);
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    
+    .login-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .twitch-icon {
+        color: #9146ff;
+        margin-bottom: 1rem;
+    }
+    
+    .login-description {
+        text-align: center;
+        color: #94a3b8;
+        margin-bottom: 2rem;
+    }
+    
+    .input-group {
+        display: flex;
+        gap: 1rem;
+    }
+    
+    .twitch-input {
+        flex: 1;
+        background: rgba(30, 41, 59, 0.5);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        border-radius: 12px;
+        padding: 1rem;
+        color: #e2e8f0;
+        transition: all 0.3s ease;
+    }
+    
+    .twitch-input:focus {
+        outline: none;
+        border-color: #7c3aed;
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+    }
+    
+    .submit-button {
+        background: linear-gradient(135deg, #a855f7, #7c3aed);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .submit-button:hover {
+        transform: translateX(4px);
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    }
+    
+    /* Empty State Styles */
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background: rgba(30, 41, 59, 0.5);
+        border-radius: 16px;
+        border: 1px solid rgba(139, 92, 246, 0.2);
+    }
+    
+    .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    
+    /* Animations */
+    @keyframes fadeSlideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes fadeSlideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .animate-fade-in {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    .animate-scale-in {
+        animation: scaleIn 0.5s ease-out;
+    }
+    
+    .animate-slide-up {
+        animation: fadeSlideUp 0.5s ease-out forwards;
+        animation-delay: var(--animation-delay);
+        opacity: 0;
+    }
+    
+    @keyframes scaleIn {
+        from {
+            opacity: 0;
+            transform: scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 640px) {
+        .voting-container {
+            padding: 1rem;
+        }
+    
+        .input-group {
+            flex-direction: column;
+        }
+    
+        .submit-button {
+            width: 100%;
+            justify-content: center;
+        }
+    
+        .animate-title {
+            font-size: 2rem;
+        }
+    }
+    </style>
         <!-- Favicon -->
         <link href="{% static 'core/img/favicon.ico' %}" rel="icon">
 
@@ -172,7 +586,7 @@
             <nav class="navbar navbar-expand-lg nav-centered">
                 <div class="container">
                     <a class="navbar-brand" href="">
-                        <span class="text-primary">i</span>CREAM
+                        <span class="text-primary">A</span>Wards
                     </a>
                     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav3">
                         <span class="navbar-toggler-icon"></span>
@@ -195,46 +609,107 @@
     </div>
     <!-- Navbar End -->
 
-    <div class="container">
-        <h1>Bienvenido a las Votaciones</h1>
-
+    <div class="voting-container">
+        <div class="page-title">
+            <h1 class="animate-title">Bienvenido a las Votaciones</h1>
+            <div class="title-decoration"></div>
+        </div>
+    
         {% if error %}
-            <div class="error">{{ error }}</div>
+            <div class="alert alert-error animate-fade-in">
+                <div class="alert-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                </div>
+                <div class="alert-content">{{ error }}</div>
+            </div>
         {% endif %}
-
+    
         {% if completed %}
-            <p style="text-align:center;">Ya has votado en todas las categorías. ¡Gracias por participar! Los resultados se mostrarán el 27 de diciembre de 2024</p>
-        {% elif twitch_name %}
-             {% if preguntas %}
-                {% for pregunta in preguntas %}
-                    <div class="card">
-                        <div class="card-header">{{ pregunta.pregunta }}</div>
-                        <div class="card-body">
-                            <ul class="options">
-                                {% for opcion in pregunta.opciones.all %}
-                                    <li>
-                                        <a href="{% url 'votaciones' pregunta_id=pregunta.id opcion_id=opcion.id %}" class="option-btn">
-                                            {{ opcion.opcion }}
-                                        </a>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </div>
+            <div class="completion-card animate-scale-in">
+                <div class="completion-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                </div>
+                <div class="completion-text">
+                    <h3>¡Votación Completada!</h3>
+                    <p>Ya has votado en todas las categorías. ¡Gracias por participar!</p>
+                    <div class="results-date">
+                        <span class="calendar-icon">📅</span>
+                        Los resultados se mostrarán el 27 de diciembre de 2024
                     </div>
-                 {% endfor %}
+                </div>
+            </div>
+        {% elif twitch_name %}
+            {% if preguntas %}
+                <div class="questions-grid">
+                    {% for pregunta in preguntas %}
+                        <div class="question-card animate-slide-up" style="--animation-delay: {{ forloop.counter0 }}00ms">
+                            <div class="question-header">
+                                <span class="question-number">#{{ forloop.counter }}</span>
+                                <h2>{{ pregunta.pregunta }}</h2>
+                            </div>
+                            <div class="question-body">
+                                <div class="options-list">
+                                    {% for opcion in pregunta.opciones.all %}
+                                        <a href="{% url 'votaciones' pregunta_id=pregunta.id opcion_id=opcion.id %}"
+                                           class="option-button"
+                                           style="--option-delay: {{ forloop.counter0 }}00ms">
+                                            <span class="option-text">{{ opcion.opcion }}</span>
+                                            <span class="option-arrow">→</span>
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
             {% else %}
-                <p class="no-questions">No hay preguntas disponibles.</p>
+                <div class="empty-state animate-fade-in">
+                    <div class="empty-icon">❓</div>
+                    <p>No hay preguntas disponibles en este momento.</p>
+                </div>
             {% endif %}
         {% else %}
-           <div class="twitch-form">
-                <p>Para comenzar las votaciones por favor agrega tu nombre de twitch</p>
-                <form method="post">
+            <div class="twitch-login-card animate-slide-up">
+                <div class="login-header">
+                    <div class="twitch-icon">
+                        <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+                            <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/>
+                        </svg>
+                    </div>
+                    <h2>Conecta con Twitch</h2>
+                </div>
+                <p class="login-description">Para comenzar las votaciones, ingresa tu nombre de usuario de Twitch</p>
+                <form method="post" class="login-form">
                     {% csrf_token %}
-                    <input type="text" name="nombre_twitch" placeholder="Nombre de Twitch" required>
-                    <button type="submit">Entrar</button>
+                    <div class="input-group">
+                        <input type="text" 
+                               name="nombre_twitch" 
+                               placeholder="Nombre de usuario" 
+                               required
+                               autocomplete="username"
+                               class="twitch-input">
+                        <button type="submit" class="submit-button">
+                            <span>Comenzar</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </button>
+                    </div>
                 </form>
             </div>
         {% endif %}
     </div>
+    
+     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

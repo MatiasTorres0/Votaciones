@@ -4,178 +4,422 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Votaciones</title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
     <style>
-        /* Estilos Globales */
-        body {
-            background-color: #f8f9fa;
-        }
-        h1, h2, h4 {
-            color: #343a40;
+        /* Root Variables for Theme Colors */
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --accent-primary: #8b5cf6;
+            --accent-secondary: #7c3aed;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --card-gradient: linear-gradient(145deg, rgba(139, 92, 246, 0.1), rgba(124, 58, 237, 0.1));
         }
 
-        /* Tarjetas */
-        .custom-card {
+        /* Global Styles */
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Background Animation */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 20%),
+                        radial-gradient(circle at 90% 80%, rgba(124, 58, 237, 0.1) 0%, transparent 20%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Typography */
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 2rem 0;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: titleFade 1s ease-out;
+        }
+
+        /* Alert Styles */
+        .alert {
+            background: rgba(30, 41, 59, 0.8);
             border: none;
-            border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        .alert-success {
+            border-left: 4px solid var(--success-color);
+            color: #4ade80;
+        }
+
+        .alert-danger {
+            border-left: 4px solid var(--error-color);
+            color: #f87171;
+        }
+
+        /* Card Styles */
+        .custom-card {
+            background: var(--card-gradient);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 20px;
             overflow: hidden;
-            transition: all 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: cardFade 0.8s ease-out;
         }
 
         .custom-card:hover {
-            transform: scale(1.02);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 32px rgba(139, 92, 246, 0.2);
         }
 
-        /* Sección de Medios */
+        .card-header {
+            background: rgba(139, 92, 246, 0.1);
+            border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+            padding: 1.5rem;
+        }
+
+        .card-header h2 {
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* Media Section Styles */
         .media-section {
-            margin-top: 20px;
+            padding: 1.5rem;
+        }
+
+        .media-container {
+            position: relative;
+            margin-bottom: 1.5rem;
         }
 
         .media-container img,
         .media-container video {
             width: 100%;
-            max-height: 400px;
-            object-fit: cover;
-            border-radius: 10px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
         }
 
-        /* Videos embebidos de YouTube centrados */
+        .media-container:hover img,
+        .media-container:hover video {
+            transform: scale(1.02);
+        }
+
+        /* YouTube Container */
         .youtube-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 15px 0;
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%;
+            margin: 1.5rem 0;
         }
 
         .youtube-container iframe {
-            width: 80%;
-            max-width: 800px; /* Máximo tamaño */
-            aspect-ratio: 16 / 9;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         }
 
-        /* Formulario */
+        /* Form Styles */
         .form-container {
-            background-color: #ffffff;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 600px;
+            margin: 2rem auto;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            animation: formSlide 0.8s ease-out;
         }
 
-        button {
-            width: 50%;
-            display: block;
-            margin: auto;
+        .form-container h4 {
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
         }
 
-        .alert {
-            margin-bottom: 1rem;
+        .form-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .form-control {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 10px;
+            color: var(--text-primary);
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            background: rgba(30, 41, 59, 0.7);
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+            color: var(--text-primary);
+        }
+
+        /* Button Styles */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border: none;
+            border-radius: 10px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: auto;
+            min-width: 200px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+            background: linear-gradient(135deg, var(--accent-secondary), var(--accent-primary));
+        }
+
+        /* Animations */
+        @keyframes titleFade {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes cardFade {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes formSlide {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .form-container {
+                padding: 1.5rem;
+            }
+
+            .btn-primary {
+                width: 100%;
+            }
+
+            .youtube-container {
+                margin: 1rem 0;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Contenedor Principal -->
     <main class="container mt-5">
-        <h1 class="mb-4 text-primary fw-bold text-center">¡Participa en las Votaciones!</h1>
+        <h1>¡Participa en las Votaciones!</h1>
 
-        <!-- Mensajes de éxito o error -->
-        {% if mensaje %}
-            <div class="alert alert-success text-center" role="alert">
-                {{ mensaje }}
+        <!-- Enhanced messages display with role="alert" for accessibility -->
+        {% if messages %}
+        <div class="messages" aria-live="polite">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}" role="alert">
+                {{ message }}
             </div>
+            {% endfor %}
+        </div>
         {% endif %}
 
-        {% if error %}
-            <div class="alert alert-danger text-center" role="alert">
-                {{ error }}
+        <div class="custom-card mx-auto">
+            <div class="card-header">
+                <h2 class="text-center">{{ pregunta.pregunta }}</h2>
             </div>
-        {% endif %}
-
-        <!-- Tarjeta de Pregunta -->
-        <div class="card custom-card mx-auto" style="max-width: 900px;">
-            <div class="card-header bg-primary text-white">
-                <h2 class="text-center mb-0">{{ pregunta.pregunta }}</h2>
-            </div>
+            
             <div class="card-body">
-                <!-- Opciones -->
-                <div class="card-body">
-                    <!-- Sección de Medios -->
-                    {% if opcion.medias.all %}
-                        <div class="media-section">
-                            <h5 class="mb-3 text-center fw-bold text-secondary">Contenido relacionado</h5>
-                            <div class="row g-4 justify-content-center">
-                                {% for media in opcion.medias.all %}
-                                    <div class="col-md-12 media-container">
-                                        <!-- Imágenes -->
-                                        {% if media.tipo_media == 'LOCAL' %}
-                                            {% if media.archivo.name|lower|slice:"-3:" in 'jpg,png,jpeg' or media.archivo.name|lower|slice:"-4:" == '.svg' %}
-                                                <img src="{{ media.archivo.url }}"
-                                                     alt="Imagen"
-                                                     class="img-fluid shadow-sm mb-3">
-                                            <!-- Videos Locales -->
-                                            {% elif media.archivo.name|lower|slice:"-3:" == 'mp4' %}
-                                                <video controls class="shadow-sm mb-3">
-                                                    <source src="{{ media.archivo.url }}" type="video/mp4">
-                                                    Tu navegador no soporta el elemento de video.
-                                                </video>
-                                            {% endif %}
-                                        <!-- Video de YouTube -->
-                                        {% elif media.tipo_media == 'YOUTUBE' %}
-                                            <div class="youtube-container">
-                                                <iframe class="shadow-sm"
-                                                        src="{{ media.get_youtube_embed_url }}"
-                                                        title="YouTube video player"
-                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                                        allowfullscreen>
-                                                </iframe>
-                                            </div>
-                                        {% endif %}
-                                    </div>
+                <!-- Media Section -->
+                {% if opcion.medias.all %}
+                <div class="media-section">
+                    <h3 class="h5 mb-3 text-center fw-bold">Contenido relacionado</h3>
+                    <div class="row g-4 justify-content-center">
+                        {% for media in opcion.medias.all %}
+                        <div class="col-md-12 media-container">
+                            {% if media.tipo_media == 'LOCAL' %}
+                                {% if media.archivo.name|lower|slice:"-3:" in 'jpg,png,jpeg' or media.archivo.name|lower|slice:"-4:" == '.svg' %}
+                                    <img src="{{ media.archivo.url }}"
+                                         alt="Imagen relacionada a la opción de voto"
+                                         class="img-fluid">
+                                {% elif media.archivo.name|lower|slice:"-3:" == 'mp4' %}
+                                    <video controls class="w-100">
+                                        <source src="{{ media.archivo.url }}" type="video/mp4">
+                                        <p>Tu navegador no soporta el elemento de video.</p>
+                                    </video>
+                                {% endif %}
+                            {% elif media.tipo_media == 'YOUTUBE' %}
+                                <div class="youtube-container">
+                                    <iframe src="{{ media.get_youtube_embed_url }}"
+                                            title="Video de YouTube relacionado a la opción"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowfullscreen>
+                                    </iframe>
+                                </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Enhanced Form Section -->
+                <div class="form-container">
+                    <h4>{% if first_time %}Ingrese su Nombre de Twitch y Vote{% else %}Vote{% endif %}</h4>
+
+                    <form method="POST" novalidate class="needs-validation">
+                        {% csrf_token %}
+                        
+                        {% if first_time %}
+                        <div class="mb-3">
+                            <label for="{{ form.nombre_twitch.id_for_label }}" class="form-label">
+                                {{ form.nombre_twitch.label }}
+                                <span class="text-danger">*</span>
+                            </label>
+                            {{ form.nombre_twitch }}
+                            {% if form.nombre_twitch.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.nombre_twitch.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <div class="form-text text-light">
+                                Ingrese el nombre exacto de su cuenta de Twitch
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {{ form.pregunta }}
+
+                        <div class="mb-3">
+                            {% if form.opcion.errors %}
+                            <div class="alert alert-danger" role="alert">
+                                {% for error in form.opcion.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            
+                            <div class="options-container mt-3">
+                                {% for radio in form.opcion %}
+                                <div class="form-check mb-2">
+                                    {{ radio }}
+                                    <label class="form-check-label" for="{{ radio.id_for_label }}">
+                                        {{ radio.choice_label }}
+                                    </label>
+                                </div>
                                 {% endfor %}
                             </div>
                         </div>
-                    {% endif %}
-    
-                   <!-- Formulario -->
-                    <div class="form-container mt-4 mx-auto" style="max-width: 600px; background-color: {{ opcion.color }};">
-                      {% if first_time %}
-                        <h4 class="text-center mb-4">Ingrese su Nombre de Twitch y Vote</h4>
-                      {% else %}
-                         <h4 class="text-center mb-4">Vote</h4>
-                      {% endif %}
 
-                      <form method="POST" novalidate>
-                        {% csrf_token %}
-                        <!-- Nombre de Twitch -->
-                        {% if first_time %}
-                            <div class="mb-3">
-                                <label for="{{ form.nombre_twitch.id_for_label }}" class="form-label">
-                                    {{ form.nombre_twitch.label }}
-                                </label>
-                                {{ form.nombre_twitch }}
-                            </div>
-                         {% endif %}
-        
-                        <!-- Campos Ocultos -->
-                        {{ form.pregunta }}
-                        {{ form.opcion }}
-        
-                        <!-- Botón de envío -->
-                        <button type="submit" class="btn btn-primary btn-lg shadow-sm" style="background-color: {{ opcion.color }};">
-                            Votar
-                        </button>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">
+                                Votar
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
-        
     </main>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Form validation enhancement script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Prevent double submission
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function(e) {
+                if (form.classList.contains('submitting')) {
+                    e.preventDefault();
+                    return;
+                }
+                form.classList.add('submitting');
+                
+                // Disable submit button
+                const submitBtn = form.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Procesando...';
+            });
+
+            // Add custom validation for Twitch username if present
+            const twitchInput = document.querySelector('input[name="nombre_twitch"]');
+            if (twitchInput) {
+                twitchInput.addEventListener('input', function(e) {
+                    const value = e.target.value.trim();
+                    // Remove spaces and special characters
+                    e.target.value = value.replace(/[^a-zA-Z0-9_]/g, '');
+                });
+            }
+        });
+    </script>
 </body>
 </html>

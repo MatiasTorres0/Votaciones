@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.core.exceptions import ValidationError
 from .forms import EncuestaForm, PreguntaForm, OpcionForm, FormularioForm, MediaForm
 from .models import Encuesta, Pregunta, Opcion, Formulario, Media
-from django.http import HttpResponseRedirect
+from django.contrib import messages  # Import messages
 
 def inicio(request):
   preguntas = Pregunta.objects.all()
@@ -109,60 +109,108 @@ def crear_opcion(request, pregunta_id):
     return render(request, 'core/crear_opcion.html', {'form': form, 'pregunta': pregunta})
 
 def votaciones(request, pregunta_id, opcion_id):
+    """
+    Handles the voting process with proper user session management.
+    
+    Args:
+        request: HttpRequest object
+        pregunta_id: ID of the question being voted on
+        opcion_id: ID of the selected option
+    """
+    # Get required objects
     pregunta = get_object_or_404(Pregunta, pk=pregunta_id)
     opcion = get_object_or_404(Opcion, pk=opcion_id)
-
+    
+    # First-time user handling
     if 'twitch_name' not in request.session:
         if request.method == 'POST':
-          form = FormularioForm(request.POST, pregunta_id=pregunta_id)
-          if form.is_valid():
-                request.session['twitch_name'] = request.POST['nombre_twitch']
-                return render(
-                        request,
-                        'core/votacion.html',
-                        {'form': FormularioForm(initial={'pregunta':pregunta_id, 'opcion': opcion_id}, pregunta_id=pregunta_id), 'mensaje': '¡Bienvenido a las votaciones, para comenzar agrega tú nombre de twitch!', 'pregunta': pregunta, 'first_time': False, 'opcion': opcion}
-                )
-
-          else:
-            return render(
-                    request,
-                    'core/votacion.html',
-                    {'form': form, 'mensaje': '¡Bienvenido a las votaciones, para comenzar agrega tú nombre de twitch!', 'pregunta': pregunta, 'first_time': True, 'opcion': opcion}
-            )
+            # Process initial username submission
+            form = FormularioForm(request.POST, pregunta_id=pregunta_id)
+            if form.is_valid():
+                 try:
+                    # Get username from form
+                    twitch_name = form.cleaned_data['nombre_twitch']
+                    
+                    # Create and save the vote
+                    voto = form.save(commit=False)
+                    voto.usuario = twitch_name
+                    voto.nombre_twitch = twitch_name  # Set both fields
+                    voto.save()
+                    
+                    # Store in session after successful vote
+                    request.session['twitch_name'] = twitch_name
+                    messages.success(request, "¡Gracias por tu voto!")
+                    return redirect('inicio')
+                 except ValidationError as e:
+                    messages.error(request, f"Error al votar: {str(e)}")
+                    return redirect('inicio')
+            else:
+                #Form Invalid
+                messages.error(request, "Error al votar. Por favor, verifica el formulario.")
         else:
-
-          form = FormularioForm(initial={'pregunta':pregunta_id, 'opcion': opcion_id}, pregunta_id=pregunta_id)
-          return render(
-                  request,
-                  'core/votacion.html',
-                  {'form': form, 'mensaje': '¡Bienvenido a las votaciones, para comenzar agrega tú nombre de twitch!', 'pregunta': pregunta, 'first_time': True, 'opcion': opcion}
-          )
-    else:
-      if request.method == 'POST':
-        form = FormularioForm(request.POST, pregunta_id=pregunta_id)
-        if form.is_valid():
-            try:
-                voto = form.save(commit=False)
-                voto.usuario = request.session['twitch_name']
-                voto.clean()
-                voto.save()
-                return redirect('inicio')
-            except ValidationError as e:
-                 form.add_error(None, e.message)
-                 return render(
-                     request,
-                     'core/votacion.html',
-                     {'form': form, 'mensaje': '¡Gracias por tu voto!', 'pregunta': pregunta, 'first_time': False, 'opcion': opcion}
-                 )
-      
-      # Handle the case for when the user has a session, is doing a GET request, and the form was not submitted:
-      form = FormularioForm(initial={'pregunta':pregunta_id, 'opcion': opcion_id}, pregunta_id=pregunta_id)
-      return render(
+            # Initial form display
+            form = FormularioForm(
+                initial={'pregunta': pregunta_id, 'opcion': opcion_id},
+                pregunta_id=pregunta_id
+            )
+            
+        return render(
             request,
             'core/votacion.html',
-            {'form': form, 'mensaje': '¡Ya puedes votar!', 'pregunta': pregunta, 'first_time': False, 'opcion': opcion}
-      )
-
+            {
+                'form': form,
+                'mensaje': '¡Bienvenido a las votaciones, para comenzar agrega tú nombre de twitch!',
+                'pregunta': pregunta,
+                'first_time': True,
+                'opcion': opcion
+            }
+        )
+    
+    # Returning user handling
+    if request.method == 'POST':
+        form = FormularioForm(request.POST, initial={'nombre_twitch': request.session.get('twitch_name')}, pregunta_id=pregunta_id)
+        if form.is_valid():
+            try:
+                # Use session username for the vote
+                twitch_name = request.session['twitch_name']
+                
+                # Create and save the vote with session username
+                voto = form.save(commit=False)
+                voto.usuario = twitch_name
+                voto.nombre_twitch = twitch_name  # Set both fields
+                voto.save()
+                
+                messages.success(request, "¡Gracias por tu voto!")
+                return redirect('inicio')
+                
+            except ValidationError as e:
+                messages.error(request, f"Error al votar: {str(e)}")
+                return redirect('inicio')
+        else:
+            #Form Invalid
+             messages.error(request, "Error al votar. Por favor, verifica el formulario.")
+    else:
+        # Display form for returning user
+        form = FormularioForm(
+            initial={
+                'pregunta': pregunta_id,
+                'opcion': opcion_id,
+                'nombre_twitch': request.session.get('twitch_name')  # Pre-fill username
+            },
+            pregunta_id=pregunta_id
+        )
+    
+    return render(
+        request,
+        'core/votacion.html',
+        {
+            'form': form,
+            'mensaje': '¡Ya puedes votar!',
+            'pregunta': pregunta,
+            'first_time': False,
+            'opcion': opcion
+        }
+    )
 
 def resultados(request, encuesta_id):
     encuesta = get_object_or_404(Encuesta, id=encuesta_id)
