@@ -5,22 +5,43 @@ from .models import Encuesta, Pregunta, Opcion, Formulario, Media
 from django.contrib import messages  # Import messages
 
 def inicio(request):
-  preguntas = Pregunta.objects.all()
-  if 'twitch_name' in request.session:
-      user = request.session['twitch_name']
-      all_voted = True
-      for pregunta in preguntas:
-        if not Formulario.objects.filter(pregunta=pregunta, usuario=user).exists():
-           all_voted = False
-           break
-      if all_voted:
-          return render(request, 'core/inicio.html', {'completed': True})
-      return render(request, 'core/inicio.html', {'preguntas': preguntas, 'twitch_name': True})
-  if request.method == 'POST':
-      request.session['twitch_name'] = request.POST['nombre_twitch']
-      return redirect('inicio')
-  return render(request, 'core/inicio.html')
+    """
+    Displays the voting interface and handles the initial username submission.
+    """
+    # Handle initial form submission and set session
+    if request.method == 'POST':
+        nombre_twitch = request.POST.get('nombre_twitch')
+        
+        if not nombre_twitch:
+            messages.error(request, "El nombre de Twitch es requerido")
+            return render(request, 'core/inicio.html')
+        
+        # Store username in session
+        request.session['twitch_name'] = nombre_twitch
+        return redirect('inicio')
 
+    # Get user information from the session
+    twitch_name = request.session.get('twitch_name')
+    preguntas = Pregunta.objects.all()
+    
+    # Prepare preguntas
+    preguntas_con_voto = []
+    for pregunta in preguntas:
+        ha_votado = pregunta.formulario_set.filter(usuario=twitch_name).exists() if twitch_name else False
+        preguntas_con_voto.append({
+            'pregunta': pregunta,
+            'ha_votado': ha_votado
+        })
+
+    # Render the page
+    return render(
+        request,
+        'core/inicio.html',
+        {
+            'preguntas': preguntas_con_voto,
+            'twitch_name': twitch_name
+        }
+    )
 def crear_encuesta(request):
     if request.method == 'POST':
         form = EncuestaForm(request.POST)

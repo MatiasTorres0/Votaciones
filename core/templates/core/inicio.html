@@ -584,7 +584,7 @@
             </style>
         
             <nav class="navbar navbar-expand-lg nav-centered">
-                <div class="container">
+                 <div class="container">
                     <a class="navbar-brand" href="">
                         <span class="text-primary">A</span>Wards
                     </a>
@@ -648,25 +648,27 @@
         {% elif twitch_name %}
             {% if preguntas %}
                 <div class="questions-grid">
-                    {% for pregunta in preguntas %}
-                        <div class="question-card animate-slide-up" style="--animation-delay: {{ forloop.counter0 }}00ms">
-                            <div class="question-header">
-                                <span class="question-number">#{{ forloop.counter }}</span>
-                                <h2>{{ pregunta.pregunta }}</h2>
-                            </div>
-                            <div class="question-body">
-                                <div class="options-list">
-                                    {% for opcion in pregunta.opciones.all %}
-                                        <a href="{% url 'votaciones' pregunta_id=pregunta.id opcion_id=opcion.id %}"
-                                           class="option-button"
-                                           style="--option-delay: {{ forloop.counter0 }}00ms">
-                                            <span class="option-text">{{ opcion.opcion }}</span>
-                                            <span class="option-arrow">→</span>
-                                        </a>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
+                    {% for item in preguntas %}
+                         {% if not item.ha_votado %}
+                             <div class="question-card animate-slide-up" style="--animation-delay: {{ forloop.counter0 }}00ms">
+                                 <div class="question-header">
+                                     <span class="question-number">#{{ forloop.counter }}</span>
+                                     <h2>{{ item.pregunta.pregunta }}</h2>
+                                 </div>
+                                 <div class="question-body">
+                                     <div class="options-list">
+                                         {% for opcion in item.pregunta.opciones.all %}
+                                            <a href="{% url 'votaciones' pregunta_id=item.pregunta.id opcion_id=opcion.id %}"
+                                               class="option-button"
+                                               style="--option-delay: {{ forloop.counter0 }}00ms">
+                                               <span class="option-text">{{ opcion.opcion }}</span>
+                                               <span class="option-arrow">→</span>
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                 </div>
+                             </div>
+                         {% endif %}
                     {% endfor %}
                 </div>
             {% else %}
