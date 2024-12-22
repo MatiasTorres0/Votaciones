@@ -115,8 +115,11 @@
                         <a href="{% url 'lista_opciones' pregunta_id=pregunta.id %}" class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-md shadow-md hover:bg-gray-700">
                             <i class="fas fa-list mr-2"></i> Ver Opciones
                         </a>
-                        <a href="eliminar_pregunta/{{ pregunta.id }}" class="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-md shadow-md hover:bg-red-700">
-                            <i class="fas fa-trash-alt mr-2"></i> Eliminar
+                        <a href="{% url 'lista_medias' pregunta_id=pregunta.id %}" class="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-md shadow-md hover:bg-yellow-700">
+                            <i class="fas fa-images mr-1"></i> Multimedia
+                        </a>    
+                        <a href="{% url 'eliminar_pregunta' pregunta_id=pregunta.id %}" class="option-button">
+                            <i class="fas fa-trash-alt mr-1"></i> Eliminar
                         </a>
                     </div>
                 </div>
