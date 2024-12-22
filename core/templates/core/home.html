@@ -3,81 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Enhanced Carousel</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
-        /* Carousel Styles */
+        body {
+            /* Purple gradient background */
+            background: linear-gradient(135deg, #4A148C, #7B1FA2, #9C27B0);
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+
+        /* Carousel Container */
         .container {
-          width: 80vw;
-          max-width: 1000px;
-          height: 60vh;
-          max-height: 500px;
-          position: relative;
-          overflow: hidden;
-          border-radius: 15px;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-          margin: 20px auto;
+            width: 80vw;
+            max-width: 1000px;
+            height: 60vh;
+            max-height: 500px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            margin: 20px auto;
         }
-    
+
+         /* Countdown Timer Styles */
+         .countdown-container {
+            text-align: center;
+            color: white;
+            margin: 20px auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            max-width: 600px;
+        }
+
+        .countdown-title {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .countdown {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .countdown-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            min-width: 100px;
+        }
+
+        .countdown-number {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .countdown-label {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Button Styles */
+        .vote-button-container {
+            text-align: center;
+            margin: 20px auto;
+            display: none; /* Initially hidden */
+        }
+        .vote-button {
+            background-color: #881AE1;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .vote-button:hover {
+            background-color: #9C27B0;
+            transform: scale(1.05);
+        }
+
+        /* Carousel Styles */
         .carousel {
-          width: 300%;
-          height: 100%;
-          display: flex;
-          transition: transform 0.7s cubic-bezier(0.25, 0.1, 0.25, 1);
+            width: 300%;
+            height: 100%;
+            display: flex;
+            transition: transform 0.7s cubic-bezier(0.25, 0.1, 0.25, 1);
         }
-    
+
         .slide {
-          width: 33.33%;
-          height: 100%;
-          flex-shrink: 0;
-          background-size: cover;
-          background-position: center;
-          position: relative;
-          overflow: hidden;
+            width: 33.33%;
+            height: 100%;
+            flex-shrink: 0;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
         }
-    
+
         .slide img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          transition: transform 0.5s ease;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
         }
-    
+
         .slide.active img {
-          transform: scale(1.05);
+            transform: scale(1.05);
         }
-    
+
         .controls {
-          position: absolute;
-          top: 50%;
-          left: 0;
-          right: 0;
-          display: flex;
-          justify-content: space-between;
-          padding: 0 20px;
-          transform: translateY(-50%);
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            transform: translateY(-50%);
         }
-    
+
         .control-button {
-          background-color: rgba(255, 255, 255, 0.2);
-          color: white;
-          border: none;
-          width: 50px;
-          height: 50px;
-          border-radius: 50%;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          font-size: 24px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 24px;
         }
-    
+
         .control-button:hover {
-          background-color: rgba(255, 255, 255, 0.4);
-          transform: scale(1.1);
+            background-color: rgba(255, 255, 255, 0.4);
+            transform: scale(1.1);
         }
-    
+
         .slide-content {
             position: absolute;
             bottom: 0;
@@ -89,94 +159,126 @@
             transform: translateY(100%);
             transition: transform 0.5s ease;
         }
-      
+
         .slide.active .slide-content {
-          transform: translateY(0);
+            transform: translateY(0);
         }
-      
+
         .slide-title {
-          font-size: 24px;
-          margin-bottom: 10px;
+            font-size: 24px;
+            margin-bottom: 10px;
         }
-      
+
         .slide-description {
-          font-size: 16px;
+            font-size: 16px;
         }
-        /* Modified button styling */
+
         .slide-content .btn {
-          background-color: rgb(136, 26, 225); /* Purple background */
-          color: white;         /* White text color */
-          padding: 10px 20px;     /* Padding for better appearance */
-          border: none;        /* Remove default border */
-          border-radius: 5px;  /* Rounded corners */
-          text-decoration: none; /* Removes underline from links*/
-          display: inline-block;
-          position: absolute;  /* Position button relative to slide-content */
-          bottom: 20px;         /* Distance from bottom */
-          right: 20px;         /* Distance from right */
+            background-color: #881AE1;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            transition: all 0.3s ease;
         }
-        
+
+        .slide-content .btn:hover {
+            background-color: #9C27B0;
+            transform: scale(1.05);
+        }
+
         .indicators {
-          position: absolute;
-          bottom: 20px;
-          left: 50%;
-          transform: translateX(-50%);
-          display: flex;
-          gap: 10px;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
         }
-    
+
         .indicator {
-          width: 10px;
-          height: 10px;
-          border-radius: 50%;
-          background-color: rgba(255, 255, 255, 0.5);
-          cursor: pointer;
-          transition: all 0.3s ease;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
-    
+
         .indicator.active {
-          background-color: white;
-          transform: scale(1.2);
+            background-color: white;
+            transform: scale(1.2);
         }
-      </style>
+    </style>
 </head>
 <body>
+    <!-- Countdown Timer -->
+    <div class="countdown-container" id="countdown-container">
+        <h2 class="countdown-title">Tiempo restante para el evento</h2>
+        <div class="countdown">
+            <div class="countdown-item">
+                <div class="countdown-number" id="days">00</div>
+                <div class="countdown-label">Días</div>
+            </div>
+            <div class="countdown-item">
+                <div class="countdown-number" id="hours">00</div>
+                <div class="countdown-label">Horas</div>
+            </div>
+            <div class="countdown-item">
+                <div class="countdown-number" id="minutes">00</div>
+                <div class="countdown-label">Minutos</div>
+            </div>
+            <div class="countdown-item">
+                <div class="countdown-number" id="seconds">00</div>
+                <div class="countdown-label">Segundos</div>
+            </div>
+        </div>
+    </div>
+     <!-- Vote Button -->
+    <div class="vote-button-container" id="vote-button-container">
+        <a href="{% url 'inicio' %}" class="vote-button" id="vote-button" type="button">Ir a votar</a>
+    </div>
+
+    <!-- Carousel -->
     <div class="container">
         <div class="carousel" id="carousel">
-          <div class="slide active">
-            <img src="https://picsum.photos/id/1077/800/500" alt="Imagen 1">
-            <div class="slide-content">
-              <h2 class="slide-title">Naturaleza Salvaje</h2>
-              <p class="slide-description">Explora la belleza intocada del mundo natural.</p>
+            <div class="slide active">
+                <img src="https://picsum.photos/id/1077/800/500" alt="Imagen 1">
+                <div class="slide-content">
+                    <h2 class="slide-title">Naturaleza Salvaje</h2>
+                    <p class="slide-description">Explora la belleza intocada del mundo natural.</p>
+                </div>
             </div>
-          </div>
-          <div class="slide">
-            <img src="https://picsum.photos/id/1078/800/500" alt="Imagen 2">
-            <div class="slide-content">
-              <h2 class="slide-title">Aventura Urbana</h2>
-              <p class="slide-description">Descubre los secretos ocultos de la ciudad.</p>
+            <div class="slide">
+                <img src="https://picsum.photos/id/1078/800/500" alt="Imagen 2">
+                <div class="slide-content">
+                    <h2 class="slide-title">Aventura Urbana</h2>
+                    <p class="slide-description">Descubre los secretos ocultos de la ciudad.</p>
+                </div>
             </div>
-          </div>
-          <div class="slide">
-            <img src="https://picsum.photos/id/1079/800/500" alt="Imagen 3">
-            <div class="slide-content">
-              <h2 class="slide-title">Acompañanos este viernes 27 de diciembre por Twitch</h2>
-              <p class="slide-description">Gran Premiación</p>
-              <a href="https://www.twitch.tv/auuriivt" type="button" class="btn btn-primary">Ven al Stream en Twitch</a>
+            <div class="slide">
+                <img src="https://picsum.photos/id/1079/800/500" alt="Imagen 3">
+                <div class="slide-content">
+                    <h2 class="slide-title">Acompañanos este viernes 27 de diciembre por Twitch</h2>
+                    <p class="slide-description">Gran Premiación</p>
+                    <a href="https://www.twitch.tv/auuriivt" type="button" class="btn btn-primary">Ven al Stream en Twitch</a>
+                </div>
             </div>
-          </div>
         </div>
         <div class="controls">
-          <button class="control-button prev" onclick="moveCarousel(-1)">&#10094;</button>
-          <button class="control-button next" onclick="moveCarousel(1)">&#10095;</button>
+            <button class="control-button prev" onclick="moveCarousel(-1)">❮</button>
+            <button class="control-button next" onclick="moveCarousel(1)">❯</button>
         </div>
         <div class="indicators" id="indicators"></div>
-      </div>
-    
+    </div>
 
-
-      <script>
-        // Carousel JavaScript
+    <script>
+        // Carousel functionality
         let currentSlide = 0;
         const carousel = document.getElementById('carousel');
         const slides = document.querySelectorAll('.slide');
@@ -205,36 +307,46 @@
             indicators.children[currentSlide].classList.add('active');
         }
 
-        // Auto-play
+        // Auto-play carousel
         setInterval(() => moveCarousel(1), 5000);
 
-        // Navbar JavaScript
-        document.addEventListener('DOMContentLoaded', function() {
-            const menuIcon = document.getElementById('menu-icon');
-            const navMenu = document.getElementById('nav-menu');
-            const dropdowns = document.querySelectorAll('.dropdown');
+        // Countdown Timer functionality
+        const countdownContainer = document.getElementById('countdown-container');
+        const voteButtonContainer = document.getElementById('vote-button-container');
+        const voteButton = document.getElementById('vote-button');
 
-            menuIcon.addEventListener('click', function() {
-                navMenu.classList.toggle('active');
-            });
+        function updateCountdown() {
+            const targetDate = new Date('December 28, 2024 20:00:00').getTime();
+            const now = new Date().getTime();
+            const timeLeft = targetDate - now;
 
-            dropdowns.forEach(dropdown => {
-                const dropdownToggle = dropdown.querySelector('.dropdown-toggle');
-                dropdownToggle.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    if (window.innerWidth <= 768) {
-                        dropdown.classList.toggle('active');
-                    }
-                });
-            });
+            if (timeLeft <= 0) {
+              // If time is up, hide countdown and show vote button
+              countdownContainer.style.display = 'none';
+              voteButtonContainer.style.display = 'block';
+              clearInterval(countdownInterval);
+                return;
+            }
 
-            window.addEventListener('resize', function() {
-                if (window.innerWidth > 768) {
-                    navMenu.classList.remove('active');
-                    dropdowns.forEach(dropdown => dropdown.classList.remove('active'));
-                }
-            });
-        });
+            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+            document.getElementById('days').innerHTML = days.toString().padStart(2, '0');
+            document.getElementById('hours').innerHTML = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').innerHTML = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').innerHTML = seconds.toString().padStart(2, '0');
+        }
+
+
+        // Initial update and set interval
+        updateCountdown();
+        const countdownInterval = setInterval(updateCountdown, 1000);
+
+        // voteButton.addEventListener('click', function() {
+        //     window.location.href = 'https://www.google.com/';
+        // });
     </script>
 </body>
 </html>

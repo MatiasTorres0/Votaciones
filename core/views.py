@@ -236,7 +236,7 @@ def votaciones(request, pregunta_id, opcion_id):
             'opcion': opcion
         }
     )
-
+@login_required
 def resultados(request, encuesta_id):
     encuesta = get_object_or_404(Encuesta, id=encuesta_id)
     preguntas = encuesta.preguntas.all()
@@ -291,29 +291,29 @@ def logout_view(request):
     print("Proceso de cierre de sesión iniciado")
     logout(request)
     print("Función logout llamada, sesión limpiada")
-    return redirect('/')  # Redirige a la página de inicio
+    return redirect('inicio')  # Redirige a la página de inicio
 
 
 def error_404(request, exception):
     return render(request, 'core/404.html', status=404)
-
+@login_required
 def eliminar_opcion(request, opcion_id):
     opcion = get_object_or_404(Opcion, id=opcion_id)
     pregunta_id = opcion.pregunta.id
     opcion.delete()
     return redirect('lista_opciones', pregunta_id=pregunta_id)
-
+@login_required
 def eliminar_pregunta(request, pregunta_id):
     pregunta = get_object_or_404(Pregunta, id=pregunta_id)
     encuesta_id = pregunta.encuesta.id
     pregunta.delete()
     return redirect('lista_preguntas', encuesta_id=encuesta_id)
-
+@login_required
 def eliminar_encuesta(request, encuesta_id):
     encuesta = get_object_or_404(Encuesta, id=encuesta_id)
     encuesta.delete()
     return redirect('lista_encuestas')
-
+@login_required
 def lista_medias(request, pregunta_id):
     pregunta = get_object_or_404(Pregunta, id=pregunta_id)
     medias = Media.objects.filter(pregunta=pregunta)

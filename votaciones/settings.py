@@ -28,7 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 LOGIN_REDIRECT_URL = 'lista_encuestas'
-LOGOUT_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = 'inicio'
 # Application definition
 
 INSTALLED_APPS = [
