@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = 'lista_encuestas'
 LOGOUT_REDIRECT_URL = '/'
 # Application definition
 

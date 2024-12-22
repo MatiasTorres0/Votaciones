@@ -291,7 +291,7 @@ def logout_view(request):
     print("Proceso de cierre de sesión iniciado")
     logout(request)
     print("Función logout llamada, sesión limpiada")
-    return redirect('home')  # Redirige a la página de inicio
+    return redirect('/')  # Redirige a la página de inicio
 
 
 def error_404(request, exception):
