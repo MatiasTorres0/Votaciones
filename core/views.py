@@ -3,6 +3,9 @@ from django.core.exceptions import ValidationError
 from .forms import EncuestaForm, PreguntaForm, OpcionForm, FormularioForm, MediaForm
 from .models import Encuesta, Pregunta, Opcion, Formulario, Media
 from django.contrib import messages  # Import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
+
 
 def inicio(request):
     """
@@ -42,6 +45,7 @@ def inicio(request):
             'twitch_name': twitch_name
         }
     )
+@login_required
 def crear_encuesta(request):
     if request.method == 'POST':
         form = EncuestaForm(request.POST)
@@ -51,11 +55,11 @@ def crear_encuesta(request):
     else:
         form = EncuestaForm()
     return render(request, 'core/crear_encuesta.html', {'form': form})
-
+@login_required
 def lista_encuestas(request):
     encuestas = Encuesta.objects.all()
     return render(request, 'core/lista_encuestas.html', {'encuestas': encuestas})
-
+@login_required
 def editar_encuesta(request, encuesta_id):
     encuesta = get_object_or_404(Encuesta, id=encuesta_id)
     if request.method == 'POST':
@@ -66,7 +70,7 @@ def editar_encuesta(request, encuesta_id):
     else:
         form = EncuestaForm(instance=encuesta)
     return render(request, 'core/editar_encuesta.html', {'form': form, 'encuesta': encuesta})
-
+@login_required
 def crear_pregunta(request, encuesta_id):
     encuesta = get_object_or_404(Encuesta, id=encuesta_id)
     if request.method == 'POST':
@@ -79,7 +83,7 @@ def crear_pregunta(request, encuesta_id):
     else:
         form = PreguntaForm()
     return render(request, 'core/crear_pregunta.html', {'form': form, 'encuesta': encuesta})
-
+@login_required
 def editar_pregunta(request, pregunta_id):
     pregunta = get_object_or_404(Pregunta, id=pregunta_id)
     if request.method == 'POST':
@@ -90,7 +94,7 @@ def editar_pregunta(request, pregunta_id):
     else:
         form = PreguntaForm(instance=pregunta)
     return render(request, 'core/editar_pregunta.html', {'form': form, 'pregunta': pregunta})
-
+@login_required
 def crear_pregunta(request, encuesta_id):
     encuesta = get_object_or_404(Encuesta, id=encuesta_id)
     if request.method == 'POST':
@@ -103,7 +107,7 @@ def crear_pregunta(request, encuesta_id):
     else:
         form = PreguntaForm()
     return render(request, 'core/crear_pregunta.html', {'form': form, 'encuesta': encuesta})
-
+@login_required
 def crear_media(request, pregunta_id):
     pregunta = get_object_or_404(Pregunta, id=pregunta_id)
     if request.method == 'POST':
@@ -114,7 +118,7 @@ def crear_media(request, pregunta_id):
     else:
         form = MediaForm()
     return render(request, 'core/crear_media.html', {'form': form, 'pregunta': pregunta})
-
+@login_required
 def crear_opcion(request, pregunta_id):
     pregunta = get_object_or_404(Pregunta, id=pregunta_id)
     if request.method == 'POST':
@@ -255,17 +259,17 @@ def resultados(request, encuesta_id):
         resultados_por_pregunta.append({'pregunta': pregunta, 'resultados': resultados_opciones})
 
     return render(request, 'core/resultados.html', {'encuesta': encuesta, 'resultados_por_pregunta': resultados_por_pregunta})
-
+@login_required
 def lista_preguntas(request, encuesta_id):
     encuesta = get_object_or_404(Encuesta, id=encuesta_id)
     preguntas = Pregunta.objects.filter(encuesta=encuesta)
     return render(request, 'core/lista_preguntas.html', {'encuesta': encuesta, 'preguntas': preguntas})
-
+@login_required
 def lista_opciones(request, pregunta_id):
     pregunta = get_object_or_404(Pregunta, id=pregunta_id)
     opciones = Opcion.objects.filter(pregunta=pregunta)
     return render(request, 'core/lista_opciones.html', {'pregunta': pregunta, 'opciones': opciones})
-
+@login_required
 def editar_opcion(request, opcion_id):
     opcion = get_object_or_404(Opcion, id=opcion_id)
     if request.method == 'POST':
@@ -282,3 +286,35 @@ def mantenimiento(request):
 
 def home(request):
     return  render(request, 'core/home.html')
+
+def logout_view(request):
+    print("Proceso de cierre de sesión iniciado")
+    logout(request)
+    print("Función logout llamada, sesión limpiada")
+    return redirect('home')  # Redirige a la página de inicio
+
+
+def error_404(request, exception):
+    return render(request, 'core/404.html', status=404)
+
+def eliminar_opcion(request, opcion_id):
+    opcion = get_object_or_404(Opcion, id=opcion_id)
+    pregunta_id = opcion.pregunta.id
+    opcion.delete()
+    return redirect('lista_opciones', pregunta_id=pregunta_id)
+
+def eliminar_pregunta(request, pregunta_id):
+    pregunta = get_object_or_404(Pregunta, id=pregunta_id)
+    encuesta_id = pregunta.encuesta.id
+    pregunta.delete()
+    return redirect('lista_preguntas', encuesta_id=encuesta_id)
+
+def eliminar_encuesta(request, encuesta_id):
+    encuesta = get_object_or_404(Encuesta, id=encuesta_id)
+    encuesta.delete()
+    return redirect('lista_encuestas')
+
+def lista_medias(request, pregunta_id):
+    pregunta = get_object_or_404(Pregunta, id=pregunta_id)
+    medias = Media.objects.filter(pregunta=pregunta)
+    return render(request, 'core/lista_medias.html', {'pregunta': pregunta, 'medias': medias})

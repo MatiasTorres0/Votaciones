@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .glass-container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        h2 {
+            color: white;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-size: 2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: white;
+            font-size: 0.9rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.5rem;
+            color: white;
+            font-size: 1rem;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+        }
+
+        input[type="text"]::placeholder,
+        input[type="password"]::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(5px);
+        }
+
+        input[type="submit"]:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .errorlist {
+            color: #ffd2d2;
+            list-style: none;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="glass-container">
+        <h2>Iniciar Sesión</h2>
+        <form method="POST">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <ul class="errorlist">
+                            {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <input type="submit" value="Ingresar">
+        </form>
+    </div>
+</body>
+</html>

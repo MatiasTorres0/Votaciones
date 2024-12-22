@@ -30,23 +30,24 @@ class Pregunta(models.Model):
         return self.pregunta
 
 class Media(models.Model):
-    TIPO_MEDIA = (
-        ('LOCAL', 'Archivo Local'),
-        ('YOUTUBE', 'YouTube'),
-    )
+   TIPO_MEDIA = (
+       ('LOCAL', 'Archivo Local'),
+       ('YOUTUBE', 'YouTube'),
+   )
 
-    tipo_media = models.CharField(max_length=10, choices=TIPO_MEDIA, default='LOCAL')
-    archivo = models.FileField(upload_to='media/', blank=True, null=True)
-    url_youtube = models.URLField(blank=True, null=True)
+   tipo_media = models.CharField(max_length=10, choices=TIPO_MEDIA, default='LOCAL')
+   archivo = models.FileField(upload_to='media/', blank=True, null=True)
+   url_youtube = models.URLField(blank=True, null=True)
+   pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE, related_name='medias', null=True)
 
-    def clean(self):
-        super().clean()
-        if self.tipo_media == 'LOCAL' and not self.archivo:
-            raise ValidationError("Se debe subir un archivo local para esta opción.")
-        elif self.tipo_media == 'YOUTUBE' and not self.url_youtube:
-            raise ValidationError("Se debe ingresar una URL de YouTube para esta opción.")
+   def clean(self):
+     super().clean()
+     if self.tipo_media == 'LOCAL' and not self.archivo:
+         raise ValidationError("Se debe subir un archivo local para esta opción.")
+     elif self.tipo_media == 'YOUTUBE' and not self.url_youtube:
+        raise ValidationError("Se debe ingresar una URL de YouTube para esta opción.")
 
-    def get_youtube_embed_url(self):
+   def get_youtube_embed_url(self):
         if self.tipo_media == 'YOUTUBE' and self.url_youtube:
             url = self.url_youtube
             video_id = None
@@ -54,27 +55,26 @@ class Media(models.Model):
             match = re.search(r'youtu\.be\/([a-zA-Z0-9_-]+)', url)
             if match:
                 video_id = match.group(1)
-             # Handle youtube.com URLs with "v=" parameter
+            # Handle youtube.com URLs with "v=" parameter
             else:
                 match = re.search(r'v=([a-zA-Z0-9_-]+)', url)
                 if match:
-                   video_id = match.group(1)
+                    video_id = match.group(1)
             # Handle YouTube Shorts URLs
             if not video_id:
                 match = re.search(r'youtube\.com\/shorts\/([a-zA-Z0-9_-]+)', url)
                 if match:
                     video_id = match.group(1)
 
-
             if video_id:
-               return f'https://www.youtube.com/embed/{video_id}'
+                return f'https://www.youtube.com/embed/{video_id}'
 
         return None
-    
 
-    def __str__(self):
+
+   def __str__(self):
         return self.archivo.name if self.tipo_media == 'LOCAL' else self.url_youtube
-
+   
 class Opcion(models.Model):
     pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE, related_name='opciones', null=True)
     opcion = models.CharField(max_length=200)

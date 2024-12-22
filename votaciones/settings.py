@@ -27,7 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 # Application definition
 
 INSTALLED_APPS = [
@@ -129,3 +130,5 @@ import os
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+

@@ -19,7 +19,12 @@ urlpatterns = [
     path('lista_opciones/<int:pregunta_id>/', views.lista_opciones, name='lista_opciones'),
     path('editar_opcion/<int:opcion_id>/', views.editar_opcion, name='editar_opcion'),
     path('home/', views.home, name='home'),
-    
+    path('logout/', views.logout_view, name='logout'),
+    path('eliminar_encuesta/<int:encuesta_id>/', views.eliminar_encuesta, name='eliminar_encuesta'),
+    path('eliminar_pregunta/<int:pregunta_id>/', views.eliminar_pregunta, name='eliminar_pregunta'),
+    path('eliminar_opcion/<int:opcion_id>/', views.eliminar_opcion, name='eliminar_opcion'),
+    path('lista_medias/<int:pregunta_id>/', views.lista_medias, name='lista_medias'),
+    path('error_404/', views.error_404, name='error_404'),
 ]
 # Sirve archivos de media en modo DEBUG
 if settings.DEBUG:
