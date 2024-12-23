@@ -21,13 +21,29 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
             color: var(--text-primary);
             margin: 0;
             padding: 20px;
             min-height: 100vh;
-            background-attachment: fixed;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; /* Para que el fondo no se mueva al hacer scroll */
+            background-repeat: no-repeat;
+             /* Esto permite que la imagen de fondo se establezca desde el template */
         }
+         /* Para la capa semi transparente encima de la imagen */
+        body::before {
+             content: '';
+             position: fixed;
+             top: 0;
+             left: 0;
+             right: 0;
+             bottom: 0;
+             background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+             opacity: 0.9; /* Ajusta la transparencia de la capa */
+             z-index: -1;  /* Coloca la capa detrás del contenido */
+         }
+
 
         .navbar {
             background: rgba(45, 27, 105, 0.8);
@@ -542,7 +558,7 @@
 
 </head>
 
-<body>
+<body style="background-image: url('{% static 'core/img/d02be515-68c1-4f86-9b67-21ae8fe617d8-profile_image-70x70.png' %}');">
 
     <!-- Navbar Start -->
     <div class="container-fluid position-relative nav-bar p-0">
