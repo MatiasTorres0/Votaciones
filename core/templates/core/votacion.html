@@ -290,6 +290,12 @@
         </div>
         {% endif %}
 
+        {% if not pregunta %}
+            <div class="text-center mt-5">
+                <h2 class="text-success">¡Gracias por participar en las votaciones!</h2>
+                <p class="lead">Todas las preguntas han sido respondidas.</p>
+            </div>
+        {% else %}
         <div class="custom-card mx-auto">
             <div class="card-header">
                 <h2 class="text-center">{{ pregunta.pregunta }}</h2>
@@ -388,6 +394,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -397,18 +404,20 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Prevent double submission
             const form = document.querySelector('form');
-            form.addEventListener('submit', function(e) {
-                if (form.classList.contains('submitting')) {
-                    e.preventDefault();
-                    return;
-                }
-                form.classList.add('submitting');
-                
-                // Disable submit button
-                const submitBtn = form.querySelector('button[type="submit"]');
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Procesando...';
-            });
+            if (form) { // Check if the form exists before adding event listener
+                form.addEventListener('submit', function(e) {
+                    if (form.classList.contains('submitting')) {
+                        e.preventDefault();
+                        return;
+                    }
+                    form.classList.add('submitting');
+                    
+                    // Disable submit button
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Procesando...';
+                });
+            }
 
             // Add custom validation for Twitch username if present
             const twitchInput = document.querySelector('input[name="nombre_twitch"]');
