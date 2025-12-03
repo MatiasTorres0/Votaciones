@@ -1,0 +1,114 @@
+/* main.css */
+
+/* Variables CSS para colores y tipografía */
+:root {
+    --color-primary: #3B82F6; /* Tailwind blue-500 */
+    --color-secondary: #10B981; /* Tailwind emerald-500 */
+    --color-background: #F9FAFB; /* Tailwind gray-50 */
+    --color-text-dark: #1F2937; /* Tailwind gray-900 */
+    --color-text-medium: #6B7280; /* Tailwind gray-500 */
+    --color-error: #EF4444; /* Tailwind red-500 */
+    --color-info: #60A5FA; /* Tailwind blue-400 */
+    --font-heading: 'Inter', sans-serif;
+    --font-body: 'Open Sans', sans-serif;
+    --border-radius-md: 0.5rem; /* 8px */
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+body {
+    font-family: var(--font-body);
+    color: var(--color-text-dark);
+    background-color: var(--color-background);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+}
+
+/* Custom gradient backgrounds */
+.bg-gradient-primary {
+    background: linear-gradient(135deg, var(--color-primary), #6366F1); /* Tailwind blue-500 to indigo-500 */
+}
+
+/* Card hover effects */
+.survey-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-md);
+}
+
+.survey-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Button hover animations */
+.action-button {
+    transition: all 0.2s ease;
+}
+
+.action-button:hover {
+    transform: translateY(-2px);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #94a3b8;
+    border-radius: 4px;
+}
+
+/* Empty state animation */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+.floating-icon {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Estilos para el campo de búsqueda y filtros */
+.search-filter-container {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.search-input {
+    flex-grow: 1;
+    padding: 0.75rem 1rem;
+    border: 1px solid #D1D5DB; /* Tailwind gray-300 */
+    border-radius: var(--border-radius-md);
+    font-size: 1rem;
+}
+
+.filter-select {
+    padding: 0.75rem 1rem;
+    border: 1px solid #D1D5DB;
+    border-radius: var(--border-radius-md);
+    font-size: 1rem;
+}
+
+/* Estilos para el botón de crear encuesta en el header */
+.create-survey-header-btn {
+    background-color: var(--color-primary);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius-md);
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+}
+
+.create-survey-header-btn:hover {
+    background-color: #2563EB; /* Tailwind blue-600 */
+}

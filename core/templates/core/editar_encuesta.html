@@ -4,45 +4,441 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Encuesta: {{ encuesta.titulo }}</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #4cc9f0;
+            --warning-color: #f72585;
+            --border-radius: 12px;
+            --box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            background-color: #f5f7ff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--dark-color);
+            padding-bottom: 50px;
+        }
+        
+        .header-container {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .card {
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 2px solid #eaeaea;
+            font-weight: 600;
+            padding: 1.2rem 1.5rem;
+            border-radius: var(--border-radius) var(--border-radius) 0 0 !important;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-control, .form-select {
+            border: 2px solid #e1e5ee;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            transition: var(--transition);
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.15);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(to right, var(--secondary-color), #2a28a5);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(to right, #ff9e00, #ff6d00);
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            color: white;
+            transition: var(--transition);
+        }
+        
+        .btn-warning:hover {
+            background: linear-gradient(to right, #ff8c00, #e65c00);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(255, 111, 0, 0.3);
+            color: white;
+        }
+        
+        .btn-success {
+            background: linear-gradient(to right, #06d6a0, #04a777);
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        
+        .btn-success:hover {
+            background: linear-gradient(to right, #04a777, #038c65);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(6, 214, 160, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(to right, #6c757d, #5a6268);
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(to right, #5a6268, #4a5056);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(108, 117, 125, 0.3);
+        }
+        
+        .action-card {
+            border-left: 5px solid var(--accent-color);
+        }
+        
+        .encuesta-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .encuesta-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 0;
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            width: 120px;
+        }
+        
+        .step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            right: -60px;
+            width: 120px;
+            height: 2px;
+            background-color: #dee2e6;
+        }
+        
+        .step.active:not(:last-child)::after {
+            background-color: var(--primary-color);
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #dee2e6;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            transition: var(--transition);
+        }
+        
+        .step.active .step-number {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 10px rgba(67, 97, 238, 0.4);
+        }
+        
+        .step-label {
+            font-size: 0.85rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+        
+        .step.active .step-label {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .field-group {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            background-color: #fafbff;
+            border-radius: 10px;
+            border-left: 4px solid #e1e5ee;
+        }
+        
+        .field-group:hover {
+            background-color: #f5f7ff;
+            border-left-color: var(--accent-color);
+        }
+        
+        .actions-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+        
+        @media (max-width: 768px) {
+            .step:not(:last-child)::after {
+                width: 60px;
+                right: -30px;
+            }
+            
+            .step {
+                width: 90px;
+            }
+            
+            .actions-container {
+                flex-direction: column;
+            }
+            
+            .actions-container a {
+                width: 100%;
+                text-align: center;
+            }
+        }
+        
+        .footer-note {
+            text-align: center;
+            margin-top: 3rem;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-4">
-        <h2 class="mb-4 text-center">Editar Encuesta: "{{ encuesta.titulo }}"</h2>
+    <!-- Header -->
+    <div class="header-container">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="encuesta-title">Editar Encuesta</h1>
+                    <p class="encuesta-subtitle">{{ encuesta.titulo }}</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <a href="{% url 'lista_encuestas' %}" class="btn btn-light">
+                        <i class="fas fa-arrow-left me-2"></i>Volver a Encuestas
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <div class="container">
+        <!-- Indicador de pasos -->
+
+        <!-- Formulario de edición -->
         <div class="row justify-content-center">
-            <div class="col-md-8">
+            <div class="col-lg-10">
                 <div class="card">
+                    <div class="card-header d-flex align-items-center">
+                        <i class="fas fa-edit me-3 text-primary"></i>
+                        <h5 class="mb-0">Editar Configuración de la Encuesta</h5>
+                    </div>
                     <div class="card-body">
                         <form method="POST">
                             {% csrf_token %}
-                            {{ form.as_p }}
-                            <div class="mt-4 text-center">
-                                <button type="submit" class="btn btn-primary mr-2">Guardar Cambios</button>
-                                <a href="{% url 'lista_encuestas' %}" class="btn btn-secondary">Cancelar</a>
+                            
+                            <!-- Mejoramos la presentación del formulario Django -->
+                            <div class="form-content">
+                                {% for field in form %}
+                                <div class="field-group">
+                                    <label for="{{ field.id_for_label }}" class="form-label">
+                                        <i class="fas fa-{% if field.name == 'titulo' %}heading{% elif field.name == 'descripcion' %}align-left{% else %}cog{% endif %} me-2"></i>
+                                        {{ field.label }}
+                                    </label>
+                                    
+                                    {% if field.field.widget.input_type == 'select' %}
+                                    <select name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-select">
+                                        {% for value, text in field.field.choices %}
+                                        <option value="{{ value }}" {% if field.value == value %}selected{% endif %}>{{ text }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    {% else %}
+                                    <input type="{{ field.field.widget.input_type }}" 
+                                           name="{{ field.name }}" 
+                                           id="{{ field.id_for_label }}" 
+                                           class="form-control" 
+                                           value="{{ field.value|default:'' }}"
+                                           {% if field.field.required %}required{% endif %}>
+                                    {% endif %}
+                                    
+                                    {% if field.help_text %}
+                                    <div class="form-text mt-2">
+                                        <i class="fas fa-info-circle me-1"></i> {{ field.help_text }}
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if field.errors %}
+                                    <div class="alert alert-danger mt-2 p-2">
+                                        <i class="fas fa-exclamation-triangle me-1"></i>
+                                        {{ field.errors|striptags }}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mt-4">
+                                <a href="{% url 'lista_encuestas' %}" class="btn btn-secondary">
+                                    <i class="fas fa-times me-2"></i>Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Guardar Cambios
+                                </button>
                             </div>
                         </form>
                     </div>
                 </div>
 
-                <hr class="my-4">
-
-                <h3 class="mb-3 text-center">Acciones Adicionales</h3>
-                <div class="text-center">
-                    <a href="{% url 'crear_pregunta' encuesta_id=encuesta.id %}" class="btn btn-warning mr-2">
-                        <i class="fas fa-plus-circle"></i> Agregar Pregunta
-                    </a>
-                    <a href="{% url 'resultados' encuesta_id=encuesta.id %}" class="btn btn-success">
-                       <i class="fas fa-chart-bar"></i> Ver Resultados
-                    </a>
-
+                <!-- Acciones adicionales -->
+                <div class="card action-card">
+                    <div class="card-header d-flex align-items-center">
+                        <i class="fas fa-tools me-3 text-warning"></i>
+                        <h5 class="mb-0">Gestión de Preguntas</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-4">Agregue nuevas preguntas a su encuesta o revise las respuestas recibidas hasta el momento.</p>
+                        
+                        <div class="actions-container">
+                            <a href="{% url 'crear_pregunta' encuesta_id=encuesta.id %}" class="btn btn-warning">
+                                <i class="fas fa-plus-circle me-2"></i>Agregar Nueva Pregunta
+                            </a>
+                            <a href="{% url 'resultados' encuesta_id=encuesta.id %}" class="btn btn-success">
+                                <i class="fas fa-chart-bar me-2"></i>Ver Resultados
+                            </a>
+                            <a href="#" class="btn btn-outline-primary">
+                                <i class="fas fa-eye me-2"></i>Vista Previa
+                            </a>
+                            <a href="#" class="btn btn-outline-secondary">
+                                <i class="fas fa-share-alt me-2"></i>Compartir Encuesta
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Información de la encuesta -->
+                <div class="card">
+                    <div class="card-header d-flex align-items-center">
+                        <i class="fas fa-info-circle me-3 text-info"></i>
+                        <h5 class="mb-0">Información de la Encuesta</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="d-flex mb-3">
+                                    <div class="me-3">
+                                        <i class="fas fa-calendar-alt text-primary fa-lg"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1">Fecha de creación</h6>
+                                        <p class="mb-0 text-muted">{% now "d/m/Y" %}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex mb-3">
+                                    <div class="me-3">
+                                        <i class="fas fa-question-circle text-primary fa-lg"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-1">Número de preguntas</h6>
+                                        <p class="mb-0 text-muted">{{ encuesta.preguntas.count }} preguntas</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+        
+        <div class="footer-note">
+            <p>© {% now "Y" %} Sistema de Encuestas | Todos los cambios se guardarán automáticamente al enviar el formulario</p>
+        </div>
     </div>
-    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Añadir funcionalidad para marcar campos requeridos
+        document.addEventListener('DOMContentLoaded', function() {
+            // Resaltar campos requeridos
+            const requiredFields = document.querySelectorAll('[required]');
+            requiredFields.forEach(field => {
+                const label = document.querySelector(`label[for="${field.id}"]`);
+                if (label) {
+                    label.innerHTML += ' <span class="text-danger">*</span>';
+                }
+            });
+            
+            // Añadir mensaje de confirmación al guardar
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function(e) {
+                // Puedes agregar validaciones adicionales aquí
+                console.log('Formulario enviado para guardar cambios');
+            });
+            
+            // Simular paso activo en el indicador (esto sería dinámico según la lógica de tu aplicación)
+            // Por ahora, solo el primer paso está activo
+        });
+    </script>
 </body>
 </html>
