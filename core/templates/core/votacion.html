@@ -95,6 +95,8 @@
             overflow: hidden;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             animation: cardFade 0.8s ease-out;
+            max-width: 600px; /* Limita el ancho máximo de la tarjeta */
+            margin: 2rem auto; /* Centra la tarjeta y añade margen vertical */
         }
 
         .custom-card:hover {
@@ -128,6 +130,9 @@
         .media-container img,
         .media-container video {
             width: 100%;
+            max-width: 560px; /* Limita el ancho máximo del video local */
+            display: block; /* Para que margin: auto funcione */
+            margin: auto; /* Centra el video local horizontalmente */
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
             transition: transform 0.3s ease;
@@ -142,16 +147,18 @@
         .youtube-container {
             position: relative;
             width: 100%;
+            max-width: 560px; /* Limita el ancho máximo del reproductor */
+            margin: 1.5rem auto; /* Centra el reproductor y añade margen vertical */
             padding-top: 56.25%;
-            margin: 1.5rem 0;
         }
 
         .youtube-container iframe {
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            max-width: 100%; /* Asegura que el iframe no exceda el ancho de su contenedor */
+            display: block; /* Para que margin: auto funcione */
+            margin: auto; /* Centra el iframe horizontalmente */
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         }
@@ -337,7 +344,7 @@
                                          alt="Imagen relacionada a la opción de voto"
                                          class="img-fluid">
                                 {% elif media.archivo.name|lower|slice:"-3:" == 'mp4' %}
-                                    <video controls class="w-100">
+                                    <video controls>
                                         <source src="{{ media.archivo.url }}" type="video/mp4">
                                         <p>Tu navegador no soporta el elemento de video.</p>
                                     </video>

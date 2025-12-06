@@ -2,6 +2,14 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 from . import views
+from rest_framework import routers
+from django.urls.conf import include
+
+router = routers.DefaultRouter()
+router.register('pregunta', views.PreguntaViewSet)
+router.register('opcion', views.OpcionViewSet)
+
+
 
 urlpatterns = [
     path('mantenimiento', views.mantenimiento, name="mantenimiento"),
@@ -25,6 +33,7 @@ urlpatterns = [
     path('eliminar_opcion/<int:opcion_id>/', views.eliminar_opcion, name='eliminar_opcion'),
     path('lista_medias/<int:pregunta_id>/', views.lista_medias, name='lista_medias'),
     path('error_404/', views.error_404, name='error_404'),
+    path('api/', include(router.urls)),
 ]
 # Sirve archivos de media en modo DEBUG
 if settings.DEBUG:

@@ -21,12 +21,21 @@
                                 <button type="submit" class="btn btn-primary mr-2">Guardar Cambios</button>
                                 <a href="{% url 'lista_opciones' pregunta_id=opcion.pregunta.id %}" class="btn btn-secondary">Volver</a>
                             </div>
+                            
                         </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    {% if opcion.pregunta.id %}
+    <h3 class="mb-3 text-center">Acciones Adicionales</h3>
+    <div class="text-center">
+        <a href="{% url 'crear_media' pregunta_id=opcion.pregunta.id %}" class="btn btn-secondary mr-2">
+             <i class="fas fa-upload"></i> Agregar Media
+         </a>
+    </div>
+    {% endif %}
      <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

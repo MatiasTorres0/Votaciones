@@ -6,6 +6,9 @@ from django.contrib import messages  # Import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 
+#rest_framework
+from rest_framework import viewsets
+from .serializers import PreguntaSerializer, OpcionSerializer
 
 def inicio(request):
     """
@@ -318,3 +321,13 @@ def lista_medias(request, pregunta_id):
     pregunta = get_object_or_404(Pregunta, id=pregunta_id)
     medias = Media.objects.filter(pregunta=pregunta)
     return render(request, 'core/lista_medias.html', {'pregunta': pregunta, 'medias': medias})
+
+
+
+class PreguntaViewSet(viewsets.ModelViewSet):
+    queryset = Pregunta.objects.all()
+    serializer_class = PreguntaSerializer
+
+class OpcionViewSet(viewsets.ModelViewSet):
+    queryset = Opcion.objects.all()
+    serializer_class = OpcionSerializer
