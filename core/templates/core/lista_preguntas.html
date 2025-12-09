@@ -3,123 +3,472 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Preguntas de la Encuesta: {{ encuesta.titulo }}</title>
+    <title>Preguntas - {{ encuesta.titulo }}</title>
+    {% load static %}
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- TailwindCSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-
     <style>
-        /* Custom gradient backgrounds */
-        .bg-gradient-primary {
-            background: linear-gradient(135deg, #4f46e5, #3b82f6);
+        :root {
+            --primary-purple: #8b5cf6;
+            --secondary-purple: #7c3aed;
+            --primary-blue: #3b82f6;
+            --primary-green: #10b981;
+            --primary-yellow: #f59e0b;
+            --primary-red: #ef4444;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
         }
-        
-        /* Card hover effects */
-        .survey-card {
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1e1b4b 50%, var(--card-bg) 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 50% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        /* Navbar */
+        .navbar-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 25px 20px;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-capsule {
+            width: 100%;
+            max-width: 1400px;
+            height: 70px;
+            border-radius: 50px;
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+        }
+
+        .brand-logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 24px;
+            color: white;
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 20px;
             transition: all 0.3s ease;
         }
-        
-        .survey-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.15);
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(139, 92, 246, 0.2);
+            color: white;
+            text-decoration: none;
         }
-        
-        /* Button hover animations */
-        .action-button {
-            transition: all 0.2s ease;
+
+        /* Main Content */
+        .main-content {
+            max-width: 1400px;
+            margin: 120px auto 40px;
+            padding: 0 40px;
         }
-        
-        .action-button:hover {
+
+        /* Header */
+        .page-header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* Questions Grid */
+        .questions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .question-card {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            animation: slideUp 0.5s ease-out;
+            animation-fill-mode: both;
+            animation-delay: calc(var(--card-index) * 0.1s);
+        }
+
+        .question-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(139, 92, 246, 0.3);
+            border-color: var(--primary-purple);
+        }
+
+        .card-header {
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(59, 130, 246, 0.15));
+            border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .question-number {
+            min-width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: white;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+
+        .card-body {
+            padding: 20px 25px;
+        }
+
+        .actions-grid {
+            display: grid;
+            gap: 10px;
+        }
+
+        .btn-action {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .btn-primary-action {
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            color: white;
+            box-shadow: 0 3px 10px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-primary-action:hover {
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.5);
+            color: white;
+            text-decoration: none;
         }
-        
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
+
+        .btn-success-action {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--primary-green);
+            border-color: var(--primary-green);
         }
-        
-        ::-webkit-scrollbar-track {
-            background: #f1f5f9;
+
+        .btn-success-action:hover {
+            background: rgba(16, 185, 129, 0.3);
+            transform: translateY(-2px);
+            color: var(--primary-green);
+            text-decoration: none;
         }
-        
-        ::-webkit-scrollbar-thumb {
-            background: #94a3b8;
-            border-radius: 4px;
+
+        .btn-secondary-action {
+            background: rgba(148, 163, 184, 0.2);
+            color: var(--text-secondary);
+            border-color: rgba(148, 163, 184, 0.3);
         }
-        
-        /* Empty state animation */
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
+
+        .btn-secondary-action:hover {
+            background: rgba(148, 163, 184, 0.3);
+            transform: translateY(-2px);
+            color: var(--text-primary);
+            text-decoration: none;
         }
-        
-        .floating-icon {
+
+        .btn-warning-action {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--primary-yellow);
+            border-color: var(--primary-yellow);
+        }
+
+        .btn-warning-action:hover {
+            background: rgba(245, 158, 11, 0.3);
+            transform: translateY(-2px);
+            color: var(--primary-yellow);
+            text-decoration: none;
+        }
+
+        .btn-danger-action {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--primary-red);
+            border-color: var(--primary-red);
+        }
+
+        .btn-danger-action:hover {
+            background: rgba(239, 68, 68, 0.3);
+            transform: translateY(-2px);
+            color: var(--primary-red);
+            text-decoration: none;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 40px;
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(15px);
+            border-radius: 30px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .empty-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.2));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .empty-icon i {
+            font-size: 4rem;
+            color: var(--primary-purple);
+        }
+
+        .empty-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+        }
+
+        .empty-text {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        /* Footer Actions */
+        .footer-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-large {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 35px;
+            border-radius: 15px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-large-primary {
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            color: white;
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-large-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(139, 92, 246, 0.6);
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-large-secondary {
+            background: rgba(148, 163, 184, 0.2);
+            color: var(--text-primary);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+        }
+
+        .btn-large-secondary:hover {
+            background: rgba(148, 163, 184, 0.3);
+            transform: translateY(-3px);
+            color: white;
+            text-decoration: none;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 0 20px;
+                margin-top: 100px;
+            }
+
+            .questions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .footer-actions {
+                flex-direction: column;
+            }
+
+            .btn-large {
+                width: 100%;
+            }
         }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex">
-                    <a href="{% url 'inicio' %}" class="flex items-center">
-                        <span class="text-xl font-bold text-indigo-600">Survey Manager</span>
-                    </a>
-                </div>
-                
-                <div class="flex items-center space-x-4">
-                    <a href="{% url 'inicio' %}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Inicio</a>
-                    <a href="{% url 'lista_encuestas' %}" class="bg-indigo-50 text-indigo-700 px-3 py-2 rounded-md text-sm font-medium">Encuestas</a>
-                    <a href="{% url 'crear_encuesta' %}" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Crear</a>
-                    
-                    {% if user.is_authenticated %}
+<body>
+    <!-- Navbar -->
+    <div class="navbar-wrapper">
+        <nav class="nav-capsule">
+            <a href="{% url 'inicio' %}" class="brand-logo">
+                <i class="fas fa-poll"></i> Survey Manager
+            </a>
 
-                        <a class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium" href="#">{{ user.username }}</a>
-
-                        <a href="{% url 'logout' %}"  class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Cerrar Sesión></a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </nav>
-
-
-    <!-- Header -->
-    <div class="container mx-auto text-center py-8">
-        <h2 class="title-gradient text-3xl font-bold animate-fade-in">{{ encuesta.titulo }}</h2>
-        <div class="mt-2 bg-gradient-primary h-1 w-20 mx-auto rounded-full"></div>
+            <ul class="nav-menu">
+                <li><a href="{% url 'inicio' %}" class="nav-link">Inicio</a></li>
+                <li><a href="{% url 'lista_encuestas' %}" class="nav-link active">Encuestas</a></li>
+                <li><a href="{% url 'crear_encuesta' %}" class="nav-link">Crear</a></li>
+                {% if user.is_authenticated %}
+                <li><a href="#" class="nav-link">{{ user.username }}</a></li>
+                <li><a href="{% url 'logout' %}" class="nav-link">Cerrar Sesión</a></li>
+                {% endif %}
+            </ul>
+        </nav>
     </div>
 
     <!-- Main Content -->
-    <div class="container mx-auto py-8">
+    <main class="main-content">
+        <!-- Header -->
+        <div class="page-header">
+            <h1 class="page-title">{{ encuesta.titulo }}</h1>
+            <p class="page-subtitle">Administra las preguntas de tu encuesta</p>
+        </div>
+
+        <!-- Questions Grid -->
         {% if preguntas %}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="questions-grid">
             {% for pregunta in preguntas %}
-            <div class="question-card shadow-lg animate-scale-in">
-                <div class="question-header flex items-center space-x-2">
-                    <div class="text-white bg-purple-600 rounded-full w-8 h-8 flex items-center justify-center font-bold">{{ forloop.counter }}</div>
-                    <h3 class="text-lg text-gray-800 font-medium">{{ pregunta.pregunta }}</h3>
+            <div class="question-card" style="--card-index: {{ forloop.counter0 }}">
+                <div class="card-header">
+                    <div class="question-number">{{ forloop.counter }}</div>
+                    <div class="question-text">{{ pregunta.pregunta }}</div>
                 </div>
-                <div class="p-4">
-                    <div class="flex flex-col space-y-2">
-                        <a href="{% url 'editar_pregunta' pregunta_id=pregunta.id %}" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md shadow-md hover:bg-indigo-700">
-                            <i class="fas fa-edit mr-2"></i> Editar
+                <div class="card-body">
+                    <div class="actions-grid">
+                        <a href="{% url 'editar_pregunta' pregunta_id=pregunta.id %}" class="btn-action btn-primary-action">
+                            <i class="fas fa-edit"></i>
+                            Editar Pregunta
                         </a>
-                        <a href="{% url 'crear_opcion' pregunta_id=pregunta.id %}" class="inline-flex items-center px-4 py-2 bg-green-500 text-white rounded-md shadow-md hover:bg-green-600">
-                            <i class="fas fa-plus mr-2"></i> Agregar Opción
+                        <a href="{% url 'crear_opcion' pregunta_id=pregunta.id %}" class="btn-action btn-success-action">
+                            <i class="fas fa-plus"></i>
+                            Agregar Opción
                         </a>
-                        <a href="{% url 'lista_opciones' pregunta_id=pregunta.id %}" class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-md shadow-md hover:bg-gray-700">
-                            <i class="fas fa-list mr-2"></i> Ver Opciones
+                        <a href="{% url 'lista_opciones' pregunta_id=pregunta.id %}" class="btn-action btn-secondary-action">
+                            <i class="fas fa-list"></i>
+                            Ver Opciones
                         </a>
-                        <a href="{% url 'lista_medias' pregunta_id=pregunta.id %}" class="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-md shadow-md hover:bg-yellow-700">
-                            <i class="fas fa-images mr-1"></i> Multimedia
-                        </a>    
-                        <a href="{% url 'eliminar_pregunta' pregunta_id=pregunta.id %}" class="option-button">
-                            <i class="fas fa-trash-alt mr-1"></i> Eliminar
+                        <a href="{% url 'lista_medias' pregunta_id=pregunta.id %}" class="btn-action btn-warning-action">
+                            <i class="fas fa-images"></i>
+                            Multimedia
+                        </a>
+                        <a href="{% url 'eliminar_pregunta' pregunta_id=pregunta.id %}" class="btn-action btn-danger-action">
+                            <i class="fas fa-trash-alt"></i>
+                            Eliminar
                         </a>
                     </div>
                 </div>
@@ -127,21 +476,26 @@
             {% endfor %}
         </div>
         {% else %}
-        <div class="empty-state shadow-md">
-            <i class="fas fa-list text-3xl mb-4"></i>
-            <p>No hay preguntas disponibles.</p>
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-question-circle"></i>
+            </div>
+            <h3 class="empty-title">No hay preguntas</h3>
+            <p class="empty-text">Comienza agregando la primera pregunta a tu encuesta</p>
         </div>
         {% endif %}
-    </div>
 
-    <!-- Action Buttons -->
-    <div class="text-center mt-8">
-        <a href="{% url 'crear_pregunta' encuesta_id=encuesta.id %}" class="inline-flex items-center px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 shadow-md">
-            <i class="fas fa-plus mr-2"></i> Agregar Pregunta
-        </a>
-        <a href="{% url 'lista_encuestas' %}" class="inline-flex items-center px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 shadow-md">
-            <i class="fas fa-arrow-left mr-2"></i> Volver a Encuestas
-        </a>
-    </div>
+        <!-- Footer Actions -->
+        <div class="footer-actions">
+            <a href="{% url 'crear_pregunta' encuesta_id=encuesta.id %}" class="btn-large btn-large-primary">
+                <i class="fas fa-plus"></i>
+                Agregar Pregunta
+            </a>
+            <a href="{% url 'lista_encuestas' %}" class="btn-large btn-large-secondary">
+                <i class="fas fa-arrow-left"></i>
+                Volver a Encuestas
+            </a>
+        </div>
+    </main>
 </body>
 </html>

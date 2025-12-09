@@ -5,164 +5,488 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear Nueva Encuesta</title>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Custom Styles -->
     <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+    
+    <style>
+        :root {
+            --primary-purple: #8b5cf6;
+            --secondary-purple: #7c3aed;
+            --primary-blue: #3b82f6;
+            --primary-green: #10b981;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1e1b4b 50%, var(--card-bg) 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 50% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 25px;
+            padding: 10px 20px;
+            background: rgba(30, 41, 59, 0.4);
+            border-radius: 12px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--primary-purple);
+            transform: translateX(-5px);
+            text-decoration: none;
+        }
+
+        .page-icon {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 25px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.2));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .page-icon i {
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .form-card {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            padding: 45px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.15));
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .info-box i {
+            color: var(--primary-blue);
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .info-content h5 {
+            color: var(--text-primary);
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .info-content ul {
+            margin: 0;
+            padding-left: 20px;
+            color: var(--text-secondary);
+        }
+
+        .info-content ul li {
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 28px;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+
+        .form-label i {
+            color: var(--primary-purple);
+        }
+
+        .required-field::after {
+            content: '*';
+            color: #ef4444;
+            margin-left: 3px;
+            font-size: 1.2rem;
+        }
+
+        .form-control, .form-select, textarea.form-control {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(15, 23, 42, 0.5);
+            border: 2px solid rgba(139, 92, 246, 0.2);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-control::placeholder {
+            color: rgba(148, 163, 184, 0.5);
+        }
+
+        .form-control:focus, .form-select:focus, textarea.form-control:focus {
+            outline: none;
+            border-color: var(--primary-purple);
+            background: rgba(15, 23, 42, 0.7);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.2);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-text {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 8px;
+        }
+
+        .alert {
+            border-left: 4px solid #ef4444;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: #ef4444;
+            color: #fca5a5;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 35px;
+        }
+
+        .btn {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 15px 30px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            color: white;
+            box-shadow: 0 5px 20px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(139, 92, 246, 0.6);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(148, 163, 184, 0.2);
+            color: var(--text-primary);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(148, 163, 184, 0.3);
+            transform: translateY(-3px);
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--primary-green), #059669);
+            color: white;
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.6);
+            color: white;
+        }
+
+        .success-section {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(6, 182, 212, 0.15));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: rgba(16, 185, 129, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .success-icon i {
+            font-size: 2.5rem;
+            color: var(--primary-green);
+        }
+
+        .success-section h5 {
+            color: var(--text-primary);
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        .alert-info {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        .page-footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(139, 92, 246, 0.2);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .form-card { padding: 30px 20px; }
+            .page-title { font-size: 2rem; }
+            .form-actions { flex-direction: column; }
+            .btn { width: 100%; }
+        }
+    </style>
 </head>
 <body>
-    <!-- Header Section -->
-    <header class="header-container">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-8">
-                    <h1 class="page-title">Crear Nueva Encuesta</h1>
-                    <p class="page-subtitle">Complete los detalles de su encuesta para comenzar a recopilar respuestas</p>
+    <div class="container">
+        <div class="page-header">
+            <a href="{% url 'lista_encuestas' %}" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Volver a Encuestas
+            </a>
+            <div class="page-icon">
+                <i class="fas fa-poll"></i>
+            </div>
+            <h1 class="page-title">Crear Nueva Encuesta</h1>
+            <p class="page-subtitle">Complete los detalles de su encuesta para comenzar a recopilar respuestas</p>
+        </div>
+
+        <div class="form-card">
+            <div class="info-box">
+                <i class="fas fa-lightbulb"></i>
+                <div class="info-content">
+                    <h5>Consejos para una buena encuesta:</h5>
+                    <ul>
+                        <li>Use un título claro y descriptivo</li>
+                        <li>Explique el propósito de la encuesta en la descripción</li>
+                        <li>Sea específico con las preguntas que planee agregar después</li>
+                        <li>Considere el tiempo estimado para completar la encuesta</li>
+                    </ul>
                 </div>
-                <div class="col-md-4 text-md-end">
-                    <a href="{% url 'lista_encuestas' %}" class="btn back-button">
-                        <i class="fas fa-arrow-left me-2"></i>Volver a Encuestas
+            </div>
+
+            <form method="POST">
+                {% csrf_token %}
+                
+                {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}" class="form-label {% if field.field.required %}required-field{% endif %}">
+                        {% if field.name == 'titulo' %}
+                        <i class="fas fa-heading"></i>
+                        {% elif field.name == 'descripcion' %}
+                        <i class="fas fa-align-left"></i>
+                        {% else %}
+                        <i class="fas fa-cog"></i>
+                        {% endif %}
+                        {{ field.label }}
+                    </label>
+                    
+                    {% if field.field.widget.input_type == 'select' %}
+                    <select name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-select">
+                        {% for value, text in field.field.choices %}
+                        <option value="{{ value }}" {% if field.value == value %}selected{% endif %}>{{ text }}</option>
+                        {% endfor %}
+                    </select>
+                    {% elif field.field.widget.input_type == 'textarea' %}
+                    <textarea name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-control" rows="4" {% if field.field.required %}required{% endif %}>{{ field.value|default:'' }}</textarea>
+                    {% else %}
+                    <input type="{{ field.field.widget.input_type }}" 
+                           name="{{ field.name }}" 
+                           id="{{ field.id_for_label }}" 
+                           class="form-control" 
+                           value="{{ field.value|default:'' }}"
+                           {% if field.field.required %}required{% endif %}
+                           {% if field.name == 'titulo' %}placeholder="Ej: Satisfacción del cliente 2024"{% endif %}>
+                    {% endif %}
+                    
+                    {% if field.help_text %}
+                    <div class="form-text">
+                        <i class="fas fa-info-circle"></i> {{ field.help_text }}
+                    </div>
+                    {% endif %}
+                    
+                    {% if field.errors %}
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        {{ field.errors|striptags }}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Guardar Encuesta
+                    </button>
+                    <a href="{% url 'lista_encuestas' %}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i>
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+
+            {% if form.instance.id %}
+            <div class="success-section">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h5>¡Encuesta creada exitosamente!</h5>
+                <p>Ahora puede agregar preguntas a su encuesta.</p>
+                <div class="form-actions">
+                    <a href="{% url 'lista_preguntas' encuesta_id=form.instance.id %}" class="btn btn-success">
+                        <i class="fas fa-plus-circle"></i>
+                        Añadir Preguntas a la Encuesta
                     </a>
                 </div>
             </div>
-        </div>
-    </header>
-
-    <!-- Main Content Section -->
-    <main class="container">
-        <!-- Progress Indicator -->
-        <!-- Survey Creation Form -->
-        <section class="row justify-content-center">
-            <div class="col-lg-10">
-                <div class="card">
-                    <div class="card-header">
-                        <h4 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Configuración de la Encuesta</h4>
-                    </div>
-                    <div class="card-body">
-                        <form method="POST">
-                            {% csrf_token %}
-                            
-                            <div class="form-section">
-                                <h5 class="section-title">
-                                    <i class="fas fa-info-circle"></i> Información Básica
-                                </h5>
-                                
-                                {# Iterate over each field in the Django form #}
-                                {% for field in form %}
-                                <div class="mb-4">
-                                    <label for="{{ field.id_for_label }}" class="form-label required-field">
-                                        {# Display appropriate icon based on field name #}
-                                        {% if field.name == 'titulo' %}
-                                        <i class="fas fa-heading"></i>
-                                        {% elif field.name == 'descripcion' %}
-                                        <i class="fas fa-align-left"></i>
-                                        {% else %}
-                                        <i class="fas fa-cog"></i> {# Default icon #}
-                                        {% endif %}
-                                        {{ field.label }}
-                                    </label>
-                                    
-                                    {# Render the form field widget with Bootstrap classes #}
-                                    {% if field.field.widget.input_type == 'select' %}
-                                    <select name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-select">
-                                        {% for value, text in field.field.choices %}
-                                        <option value="{{ value }}" {% if field.value == value %}selected{% endif %}>{{ text }}</option>
-                                        {% endfor %}
-                                    </select>
-                                    {% elif field.field.widget.input_type == 'textarea' %}
-                                    <textarea name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-control" rows="4" {% if field.field.required %}required{% endif %}>{{ field.value|default:'' }}</textarea>
-                                    {% else %}
-                                    <input type="{{ field.field.widget.input_type }}" 
-                                           name="{{ field.name }}" 
-                                           id="{{ field.id_for_label }}" 
-                                           class="form-control" 
-                                           value="{{ field.value|default:'' }}"
-                                           {% if field.field.required %}required{% endif %}
-                                           {% if field.name == 'titulo' %}placeholder="Ej: Satisfacción del cliente 2023"{% endif %}>
-                                    {% endif %}
-                                    
-                                    {# Display help text if available #}
-                                    {% if field.help_text %}
-                                    <div class="form-text mt-2 text-muted">
-                                        <i class="fas fa-info-circle me-1"></i> {{ field.help_text }}
-                                    </div>
-                                    {% endif %}
-                                    
-                                    {# Display field errors if any #}
-                                    {% if field.errors %}
-                                    <div class="alert alert-danger mt-2 p-2 border-0">
-                                        <i class="fas fa-exclamation-triangle me-1"></i>
-                                        {{ field.errors|striptags }}
-                                    </div>
-                                    {% endif %}
-                                </div>
-                                {% endfor %}
-                            </div>
-                            
-                            <!-- Tips for creating a good survey -->
-                            <div class="tip-box">
-                                <div class="tip-title">
-                                    <i class="fas fa-lightbulb"></i> Consejos para una buena encuesta:
-                                </div>
-                                <ul class="mb-0 ps-3">
-                                    <li>Use un título claro y descriptivo</li>
-                                    <li>Explique el propósito de la encuesta en la descripción</li>
-                                    <li>Sea específico con las preguntas que planee agregar después</li>
-                                    <li>Considere el tiempo estimado para completar la encuesta</li>
-                                </ul>
-                            </div>
-                            
-                            <div class="d-flex justify-content-between mt-4 pt-3">
-                                <a href="{% url 'lista_encuestas' %}" class="btn btn-secondary">
-                                    <i class="fas fa-times me-2"></i>Cancelar
-                                </a>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save me-2"></i>Guardar Encuesta
-                                </button>
-                            </div>
-                        </form>
-                        
-                        <!-- Section to add questions (only visible after saving) -->
-                        {% if form.instance.id %}
-                        <hr class="my-5">
-                        <div class="text-center">
-                            <h5 class="mb-3">¡Encuesta creada exitosamente!</h5>
-                            <p class="mb-4">Ahora puede agregar preguntas a su encuesta.</p>
-                            <a href="{% url 'lista_preguntas' encuesta_id=form.instance.id %}" class="btn btn-success btn-lg">
-                                <i class="fas fa-plus-circle me-2"></i>Añadir Preguntas a la Encuesta
-                            </a>
-                        </div>
-                        {% else %}
-                        <hr class="my-5">
-                        <div class="alert alert-info text-center" role="alert">
-                            <div class="d-flex align-items-center justify-content-center">
-                                <i class="fas fa-info-circle fa-2x me-3"></i>
-                                <div>
-                                    <h5 class="alert-heading mb-2">Debes crear la encuesta primero</h5>
-                                    <p class="mb-0">Después de guardar la encuesta, podrás agregar preguntas.</p>
-                                </div>
-                            </div>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-                
-                <!-- Additional Information Section -->
-            
+            {% else %}
+            <div class="alert-info text-center">
+                <i class="fas fa-info-circle fa-2x mb-3" style="color: var(--primary-blue);"></i>
+                <h5 style="color: var(--text-primary); margin-bottom: 10px;">Debes crear la encuesta primero</h5>
+                <p style="color: var(--text-secondary); margin: 0;">Después de guardar la encuesta, podrás agregar preguntas.</p>
             </div>
-        </section>
-    </main>
-
-    <!-- Footer Section -->
-    <footer class="footer-note">
-        <div class="container">
-            <p>&copy; 2023 Sistema de Votaciones. Todos los derechos reservados.</p>
+            {% endif %}
         </div>
-    </footer>
 
-    <!-- Bootstrap 5 JS (bundle includes Popper) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+        <div class="page-footer">
+            <p>&copy; {% now "Y" %} Sistema de Votaciones. Todos los derechos reservados.</p>
+        </div>
+    </div>
 </body>
 </html>

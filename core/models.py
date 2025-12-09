@@ -7,11 +7,18 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+class streamer(models.Model):
+    id = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.nombre
+
 class Encuesta(models.Model):
     titulo = models.CharField(max_length=200)
     fecha_creacion = models.DateTimeField(default=timezone.now)
     descripcion = models.TextField(blank=True)
-
+    streamer = models.ForeignKey(streamer, on_delete=models.CASCADE, related_name='encuestas', null=True)
     def __str__(self):
         return self.titulo
 
@@ -25,7 +32,7 @@ class Encuesta(models.Model):
 class Pregunta(models.Model):
     encuesta = models.ForeignKey(Encuesta, on_delete=models.CASCADE, related_name='preguntas', null=True)
     pregunta = models.TextField(null=True)
-
+    streamer = models.ForeignKey(streamer, on_delete=models.CASCADE, related_name='preguntas', null=True)
     def __str__(self):
         return self.pregunta
 
@@ -39,7 +46,7 @@ class Media(models.Model):
    archivo = models.FileField(upload_to='media/', blank=True, null=True)
    url_youtube = models.URLField(blank=True, null=True)
    pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE, related_name='medias', null=True)
-
+   streamer = models.ForeignKey(streamer, on_delete=models.CASCADE, related_name='medias', null=True)
    def clean(self):
      super().clean()
      if self.tipo_media == 'LOCAL' and not self.archivo:
@@ -82,7 +89,8 @@ class Opcion(models.Model):
     color = models.CharField(max_length=7, blank=True, default="#28a745", validators=[
         RegexValidator(r'^#[0-9A-Fa-f]{6}$', message="El color debe ser un código hexadecimal válido.")
     ])
-
+    streamer = models.ForeignKey(streamer, on_delete=models.CASCADE, related_name='opciones', null=True)
+    
     def __str__(self):
         return self.opcion
 
@@ -93,6 +101,7 @@ class Formulario(models.Model):
     opcion = models.ForeignKey(Opcion, on_delete=models.CASCADE, null=True)
     fecha_votacion = models.DateTimeField(auto_now_add=True, null=True)
     usuario = models.CharField(max_length=100, blank=True, null=True)
+    streamer = models.ForeignKey(streamer, on_delete=models.CASCADE, related_name='formularios', null=True)
 
     def clean(self):
       if self.pregunta and self.opcion and self.usuario:

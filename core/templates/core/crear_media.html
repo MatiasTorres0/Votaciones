@@ -5,31 +5,942 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Añadir Media a {{ pregunta.pregunta }}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-purple: #8b5cf6;
+            --secondary-purple: #7c3aed;
+            --primary-blue: #3b82f6;
+            --primary-green: #10b981;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1e1b4b 50%, var(--card-bg) 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 50% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 25px;
+            padding: 10px 20px;
+            background: rgba(30, 41, 59, 0.4);
+            border-radius: 12px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--primary-purple);
+            transform: translateX(-5px);
+            text-decoration: none;
+        }
+
+        .page-icon {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 25px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.2));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .page-icon i {
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .form-card {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            padding: 45px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.15));
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .info-box i {
+            color: var(--primary-blue);
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .info-content h5 {
+            color: var(--text-primary);
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .info-content ul {
+            margin: 0;
+            padding-left: 20px;
+            color: var(--text-secondary);
+        }
+
+        .info-content ul li {
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 28px;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+
+        .form-label i {
+            color: var(--primary-purple);
+        }
+
+        .required-field::after {
+            content: '*';
+            color: #ef4444;
+            margin-left: 3px;
+            font-size: 1.2rem;
+        }
+
+        .form-control, .form-select, textarea.form-control {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(15, 23, 42, 0.5);
+            border: 2px solid rgba(139, 92, 246, 0.2);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-control::placeholder {
+            color: rgba(148, 163, 184, 0.5);
+        }
+
+        .form-control:focus, .form-select:focus, textarea.form-control:focus {
+            outline: none;
+            border-color: var(--primary-purple);
+            background: rgba(15, 23, 42, 0.7);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.2);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-text {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 8px;
+        }
+
+        .alert {
+            border-left: 4px solid #ef4444;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: #ef4444;
+            color: #fca5a5;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 35px;
+        }
+
+        .btn {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 15px 30px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            color: white;
+            box-shadow: 0 5px 20px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(139, 92, 246, 0.6);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(148, 163, 184, 0.2);
+            color: var(--text-primary);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(148, 163, 184, 0.3);
+            transform: translateY(-3px);
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--primary-green), #059669);
+            color: white;
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.6);
+            color: white;
+        }
+
+        .success-section {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(6, 182, 212, 0.15));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: rgba(16, 185, 129, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .success-icon i {
+            font-size: 2.5rem;
+            color: var(--primary-green);
+        }
+
+        .success-section h5 {
+            color: var(--text-primary);
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        .alert-info {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        .page-footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(139, 92, 246, 0.2);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Estilos específicos para el formulario de media */
+        .upload-area {
+            border: 2px dashed rgba(139, 92, 246, 0.3);
+            border-radius: 15px;
+            padding: 40px 20px;
+            text-align: center;
+            background: rgba(15, 23, 42, 0.3);
+            transition: all 0.3s ease;
+            margin-bottom: 25px;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-purple);
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--primary-green);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 3.5rem;
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 15px;
+        }
+
+        .upload-info h5 {
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .upload-info p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .btn-upload {
+            background: rgba(139, 92, 246, 0.2);
+            border: 1px solid var(--primary-purple);
+            color: var(--primary-purple);
+            padding: 10px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-upload:hover {
+            background: var(--primary-purple);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .file-preview {
+            max-width: 200px;
+            border-radius: 12px;
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            margin-top: 20px;
+            display: none;
+        }
+
+        .selected-file {
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .file-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.2));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary-purple);
+        }
+
+        .file-details h6 {
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .file-details p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin: 0;
+        }
+
+        .question-preview-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.7));
+            border-radius: 18px;
+            padding: 25px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .question-preview-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary-purple), var(--primary-blue));
+        }
+
+        .question-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .question-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.2));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary-purple);
+        }
+
+        .question-text {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .question-meta {
+            display: flex;
+            gap: 20px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .question-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .question-meta-item i {
+            color: var(--primary-blue);
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            flex: 1;
+            max-width: 200px;
+        }
+
+        .step-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(30, 41, 59, 0.7);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-weight: 700;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .step.active .step-circle {
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            border-color: var(--primary-purple);
+            color: white;
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
+        }
+
+        .step-line {
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: rgba(139, 92, 246, 0.3);
+            z-index: 1;
+        }
+
+        .step:last-child .step-line {
+            display: none;
+        }
+
+        .step-label {
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .step.active .step-label {
+            color: var(--primary-purple);
+        }
+
+        @media (max-width: 768px) {
+            .form-card { padding: 30px 20px; }
+            .page-title { font-size: 2rem; }
+            .form-actions { flex-direction: column; }
+            .btn { width: 100%; }
+            .step-indicator { flex-direction: column; align-items: center; gap: 20px; }
+            .step { width: 100%; max-width: 300px; }
+            .step-line { display: none; }
+            .question-meta { flex-direction: column; gap: 10px; }
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-4">
-        <h2 class="mb-4 text-center">Añadir Media a</h2>
-        <h4 class="mb-3 text-center">{{ pregunta.pregunta }}</h4>
+    <div class="container">
+        <!-- Enlace de regreso -->
+        <a href="{% url 'lista_preguntas' encuesta_id=pregunta.encuesta.id %}" class="back-link">
+            <i class="fas fa-arrow-left"></i>
+            Volver a preguntas
+        </a>
 
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-body">
-                        <form method="POST" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            {{ form.as_p }}
-                            <div class="mt-4 text-center">
-                                <button type="submit" class="btn btn-primary mr-2">Guardar Media</button>
-                                <a href="{% url 'lista_preguntas' encuesta_id=pregunta.encuesta.id %}" class="btn btn-secondary">Volver</a>
-                             </div>
-                        </form>
+        <!-- Encabezado de página -->
+        <div class="page-header">
+            <div class="page-icon">
+                <i class="fas fa-photo-video"></i>
+            </div>
+            <h1 class="page-title">Añadir Media a Pregunta</h1>
+            <p class="page-subtitle">Sube imágenes, videos o audios para complementar tu pregunta</p>
+        </div>
+
+        <!-- Indicador de pasos -->
+        <div class="step-indicator">
+            <div class="step active">
+                <div class="step-circle">1</div>
+                <div class="step-line"></div>
+                <span class="step-label">Seleccionar Pregunta</span>
+            </div>
+            <div class="step active">
+                <div class="step-circle">2</div>
+                <div class="step-line"></div>
+                <span class="step-label">Subir Multimedia</span>
+            </div>
+            <div class="step">
+                <div class="step-circle">3</div>
+                <div class="step-line"></div>
+                <span class="step-label">Confirmar</span>
+            </div>
+        </div>
+
+        <!-- Vista previa de la pregunta -->
+        <div class="question-preview-card">
+            <div class="question-header">
+                <div class="question-icon">
+                    <i class="far fa-question-circle"></i>
+                </div>
+                <div>
+                    <h5>Pregunta seleccionada:</h5>
+                    <p class="question-text">{{ pregunta.pregunta }}</p>
+                </div>
+            </div>
+            <div class="question-meta">
+                <div class="question-meta-item">
+                    <i class="fas fa-poll"></i>
+                    <span>Encuesta: {{ pregunta.encuesta.titulo }}</span>
+                </div>
+                <div class="question-meta-item">
+                    <i class="far fa-calendar-alt"></i>
+                    <span>Creada: {{ pregunta.fecha_creacion|date:"d/m/Y" }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta del formulario -->
+        <div class="form-card">
+            <form method="POST" enctype="multipart/form-data" id="mediaForm">
+                {% csrf_token %}
+                
+                <!-- Área de subida de archivos -->
+                <div class="upload-area" id="dropArea">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <div class="upload-info">
+                        <h5>Arrastra y suelta tu archivo multimedia</h5>
+                        <p>o haz clic para seleccionarlo desde tu dispositivo</p>
+                    </div>
+                    
+                    <!-- Input de archivo oculto -->
+                    <input type="file" class="d-none" id="fileInput" name="archivo">
+                    
+                    <!-- Botón para seleccionar archivo -->
+                    <button type="button" class="btn-upload" id="browseBtn">
+                        <i class="fas fa-search mr-2"></i> Seleccionar archivo
+                    </button>
+                    
+                    <!-- Información de formatos -->
+                    <div class="mt-4">
+                        <small class="form-text">
+                            <i class="fas fa-info-circle"></i>
+                            Formatos soportados: JPG, PNG, GIF, MP4, MP3, PDF • Tamaño máximo: 10MB
+                        </small>
+                    </div>
+                    
+                    <!-- Vista previa de imagen -->
+                    <img id="filePreview" class="file-preview img-fluid" alt="Vista previa del archivo">
+                    
+                    <!-- Información del archivo seleccionado -->
+                    <div id="selectedFileInfo" class="selected-file" style="display: none;">
+                        <div class="file-icon">
+                            <i class="fas fa-file"></i>
+                        </div>
+                        <div class="file-details">
+                            <h6 id="fileName">Archivo seleccionado</h6>
+                            <p id="fileSize">Tamaño no disponible</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Campos del formulario -->
+                <div class="form-group">
+                    <label for="id_tipo_media" class="form-label required-field">
+                        <i class="fas fa-file-alt"></i>
+                        Tipo de media
+                    </label>
+                    {{ form.tipo_media }}
+                    <small class="form-text">
+                        <i class="fas fa-question-circle"></i>
+                        Selecciona el tipo de contenido que estás subiendo
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_descripcion" class="form-label">
+                        <i class="fas fa-align-left"></i>
+                        Descripción (opcional)
+                    </label>
+                    {{ form.descripcion }}
+                    <small class="form-text">
+                        <i class="fas fa-question-circle"></i>
+                        Añade una descripción que explique el contenido del archivo
+                    </small>
+                </div>
+
+                <!-- Campos adicionales del formulario Django (si existen) -->
+                {% for field in form %}
+                    {% if field.name != 'archivo' and field.name != 'tipo_media' and field.name != 'descripcion' %}
+                        <div class="form-group">
+                            <label for="{{ field.id_for_label }}" class="form-label {% if field.field.required %}required-field{% endif %}">
+                                <i class="fas fa-tag"></i>
+                                {{ field.label }}
+                            </label>
+                            {{ field }}
+                            {% if field.help_text %}
+                                <small class="form-text">
+                                    <i class="fas fa-question-circle"></i>
+                                    {{ field.help_text }}
+                                </small>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+
+                <!-- Botones de acción -->
+                <div class="form-actions">
+                    <button type="reset" class="btn btn-secondary">
+                        <i class="fas fa-redo mr-2"></i> Limpiar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save mr-2"></i> Guardar Media
+                    </button>
+                </div>
+            </form>
+
+            <!-- Información adicional -->
+            <div class="alert-info mt-4">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-lightbulb mr-3" style="font-size: 1.5rem; color: var(--primary-blue);"></i>
+                    <div>
+                        <h5 class="mb-2">Consejo para medios efectivos</h5>
+                        <p class="mb-0">Utiliza imágenes y videos de alta calidad que complementen claramente la pregunta. Evita archivos demasiado grandes que puedan ralentizar la carga de la encuesta.</p>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Pie de página -->
+        <div class="page-footer">
+            <p><i class="fas fa-shield-alt mr-2"></i> Tus archivos se almacenan de forma segura y solo serán visibles para los participantes de la encuesta.</p>
+            <p class="mb-0">Sistema de Gestión de Encuestas • {{ request.user.username }} • {% now "d/m/Y H:i" %}</p>
+        </div>
     </div>
-   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // Aplicar clases de Bootstrap a los campos del formulario Django
+            $('select').addClass('form-control form-select');
+            $('input[type="text"], input[type="url"], input[type="number"]').addClass('form-control');
+            $('textarea').addClass('form-control');
+            
+            // Manejar el área de arrastrar y soltar
+            const dropArea = document.getElementById('dropArea');
+            const fileInput = document.getElementById('fileInput');
+            const browseBtn = document.getElementById('browseBtn');
+            const filePreview = document.getElementById('filePreview');
+            const selectedFileInfo = document.getElementById('selectedFileInfo');
+            const fileName = document.getElementById('fileName');
+            const fileSize = document.getElementById('fileSize');
+            
+            // Al hacer clic en el botón "Seleccionar archivo"
+            browseBtn.addEventListener('click', () => {
+                fileInput.click();
+            });
+            
+            // Al seleccionar un archivo mediante el input
+            fileInput.addEventListener('change', function() {
+                handleFiles(this.files);
+            });
+            
+            // Prevenir el comportamiento por defecto al arrastrar sobre el área
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            // Efectos visuales al arrastrar sobre el área
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, unhighlight, false);
+            });
+            
+            function highlight() {
+                dropArea.classList.add('dragover');
+            }
+            
+            function unhighlight() {
+                dropArea.classList.remove('dragover');
+            }
+            
+            // Manejar archivos soltados
+            dropArea.addEventListener('drop', handleDrop, false);
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                handleFiles(files);
+            }
+            
+            // Procesar archivos seleccionados o soltados
+            function handleFiles(files) {
+                if (files.length > 0) {
+                    const file = files[0];
+                    
+                    // Mostrar información del archivo
+                    fileName.textContent = file.name;
+                    fileSize.textContent = formatFileSize(file.size);
+                    
+                    // Mostrar icono según el tipo de archivo
+                    const fileIcon = selectedFileInfo.querySelector('.file-icon i');
+                    if (file.type.startsWith('image/')) {
+                        fileIcon.className = 'fas fa-file-image';
+                    } else if (file.type.startsWith('video/')) {
+                        fileIcon.className = 'fas fa-file-video';
+                    } else if (file.type.startsWith('audio/')) {
+                        fileIcon.className = 'fas fa-file-audio';
+                    } else {
+                        fileIcon.className = 'fas fa-file';
+                    }
+                    
+                    // Mostrar vista previa si es una imagen
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            filePreview.src = e.target.result;
+                            filePreview.style.display = 'block';
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        filePreview.style.display = 'none';
+                    }
+                    
+                    // Mostrar información del archivo
+                    selectedFileInfo.style.display = 'flex';
+                    
+                    // Actualizar el input file real del formulario Django
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    fileInput.files = dataTransfer.files;
+                }
+            }
+            
+            // Función para formatear el tamaño del archivo
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+            
+            // Mostrar alerta al enviar el formulario
+            $('#mediaForm').on('submit', function(e) {
+                if (fileInput.files.length === 0) {
+                    e.preventDefault();
+                    showAlert('Por favor, selecciona un archivo antes de enviar el formulario.', 'danger');
+                    return false;
+                }
+                
+                // Cambiar texto del botón mientras se procesa
+                const submitBtn = $(this).find('button[type="submit"]');
+                const originalText = submitBtn.html();
+                submitBtn.html('<i class="fas fa-spinner fa-spin mr-2"></i> Subiendo...');
+                submitBtn.prop('disabled', true);
+                
+                // Restaurar después de 5 segundos (en caso de que el envío falle)
+                setTimeout(function() {
+                    submitBtn.html(originalText);
+                    submitBtn.prop('disabled', false);
+                }, 5000);
+            });
+            
+            // Función para mostrar alertas
+            function showAlert(message, type) {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+                alertDiv.innerHTML = `
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    ${message}
+                    <button type="button" class="close" data-dismiss="alert">
+                        <span>&times;</span>
+                    </button>
+                `;
+                
+                // Insertar después del formulario
+                const formCard = document.querySelector('.form-card');
+                formCard.insertBefore(alertDiv, formCard.firstChild);
+                
+                // Eliminar automáticamente después de 5 segundos
+                setTimeout(() => {
+                    $(alertDiv).alert('close');
+                }, 5000);
+            }
+        });
+    </script>
 </body>
 </html>

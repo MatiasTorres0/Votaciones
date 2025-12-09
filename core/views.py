@@ -322,6 +322,13 @@ def lista_medias(request, pregunta_id):
     medias = Media.objects.filter(pregunta=pregunta)
     return render(request, 'core/lista_medias.html', {'pregunta': pregunta, 'medias': medias})
 
+@login_required
+def eliminar_media(request, media_id):
+    media = get_object_or_404(Media, id=media_id)
+    pregunta_id = media.pregunta.id
+    media.delete()
+    return redirect('lista_medias', pregunta_id=pregunta_id)
+
 
 
 class PreguntaViewSet(viewsets.ModelViewSet):

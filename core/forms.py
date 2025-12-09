@@ -11,42 +11,48 @@ logger = logging.getLogger(__name__)
 class EncuestaForm(forms.ModelForm):
     class Meta:
         model = Encuesta
-        fields = ['titulo', 'descripcion']
+        fields = ['titulo', 'descripcion', 'streamer']
         widgets = {
             'titulo': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Título de la encuesta'}),
             'descripcion': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Descripción opcional'}),
+            'streamer': forms.Select(attrs={'class': 'form-control'}),
         }
         labels = {
             'titulo': 'Título',
             'descripcion': 'Descripción',
+            'streamer': 'Streamer',
         }
 
 # Formulario para Pregunta
 class PreguntaForm(forms.ModelForm):
     class Meta:
         model = Pregunta
-        fields = ['pregunta']
+        fields = ['pregunta', 'streamer']
         widgets = {
             'pregunta': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Escribe la pregunta aquí'}),
+            'streamer': forms.Select(attrs={'class': 'form-control'}),
         }
         labels = {
             'pregunta': 'Pregunta',
+            'streamer': 'Streamer', 
         }
 
 # Formulario para Media
 class MediaForm(forms.ModelForm):
     class Meta:
         model = Media
-        fields = ['tipo_media', 'archivo', 'url_youtube']
+        fields = ['tipo_media', 'archivo', 'url_youtube', 'streamer']
         widgets = {
             'tipo_media': forms.RadioSelect(),
             'archivo': forms.ClearableFileInput(attrs={'class': 'form-control'}),
             'url_youtube': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://youtube.com/...'}),
+            'streamer': forms.Select(attrs={'class': 'form-control'}),
         }
         labels = {
             'tipo_media': 'Tipo de Media',
             'archivo': 'Subir Archivo',
             'url_youtube': 'URL de YouTube',
+            'streamer': 'Streamer',
         }
 
 # Formulario para Opción
@@ -60,14 +66,16 @@ class OpcionForm(forms.ModelForm):
 
     class Meta:
         model = Opcion
-        fields = ['opcion', 'medias', 'color']
+        fields = ['opcion', 'medias', 'color', 'streamer']
         widgets = {
             'opcion': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Opción de respuesta'}),
             'color': forms.TextInput(attrs={'class': 'form-control', 'type': 'color'}),
+            'streamer': forms.Select(attrs={'class': 'form-control'}),
         }
         labels = {
             'opcion': 'Opción',
             'color': 'Color de la Opción',
+            'streamer': 'Streamer',
         }
 
 class FormularioForm(forms.ModelForm):
@@ -89,10 +97,11 @@ class FormularioForm(forms.ModelForm):
 
     class Meta:
         model = Formulario
-        fields = ['nombre_twitch', 'pregunta', 'opcion']
+        fields = ['nombre_twitch', 'pregunta', 'opcion', 'streamer']
         widgets = {
             'pregunta': forms.HiddenInput(),
-            'opcion': forms.RadioSelect(attrs={'class': 'form-check-input'})
+            'opcion': forms.RadioSelect(attrs={'class': 'form-check-input'}),
+            'streamer': forms.HiddenInput(),
         }
 
     def __init__(self, *args, **kwargs):
