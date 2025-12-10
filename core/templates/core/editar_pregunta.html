@@ -4,44 +4,398 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Pregunta</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Fuentes -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* === TEMA DARK / GLASSMORPHISM === */
+        :root {
+            --primary-purple: #8b5cf6;
+            --secondary-purple: #7c3aed;
+            --primary-blue: #3b82f6;
+            --primary-green: #10b981;
+            --primary-yellow: #f59e0b;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1e1b4b 50%, var(--card-bg) 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        /* Fondo Animado */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 40%);
+            z-index: -1;
+        }
+
+        .container { max-width: 900px; margin: 0 auto; }
+
+        /* HEADER */
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 25px;
+            padding: 10px 20px;
+            background: rgba(30, 41, 59, 0.4);
+            border-radius: 12px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--primary-purple);
+            transform: translateX(-5px);
+            text-decoration: none;
+        }
+
+        .page-icon {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.2));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .page-icon i {
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* TARJETAS GLASS */
+        .glass-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .card-header-small {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        /* FORMULARIOS */
+        .form-group { margin-bottom: 25px; }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .form-label i { color: var(--primary-purple); }
+
+        /* Estilos Inputs */
+        .form-control, .form-select, input[type="text"], textarea, select {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 2px solid rgba(139, 92, 246, 0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary-purple);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
+            background: rgba(15, 23, 42, 0.8);
+        }
+
+        textarea { min-height: 120px; resize: vertical; }
+
+        /* BOTONES */
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 35px;
+        }
+
+        .btn {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px 30px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple));
+            color: white;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.5);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(148, 163, 184, 0.1);
+            color: var(--text-primary);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+        .btn-secondary:hover {
+            background: rgba(148, 163, 184, 0.2);
+            color: white;
+            text-decoration: none;
+        }
+
+        /* Botones de Acciones Adicionales */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 25px;
+            border-radius: 16px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .action-btn i { font-size: 2rem; margin-bottom: 5px; }
+
+        .btn-warning-glass {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: var(--primary-yellow);
+        }
+        .btn-warning-glass:hover {
+            background: rgba(245, 158, 11, 0.25);
+            transform: translateY(-3px);
+            color: #fff;
+            box-shadow: 0 10px 20px rgba(245, 158, 11, 0.2);
+            text-decoration: none;
+        }
+
+        .btn-blue-glass {
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: var(--primary-blue);
+        }
+        .btn-blue-glass:hover {
+            background: rgba(59, 130, 246, 0.25);
+            transform: translateY(-3px);
+            color: #fff;
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.2);
+            text-decoration: none;
+        }
+
+        /* ANIMACIONES */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+
+        @media (max-width: 768px) {
+            .page-title { font-size: 2rem; }
+            .form-actions { flex-direction: column; }
+            .actions-grid { grid-template-columns: 1fr; }
+            .btn { width: 100%; }
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-4">
-        <h2 class="mb-4 text-center">Editar Pregunta</h2>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="page-header">
+            <!-- Link dinámico a la encuesta -->
+            <a href="{% url 'editar_encuesta' encuesta_id=pregunta.encuesta.id %}" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Volver a la Encuesta
+            </a>
+            
+            <div class="page-icon">
+                <i class="fas fa-question-circle"></i>
+            </div>
+            <h1 class="page-title">Editar Pregunta</h1>
+            <p class="page-subtitle">
+                Modifica el enunciado de la pregunta o su streamer asignado.
+            </p>
+        </div>
 
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-body">
-                        <form method="POST">
-                            {% csrf_token %}
-                            {{ form.as_p }}
-                            <div class="mt-4 text-center">
-                                <button type="submit" class="btn btn-primary mr-2">Guardar Cambios</button>
-                                <a href="{% url 'editar_encuesta' encuesta_id=pregunta.encuesta.id %}" class="btn btn-secondary">Volver</a>
-                            </div>
-                        </form>
+        <!-- FORMULARIO PRINCIPAL -->
+        <div class="glass-card">
+            <div class="card-header-small">
+                <i class="fas fa-edit" style="color: var(--primary-purple);"></i>
+                <span>Contenido de la Pregunta</span>
+            </div>
 
-                        <hr class="my-4">
+            <form method="POST">
+                {% csrf_token %}
+                
+                <!-- Loop para renderizar campos automáticamente -->
+                {% for field in form %}
+                <div class="form-group">
+                    <label class="form-label" for="{{ field.id_for_label }}">
+                        <!-- Iconos dinámicos según el nombre del campo -->
+                        {% if 'pregunta' in field.name %}
+                            <i class="fas fa-comment-dots"></i>
+                        {% elif 'streamer' in field.name %}
+                            <i class="fas fa-user-circle"></i>
+                        {% else %}
+                            <i class="fas fa-cog"></i>
+                        {% endif %}
+                        {{ field.label }}
+                    </label>
 
-                        <h3 class="mb-3 text-center">Acciones Adicionales</h3>
-                        <div class="text-center">
-                            <a href="{% url 'crear_opcion' pregunta_id=pregunta.id %}" class="btn btn-warning mr-2">
-                                <i class="fas fa-plus-circle mr-1"></i> Agregar Opción
-                            </a>
-                            <a href="{% url 'crear_media' pregunta_id=pregunta.id %}" class="btn btn-secondary mr-2">
-                                 <i class="fas fa-upload mr-1"></i> Agregar Media
-                            </a>
+                    <!-- Renderizado del campo -->
+                    <!-- Si tu forms.py ya tiene los widgets con 'form-control', esto funciona directo -->
+                    {{ field }}
+                    
+                    <!-- Errores y Ayuda -->
+                    {% if field.help_text %}
+                        <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 5px;">
+                            {{ field.help_text }}
                         </div>
+                    {% endif %}
+                    
+                    {% if field.errors %}
+                    <div style="margin-top: 8px; padding: 10px; background: rgba(239, 68, 68, 0.15); border-radius: 8px; color: #fca5a5; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        {{ field.errors|striptags }}
                     </div>
+                    {% endif %}
                 </div>
+                {% endfor %}
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Guardar Cambios
+                    </button>
+                    <a href="{% url 'editar_encuesta' encuesta_id=pregunta.encuesta.id %}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i>
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- TARJETA DE ACCIONES ADICIONALES -->
+        <!-- Estilizada como un panel de herramientas -->
+        <div class="glass-card" style="border-color: rgba(245, 158, 11, 0.2);">
+            <div class="card-header-small" style="color: var(--primary-yellow);">
+                <i class="fas fa-tools"></i>
+                <span>Herramientas de Edición</span>
+            </div>
+            
+            <p style="color: var(--text-secondary); margin-bottom: 25px; text-align: center;">
+                Enriquece esta pregunta agregando opciones de respuesta o contenido multimedia.
+            </p>
+
+            <div class="actions-grid">
+                <!-- Botón Agregar Opción -->
+                <a href="{% url 'crear_opcion' pregunta_id=pregunta.id %}" class="action-btn btn-warning-glass">
+                    <i class="fas fa-list-ol"></i>
+                    <div>
+                        <div style="font-weight: 700;">Agregar Opción</div>
+                        <div style="font-size: 0.85rem; opacity: 0.8;">Añadir respuesta posible</div>
+                    </div>
+                </a>
+
+                <!-- Botón Agregar Media -->
+                <a href="{% url 'crear_media' pregunta_id=pregunta.id %}" class="action-btn btn-blue-glass">
+                    <i class="fas fa-photo-video"></i>
+                    <div>
+                        <div style="font-weight: 700;">Agregar Media</div>
+                        <div style="font-size: 0.85rem; opacity: 0.8;">Imágenes o Videos</div>
+                    </div>
+                </a>
             </div>
         </div>
+
+        <!-- Footer -->
+        <div style="text-align: center; color: var(--text-secondary); margin-top: 50px; opacity: 0.6; font-size: 0.9rem;">
+            Sistema de Encuestas &copy; {% now "Y" %}
+        </div>
     </div>
-     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

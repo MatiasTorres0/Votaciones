@@ -15,6 +15,11 @@ class streamer(models.Model):
         return self.nombre
 
 class Encuesta(models.Model):
+    ESTADO = (
+        ('ACTIVA', 'Activa'),
+        ('TERMINADA', 'Terminada'),
+    )
+    estado = models.CharField(max_length=10, choices=ESTADO, default='ACTIVA')
     titulo = models.CharField(max_length=200)
     fecha_creacion = models.DateTimeField(default=timezone.now)
     descripcion = models.TextField(blank=True)

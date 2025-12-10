@@ -1,67 +1,375 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Coming Soon Evening</title>
-        <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
-        {% load static %}
-        <link rel="stylesheet" href="{% static 'core/css/bootstrap.min.css' %}">
-        <link rel="stylesheet" href="{% static 'core/css/jquery.countdown.css' %}">
-        <link rel="stylesheet" href="{% static 'core/css/font-awesome.min.css' %}">
-        <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
-    </head>
-    <body>
-      <div class="wrapper">
-           <div class="opacity"></div>
-            <div class="gravity">
-               <div class="container">
-                   <div class=" row">
-                       <div class="col-md-12">
-                       <img class="logo" src="{% static 'core/img/gravity.png' %}" alt="Gravity">
-                       <P>Our website is coming soon</P>
-                       </div>
-                   </div>
-               </div>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema en Mantenimiento</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* PALETA DE COLORES */
+        :root {
+            --primary-purple: #8b5cf6;
+            --secondary-purple: #7c3aed;
+            --primary-blue: #3b82f6;
+            --primary-green: #10b981;
+            --warning-yellow: #f59e0b;
+            --dark-bg: #0f172a;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--dark-bg);
+            /* Fondo técnico sutil */
+            background-image: 
+                linear-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(139, 92, 246, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 30px;
+            padding: 60px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* === COLUMNA IZQUIERDA: TEXTO === */
+        .text-content {
+            z-index: 2;
+            padding-right: 20px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--primary-purple);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, #fff 0%, var(--text-secondary) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .info-note {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: var(--primary-blue);
+            background: rgba(59, 130, 246, 0.1);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            width: fit-content;
+        }
+
+        /* === COLUMNA DERECHA: ILUSTRACIÓN CSS === */
+        .illustration-content {
+            position: relative;
+            height: 350px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Laptop Wrapper */
+        .laptop-wrapper {
+            position: relative;
+            width: 340px;
+            height: 220px;
+            perspective: 1000px;
+        }
+
+        .laptop-screen {
+            width: 300px;
+            height: 200px;
+            background: #1e293b;
+            border: 2px solid #334155;
+            border-radius: 16px 16px 0 0;
+            margin: 0 auto;
+            position: relative;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.15);
+        }
+
+        .screen-content { text-align: center; }
+        
+        .screen-icon {
+            font-size: 3.5rem;
+            color: var(--primary-purple);
+            margin-bottom: 15px;
+            animation: pulse 3s infinite;
+        }
+
+        /* Barras de carga en pantalla */
+        .loading-bar {
+            width: 140px;
+            height: 6px;
+            background: #334155;
+            border-radius: 10px;
+            margin: 0 auto;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .loading-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 40%;
+            background: var(--primary-purple);
+            animation: load 2s infinite ease-in-out;
+            border-radius: 10px;
+        }
+
+        .laptop-base {
+            width: 360px;
+            height: 14px;
+            background: #334155;
+            border-radius: 0 0 10px 10px;
+            margin: -2px auto 0;
+            position: relative;
+            z-index: 6;
+        }
+
+        /* Elementos flotantes */
+        .floating-element {
+            position: absolute;
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        /* Grúa abstracta */
+        .crane-arm {
+            position: absolute;
+            top: -40px;
+            right: 20px;
+            width: 4px;
+            height: 150px;
+            background: var(--text-secondary);
+            transform: rotate(15deg);
+            z-index: 1;
+            opacity: 0.2;
+        }
+        .crane-hook {
+            position: absolute;
+            top: 0;
+            left: -40px;
+            font-size: 2rem;
+            color: var(--text-secondary);
+            animation: swing 4s ease-in-out infinite;
+        }
+
+        /* Iconos flotantes */
+        .gear-box {
+            width: 50px;
+            height: 50px;
+            top: 10px;
+            left: -10px;
+            color: var(--primary-blue);
+            font-size: 1.5rem;
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .vote-box {
+            width: 45px;
+            height: 45px;
+            bottom: 30px;
+            right: -20px;
+            color: var(--primary-green);
+            font-size: 1.2rem;
+            animation: float 5s ease-in-out infinite 1s;
+        }
+
+        .helmet-icon {
+            position: absolute;
+            bottom: 60px;
+            left: -20px;
+            font-size: 2.2rem;
+            color: var(--warning-yellow);
+            transform: rotate(-15deg);
+            z-index: 8;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
+        }
+
+        /* Animaciones */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        
+        @keyframes swing {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+        }
+
+        @keyframes load {
+            0% { left: -40%; }
+            100% { left: 100%; }
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 40px 30px;
+                text-align: center;
+                max-width: 500px;
+            }
+
+            .text-content {
+                padding-right: 0;
+            }
+
+            .info-note {
+                margin: 0 auto;
+            }
+
+            .illustration-content {
+                order: -1; /* Imagen arriba en móviles */
+                height: 280px;
+                margin-bottom: 10px;
+            }
+
+            .laptop-wrapper {
+                transform: scale(0.85);
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Columna Izquierda: Mensaje Puro -->
+        <div class="text-content">
+            <div class="badge">
+                <i class="fas fa-server"></i> &nbsp; Sistema en Pausa
             </div>
-            <div id="countdown"></div>
-    
-            <div class="email">
-               <div class="container">
-                   <div class=" row">
-                       <div class="col-md-12">
-                           <p>NOTIFY ME WHEN IT’S READY</p>
-                           
-                           <form action="#" method="post">
-                                <input type="email" placeholder="Enter Your Email Adress">
-                                <input type="submit" value="Send">
-                            </form>
-                       </div>
-                   </div>
-               </div>
-            </div>
-    
-            <div class="social-icon">
-                <div class="container">
-                    <div class=" row">
-                       <div class="col-md-12">
-                            <div class="icon">
-                               <a href="#"><i class="fa fa-facebook"></i></a>
-                               <a href="#"><i class="fa fa-twitter"></i></a>
-                               <a href="#"><i class="fa fa-linkedin"></i></a>
-                               <a href="#"><i class="fa fa-google-plus"></i></a>
-                            </div>
-    
-                       </div>
-                    </div>
-                </div>
+            <h1>Afinando el<br>Motor de Votos</h1>
+            <p>
+                Estamos realizando ajustes técnicos en la plataforma para asegurar que cada voto se registre correctamente y en tiempo real.
+            </p>
+            <p>
+                No es necesario que hagas nada. El sistema volverá a estar operativo automáticamente en unos momentos.
+            </p>
+            
+            <!-- Nota sutil en lugar de botones -->
+            <div class="info-note">
+                <i class="fas fa-sync-alt fa-spin" style="animation-duration: 3s;"></i>
+                <span>Esperando conexión...</span>
             </div>
         </div>
-    	
-		<script src="{% static 'core/js/jquery-3.1.1.min.js' %}"></script>
-        <script src="{% static 'core/js/bootstrap.min.js' %}"></script>
-        <script src="{% static 'core/js/jquery.countdown.js' %}"></script>
-        <script src="{% static 'core/js/active.js' %}"></script>
-    
-    
-    </body>
+
+        <!-- Columna Derecha: Ilustración -->
+        <div class="illustration-content">
+            <div class="crane-arm">
+                <div class="crane-hook"><i class="fas fa-hook"></i></div>
+            </div>
+
+            <div class="laptop-wrapper">
+                <div class="laptop-screen">
+                    <div class="screen-content">
+                        <!-- Icono código -->
+                        <div class="screen-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <!-- Barra de carga animada -->
+                        <div class="loading-bar"></div>
+                    </div>
+                </div>
+                <div class="laptop-base"></div>
+
+                <!-- Decoración -->
+                <div class="floating-element gear-box">
+                    <i class="fas fa-cog fa-spin" style="animation-duration: 8s;"></i>
+                </div>
+                
+                <div class="floating-element vote-box">
+                    <i class="fas fa-check"></i>
+                </div>
+
+                <i class="fas fa-hard-hat helmet-icon"></i>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Script opcional: Recarga la página cada 60 segundos
+        // Útil para eventos en vivo donde la gente deja la pestaña abierta
+        setTimeout(function(){
+           window.location.reload();
+        }, 60000);
+    </script>
+</body>
 </html>

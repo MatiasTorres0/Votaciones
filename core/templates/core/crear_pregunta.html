@@ -390,33 +390,35 @@
             </div>
 
             <form method="POST">
-                {% csrf_token %}
-                
-                {% for field in form %}
-                <div class="form-group">
-                    <label class="form-label {% if field.field.required %}required{% endif %}" for="{{ field.id_for_label }}">
-                        {{ field.label }}
-                    </label>
-                    
-                    {% if field.field.widget.input_type == 'textarea' %}
-                        <textarea name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-control" {% if field.field.required %}required{% endif %}>{{ field.value|default:'' }}</textarea>
-                    {% else %}
-                        <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" id="{{ field.id_for_label }}" class="form-control" value="{{ field.value|default:'' }}" {% if field.field.required %}required{% endif %}>
-                    {% endif %}
-                    
-                    {% if field.help_text %}
-                    <span class="form-help">{{ field.help_text }}</span>
-                    {% endif %}
-                    
-                    {% if field.errors %}
-                    <div class="error-message">
-                        {% for error in field.errors %}
-                        <div><i class="fas fa-exclamation-circle"></i> {{ error }}</div>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-                </div>
-                {% endfor %}
+    {% csrf_token %}
+    
+    {% for field in form %}
+    <div class="form-group">
+        <label class="form-label {% if field.field.required %}required{% endif %}" for="{{ field.id_for_label }}">
+            {{ field.label }}
+        </label>
+        
+        <!-- CORRECCIÓN AQUÍ: -->
+        <!-- Borramos toda la lógica if/else manual y dejamos que Django renderice el widget -->
+        <!-- Django detectará si es Select, Textarea o Input y usará las clases de forms.py -->
+        
+        {{ field }}
+        
+        <!-- FIN CORRECCIÓN -->
+
+        {% if field.help_text %}
+        <span class="form-help">{{ field.help_text }}</span>
+        {% endif %}
+        
+        {% if field.errors %}
+        <div class="error-message">
+            {% for error in field.errors %}
+            <div><i class="fas fa-exclamation-circle"></i> {{ error }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">

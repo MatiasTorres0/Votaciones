@@ -35,6 +35,8 @@ urlpatterns = [
     path('eliminar_media/<int:media_id>/', views.eliminar_media, name='eliminar_media'),
     path('error_404/', views.error_404, name='error_404'),
     path('api/', include(router.urls)),
+    path('descargar_resultados/<int:encuesta_id>/', views.descargar_resultados, name='descargar_resultados'),
+    path('comparar_resultados/', views.comparar_resultados, name='comparar_resultados'),
 ]
 # Sirve archivos de media en modo DEBUG
 if settings.DEBUG:

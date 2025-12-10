@@ -4,40 +4,394 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Opción</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Fuentes -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* === TUS VARIABLES Y ESTILOS DE DISEÑO === */
+        :root {
+            --primary-purple: #8b5cf6;
+            --secondary-purple: #7c3aed;
+            --primary-blue: #3b82f6;
+            --primary-green: #10b981;
+            --primary-yellow: #f59e0b;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --danger: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1e1b4b 50%, var(--card-bg) 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        /* Fondo animado sutil */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.12) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .container { max-width: 800px; margin: 0 auto; }
+
+        /* HEADER */
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 25px;
+            padding: 10px 20px;
+            background: rgba(30, 41, 59, 0.4);
+            border-radius: 12px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--primary-purple);
+            transform: translateX(-5px);
+            text-decoration: none;
+        }
+
+        .page-icon {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.2));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .page-icon i {
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* TARJETAS */
+        .glass-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .card-header-small {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        /* FORMULARIOS */
+        .form-group { margin-bottom: 25px; }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .form-label i { color: var(--primary-purple); }
+
+        /* Estilos para inputs generados por Django */
+        .form-control, .form-select, input[type="text"], input[type="number"], textarea, select {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 2px solid rgba(139, 92, 246, 0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-purple);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
+        }
+
+        /* Checkbox especial */
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary-purple);
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.4);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .help-text {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        /* BOTONES */
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 35px;
+        }
+
+        .btn {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px 30px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple));
+            color: white;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.5);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(148, 163, 184, 0.1);
+            color: var(--text-primary);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(148, 163, 184, 0.2);
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-warning {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--primary-yellow);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-warning:hover {
+            background: rgba(245, 158, 11, 0.25);
+            transform: translateY(-2px);
+            color: white;
+            text-decoration: none;
+        }
+
+        /* ANIMACIONES */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-title { font-size: 2rem; }
+            .form-actions { flex-direction: column; }
+            .btn { width: 100%; }
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-4">
-        <h2 class="mb-4 text-center">Editar Opción</h2>
-
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-body">
-                        <form method="POST">
-                            {% csrf_token %}
-                            {{ form.as_p }}
-                            <div class="mt-4 text-center">
-                                <button type="submit" class="btn btn-primary mr-2">Guardar Cambios</button>
-                                <a href="{% url 'lista_opciones' pregunta_id=opcion.pregunta.id %}" class="btn btn-secondary">Volver</a>
-                            </div>
-                            
-                        </form>
-                    </div>
-                </div>
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <!-- Volver dinámico a la lista de opciones de la pregunta relacionada -->
+            <a href="{% url 'lista_opciones' pregunta_id=opcion.pregunta.id %}" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Volver a Opciones
+            </a>
+            
+            <div class="page-icon">
+                <i class="fas fa-list-ul"></i>
             </div>
+            <h1 class="page-title">Editar Opción</h1>
+            <p class="page-subtitle">
+                Editando opción para la pregunta: <br>
+                <span style="color: var(--primary-purple);">"{{ opcion.pregunta.pregunta|truncatechars:60 }}"</span>
+            </p>
+        </div>
+
+        <!-- Form Card Principal -->
+        <div class="glass-card">
+            <div class="card-header-small">
+                <i class="fas fa-edit" style="color: var(--primary-purple);"></i>
+                <span>Datos de la Opción</span>
+            </div>
+
+            <form method="POST">
+                {% csrf_token %}
+                
+                <!-- Loop inteligente para renderizar campos con diseño -->
+                {% for field in form %}
+                <div class="form-group">
+                    <!-- Label con Icono dinámico según el nombre del campo -->
+                    <label class="form-label" for="{{ field.id_for_label }}">
+                        {% if 'correcta' in field.name %}
+                            <i class="fas fa-check-circle"></i>
+                        {% elif 'texto' in field.name or 'opcion' in field.name %}
+                            <i class="fas fa-font"></i>
+                        {% else %}
+                            <i class="fas fa-cog"></i>
+                        {% endif %}
+                        {{ field.label }}
+                    </label>
+                    
+                    <!-- Renderizado del campo -->
+                    <!-- Si es Checkbox (booleano), usamos un contenedor especial -->
+                    {% if field.field.widget.input_type == 'checkbox' %}
+                        <div class="checkbox-wrapper">
+                            {{ field }}
+                            <span style="font-size: 0.9rem; color: var(--text-secondary);">Marcar si esta es la opción correcta</span>
+                        </div>
+                    {% else %}
+                        <!-- Renderizado normal (Django aplicará las clases si están en forms.py, 
+                             si no, el CSS global 'input[type=text]' lo arregla) -->
+                        {{ field }}
+                    {% endif %}
+                    
+                    <!-- Mensajes de ayuda y errores -->
+                    {% if field.help_text %}
+                    <span class="help-text">{{ field.help_text }}</span>
+                    {% endif %}
+                    
+                    {% if field.errors %}
+                    <div style="margin-top: 8px; padding: 10px; background: rgba(239, 68, 68, 0.15); border-radius: 8px; color: #fca5a5; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-exclamation-circle"></i>
+                        {{ field.errors|striptags }}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                <!-- Botones de Acción -->
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Guardar Cambios
+                    </button>
+                    <a href="{% url 'lista_opciones' pregunta_id=opcion.pregunta.id %}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i>
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Acciones Adicionales (Solo si la opción existe) -->
+        {% if opcion.pregunta.id %}
+        <div class="glass-card" style="padding: 30px; border-color: rgba(245, 158, 11, 0.3);">
+            <div class="card-header-small" style="color: var(--primary-yellow); border-color: rgba(245, 158, 11, 0.2);">
+                <i class="fas fa-bolt"></i>
+                <span>Acciones Adicionales</span>
+            </div>
+            
+            <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 0.95rem;">
+                Puedes enriquecer esta opción agregando imágenes o videos para que se muestren durante la encuesta.
+            </p>
+
+            <a href="{% url 'crear_media' pregunta_id=opcion.pregunta.id %}" class="btn btn-warning" style="width: 100%;">
+                <i class="fas fa-photo-video"></i>
+                Gestionar Contenido Multimedia
+            </a>
+        </div>
+        {% endif %}
+
+        <!-- Footer simple -->
+        <div style="text-align: center; color: var(--text-secondary); font-size: 0.85rem; margin-top: 40px; opacity: 0.7;">
+            Sistema de Encuestas &copy; {% now "Y" %}
         </div>
     </div>
-    {% if opcion.pregunta.id %}
-    <h3 class="mb-3 text-center">Acciones Adicionales</h3>
-    <div class="text-center">
-        <a href="{% url 'crear_media' pregunta_id=opcion.pregunta.id %}" class="btn btn-secondary mr-2">
-             <i class="fas fa-upload"></i> Agregar Media
-         </a>
-    </div>
-    {% endif %}
-     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

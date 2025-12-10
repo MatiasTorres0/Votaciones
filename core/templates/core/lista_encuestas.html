@@ -15,6 +15,7 @@
             --secondary-purple: #7c3aed;
             --primary-blue: #3b82f6;
             --primary-green: #10b981;
+            --primary-red: #ef4444;
             --dark-bg: #0f172a;
             --card-bg: #1e293b;
             --text-primary: #e2e8f0;
@@ -22,11 +23,7 @@
             --border-color: rgba(139, 92, 246, 0.2);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Poppins', sans-serif;
@@ -34,16 +31,12 @@
             min-height: 100vh;
             color: var(--text-primary);
             position: relative;
+            padding-bottom: 60px;
         }
 
         /* Animated Background */
         body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: 
                 radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
                 radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.12) 0%, transparent 50%),
@@ -51,612 +44,116 @@
             z-index: -1;
             animation: bgPulse 15s ease-in-out infinite;
         }
-
-        @keyframes bgPulse {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 0.8; }
-        }
+        @keyframes bgPulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.8; } }
 
         /* Navbar */
         .navbar-wrapper {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            padding: 25px 20px;
-            position: fixed;
-            top: 0;
-            z-index: 1000;
+            width: 100%; display: flex; justify-content: center; padding: 25px 20px;
+            position: fixed; top: 0; z-index: 1000;
         }
-
         .nav-capsule {
-            width: 100%;
-            max-width: 1400px;
-            height: 70px;
-            border-radius: 50px;
-            background: rgba(30, 41, 59, 0.4);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 
-                        0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            width: 100%; max-width: 1400px; height: 70px; border-radius: 50px;
+            background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
             border: 1px solid rgba(255, 255, 255, 0.18);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 30px;
+            display: flex; align-items: center; justify-content: space-between; padding: 0 30px;
         }
+        .brand-logo { display: flex; align-items: center; text-decoration: none; gap: 10px; }
+        .logo-text { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 24px; color: white; }
+        .logo-icon { color: var(--primary-purple); font-size: 28px; }
+        
+        .nav-menu { display: flex; gap: 20px; list-style: none; align-items: center; }
+        .nav-link { color: white; text-decoration: none; font-weight: 600; font-size: 14px; padding: 8px 16px; border-radius: 20px; transition: 0.3s; }
+        .nav-link:hover, .nav-link.active { background: rgba(139, 92, 246, 0.2); }
 
-        .brand-logo {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            gap: 10px;
-        }
+        .search-box { position: relative; flex: 1; max-width: 400px; margin: 0 20px; }
+        .search-input { width: 100%; padding: 10px 15px 10px 40px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 25px; color: white; transition: 0.3s; }
+        .search-input:focus { outline: none; background: rgba(255, 255, 255, 0.15); border-color: var(--primary-purple); }
+        .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: rgba(255, 255, 255, 0.5); }
 
-        .logo-text {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 900;
-            font-size: 24px;
-            color: white;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-        }
+        .btn-create { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue)); color: white; padding: 12px 24px; border-radius: 25px; text-decoration: none; font-weight: 700; font-size: 14px; transition: 0.3s; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4); }
+        .btn-create:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6); }
 
-        .logo-icon {
-            color: var(--primary-purple);
-            font-size: 28px;
-        }
-
-        .nav-menu {
-            display: flex;
-            gap: 20px;
-            list-style: none;
-            align-items: center;
-        }
-
-        .nav-link {
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
-            padding: 8px 16px;
-            border-radius: 20px;
-            transition: all 0.3s ease;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-        }
-
-        .nav-link:hover, .nav-link.active {
-            background: rgba(139, 92, 246, 0.2);
-            color: white;
-        }
-
-        .search-box {
-            position: relative;
-            flex: 1;
-            max-width: 400px;
-            margin: 0 20px;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 10px 15px 10px 40px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            border-radius: 25px;
-            color: white;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-
-        .search-input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        .search-input:focus {
-            outline: none;
-            background: rgba(255, 255, 255, 0.15);
-            border-color: var(--primary-purple);
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        .btn-create {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
-            color: white;
-            padding: 12px 24px;
-            border-radius: 25px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
-        }
-
-        .btn-create:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
-            color: white;
-            text-decoration: none;
-        }
-
-        .user-menu {
-            position: relative;
-            margin-left: 15px;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .user-avatar:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
-        }
-
-        .user-dropdown {
-            position: absolute;
-            top: 55px;
-            right: 0;
-            background: rgba(30, 41, 59, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 15px;
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            padding: 10px;
-            min-width: 180px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-            display: none;
-        }
-
-        .user-dropdown.show {
-            display: block;
-            animation: fadeSlideDown 0.3s ease-out;
-        }
-
-        .dropdown-item {
-            display: block;
-            padding: 10px 15px;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-            font-size: 14px;
-        }
-
-        .dropdown-item:hover {
-            background: rgba(139, 92, 246, 0.2);
-            color: white;
-        }
+        .user-menu { position: relative; margin-left: 15px; }
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .user-dropdown { position: absolute; top: 55px; right: 0; background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(20px); border-radius: 15px; border: 1px solid rgba(139, 92, 246, 0.3); padding: 10px; min-width: 180px; display: none; }
+        .user-dropdown.show { display: block; animation: fadeSlideDown 0.3s ease-out; }
+        .dropdown-item { display: block; padding: 10px 15px; color: white; text-decoration: none; border-radius: 8px; transition: 0.2s; }
+        .dropdown-item:hover { background: rgba(139, 92, 246, 0.2); }
 
         /* Main Content */
-        .main-content {
-            max-width: 1400px;
-            margin: 120px auto 40px;
-            padding: 0 40px;
-        }
+        .main-content { max-width: 1400px; margin: 120px auto 40px; padding: 0 40px; }
+        .page-header { margin-bottom: 40px; animation: fadeSlideDown 0.8s ease-out; }
+        .page-title { font-size: 2.5rem; font-weight: 800; background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue), var(--primary-green)); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 10px; }
+        .page-subtitle { color: var(--text-secondary); font-size: 1.1rem; }
 
-        .page-header {
-            margin-bottom: 40px;
-            animation: fadeSlideDown 0.8s ease-out;
-        }
+        /* SECCIONES Y ESTADOS */
+        .section-divider { margin: 50px 0 20px; display: flex; align-items: center; gap: 15px; animation: fadeIn 1s ease-out; }
+        .section-title { font-size: 1.5rem; font-weight: 700; color: white; margin: 0; }
+        .section-badge { font-size: 0.8rem; padding: 4px 10px; border-radius: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        .badge-active { background: rgba(16, 185, 129, 0.15); color: var(--primary-green); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-terminated { background: rgba(148, 163, 184, 0.15); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.3); }
 
-        .page-title {
-            font-size: 2.5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue), var(--primary-green));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-bottom: 10px;
-        }
+        /* STATUS DOTS EN TARJETAS */
+        .status-indicator { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 600; padding: 4px 10px; border-radius: 20px; margin-bottom: 10px; }
+        .status-active { color: var(--primary-green); background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); }
+        .status-terminated { color: var(--primary-red); background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); }
+        .dot { width: 6px; height: 6px; border-radius: 50%; background-color: currentColor; box-shadow: 0 0 5px currentColor; }
 
-        .page-subtitle {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
+        /* Carousel & Cards */
+        .carousel-container { position: relative; margin-bottom: 40px; animation: fadeSlideUp 0.8s ease-out; }
+        .carousel-wrapper { overflow-x: auto; padding-bottom: 20px; scrollbar-width: thin; scrollbar-color: var(--primary-purple) rgba(255, 255, 255, 0.1); }
+        .survey-grid { display: flex; gap: 25px; padding: 10px 5px; }
+        
+        .survey-card { 
+            flex: 0 0 380px; background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(15px); border-radius: 20px; border: 1px solid var(--border-color); 
+            overflow: hidden; transition: 0.3s; display: flex; flex-direction: column; 
         }
+        .survey-card:hover { transform: translateY(-8px); box-shadow: 0 15px 40px rgba(139, 92, 246, 0.3); border-color: var(--primary-purple); }
+        
+        .survey-card.terminated-card { border-color: rgba(255,255,255,0.1); opacity: 0.9; }
+        .survey-card.terminated-card:hover { border-color: var(--primary-red); opacity: 1; box-shadow: 0 15px 40px rgba(239, 68, 68, 0.2); }
 
-        /* Survey Cards Carousel */
-        .carousel-container {
-            position: relative;
-            animation: fadeSlideUp 0.8s ease-out 0.2s both;
-        }
-
-        .carousel-wrapper {
-            overflow-x: auto;
-            overflow-y: hidden;
-            scrollbar-width: thin;
-            scrollbar-color: var(--primary-purple) rgba(255, 255, 255, 0.1);
-            padding-bottom: 20px;
-        }
-
-        .carousel-wrapper::-webkit-scrollbar {
-            height: 8px;
-        }
-
-        .carousel-wrapper::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-        }
-
-        .carousel-wrapper::-webkit-scrollbar-thumb {
-            background: var(--primary-purple);
-            border-radius: 10px;
-        }
-
-        .carousel-wrapper::-webkit-scrollbar-thumb:hover {
-            background: var(--secondary-purple);
-        }
-
-        .survey-grid {
-            display: flex;
-            gap: 25px;
-            padding: 10px 5px;
-        }
-
-        .survey-card {
-            flex: 0 0 380px;
-            background: rgba(30, 41, 59, 0.5);
-            backdrop-filter: blur(15px);
-            border-radius: 20px;
-            border: 1px solid var(--border-color);
-            overflow: hidden;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            animation: fadeSlideUp 0.5s ease-out;
-            animation-delay: calc(var(--card-index) * 0.1s);
-        }
-
-        .survey-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 40px rgba(139, 92, 246, 0.3);
-            border-color: var(--primary-purple);
-        }
-
-        .card-header {
-            padding: 25px;
-            border-bottom: 1px solid rgba(139, 92, 246, 0.2);
-            flex-grow: 1;
-        }
-
-        .card-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 12px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .card-description {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-            line-height: 1.6;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .card-footer {
-            padding: 20px 25px;
-            background: rgba(139, 92, 246, 0.05);
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .btn-results {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
-            color: white;
-            padding: 12px 20px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            box-shadow: 0 3px 10px rgba(139, 92, 246, 0.3);
-            width: 100%;
-        }
-
-        .btn-results:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.5);
-            color: white;
-            text-decoration: none;
-        }
-
-        .card-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn-action-text {
-            flex: 1;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(139, 92, 246, 0.2);
-            border-radius: 10px;
-            padding: 10px 12px;
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .btn-action-text:hover {
-            background: rgba(139, 92, 246, 0.2);
-            color: var(--primary-purple);
-            transform: translateY(-2px);
-            text-decoration: none;
-        }
-
-        .btn-action-text.delete:hover {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-            border-color: #ef4444;
-        }
-
-        .btn-action-text i {
-            font-size: 14px;
-        }
+        .card-header { padding: 25px; border-bottom: 1px solid rgba(139, 92, 246, 0.2); flex-grow: 1; }
+        .card-title { font-size: 1.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .card-description { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        
+        .card-footer { padding: 20px 25px; background: rgba(139, 92, 246, 0.05); display: flex; flex-direction: column; gap: 12px; }
+        
+        .btn-results { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue)); color: white; padding: 12px 20px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 14px; transition: 0.3s; width: 100%; box-shadow: 0 3px 10px rgba(139, 92, 246, 0.3); }
+        .btn-results:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(139, 92, 246, 0.5); }
+        
+        .card-actions { display: flex; gap: 10px; }
+        .btn-action-text { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 10px; padding: 10px 12px; color: var(--text-secondary); text-decoration: none; font-size: 13px; font-weight: 600; transition: 0.3s; cursor: pointer; }
+        .btn-action-text:hover { background: rgba(139, 92, 246, 0.2); color: var(--primary-purple); }
+        .btn-action-text.delete:hover { background: rgba(239, 68, 68, 0.2); color: #ef4444; border-color: #ef4444; }
 
         /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 80px 40px;
-            background: rgba(30, 41, 59, 0.5);
-            backdrop-filter: blur(15px);
-            border-radius: 30px;
-            border: 1px solid var(--border-color);
-            animation: fadeSlideUp 0.8s ease-out;
-        }
-
-        .empty-icon {
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 30px;
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.2));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
-        }
-
-        .empty-icon i {
-            font-size: 4rem;
-            color: var(--primary-purple);
-        }
-
-        .empty-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 15px;
-        }
-
-        .empty-text {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            margin-bottom: 30px;
-        }
+        .empty-state { text-align: center; padding: 80px 40px; background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(15px); border-radius: 30px; border: 1px solid var(--border-color); animation: fadeSlideUp 0.8s ease-out; }
+        .empty-icon { width: 120px; height: 120px; margin: 0 auto 30px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.2)); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .empty-icon i { font-size: 4rem; color: var(--primary-purple); }
+        .empty-mini { padding: 30px; text-align: center; background: rgba(255,255,255,0.02); border-radius: 20px; border: 1px dashed rgba(255,255,255,0.1); color: var(--text-secondary); }
 
         /* Modal */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            animation: fadeIn 0.3s ease-out;
-        }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 2000; animation: fadeIn 0.3s; }
+        .modal-overlay.show { display: flex; }
+        .modal-content { background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(20px); border-radius: 25px; border: 1px solid rgba(139, 92, 246, 0.3); padding: 40px; max-width: 450px; width: 90%; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5); animation: scaleIn 0.3s; }
+        .modal-icon { width: 80px; height: 80px; margin: 0 auto 25px; background: rgba(239, 68, 68, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .modal-icon i { font-size: 2.5rem; color: #ef4444; }
+        .modal-buttons { display: flex; gap: 15px; margin-top: 30px; }
+        .btn-modal { flex: 1; padding: 14px; border-radius: 15px; font-weight: 700; border: none; cursor: pointer; transition: 0.3s; }
+        .btn-confirm { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
+        .btn-cancel { background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid rgba(139, 92, 246, 0.3); }
 
-        .modal-overlay.show {
-            display: flex;
-        }
+        @keyframes fadeSlideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .modal-content {
-            background: rgba(30, 41, 59, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 25px;
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            padding: 40px;
-            max-width: 450px;
-            width: 90%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            animation: scaleIn 0.3s ease-out;
-        }
-
-        @keyframes scaleIn {
-            from {
-                opacity: 0;
-                transform: scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        .modal-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 25px;
-            background: rgba(239, 68, 68, 0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-icon i {
-            font-size: 2.5rem;
-            color: #ef4444;
-        }
-
-        .modal-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        .modal-text {
-            color: var(--text-secondary);
-            text-align: center;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 15px;
-        }
-
-        .btn-modal {
-            flex: 1;
-            padding: 14px 24px;
-            border-radius: 15px;
-            font-weight: 700;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 15px;
-        }
-
-        .btn-confirm {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
-        }
-
-        .btn-confirm:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.6);
-        }
-
-        .btn-cancel {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: 1px solid rgba(139, 92, 246, 0.3);
-        }
-
-        .btn-cancel:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        /* Animations */
-        @keyframes fadeSlideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeSlideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* Responsive */
         @media (max-width: 768px) {
-            .nav-capsule {
-                height: auto;
-                padding: 15px 20px;
-                flex-wrap: wrap;
-            }
-
-            .nav-menu {
-                display: none;
-            }
-
-            .search-box {
-                width: 100%;
-                margin: 15px 0;
-                order: 3;
-            }
-
-            .main-content {
-                padding: 0 20px;
-                margin-top: 180px;
-            }
-
-            .page-title {
-                font-size: 2rem;
-            }
-
-            .survey-card {
-                flex: 0 0 320px;
-            }
-
-            .card-actions {
-                flex-direction: column;
-            }
-
-            .btn-action-text {
-                width: 100%;
-            }
-
-            .modal-content {
-                padding: 30px 20px;
-            }
-
-            .modal-buttons {
-                flex-direction: column;
-            }
+            .nav-menu, .search-box { display: none; }
+            .main-content { padding: 0 20px; margin-top: 100px; }
+            .survey-card { flex: 0 0 300px; }
         }
     </style>
 </head>
@@ -670,16 +167,8 @@
             </a>
 
             <ul class="nav-menu">
-                <li>
-                    <a href="{% url 'inicio' %}" class="nav-link {% if request.resolver_match.url_name == 'inicio' %}active{% endif %}">
-                        Inicio
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'lista_encuestas' %}" class="nav-link {% if request.resolver_match.url_name == 'lista_encuestas' %}active{% endif %}">
-                        Encuestas
-                    </a>
-                </li>
+                <li><a href="{% url 'inicio' %}" class="nav-link">Inicio</a></li>
+                <li><a href="{% url 'lista_encuestas' %}" class="nav-link active">Encuestas</a></li>
             </ul>
 
             <div class="search-box">
@@ -687,23 +176,14 @@
                 <input type="search" class="search-input" placeholder="Buscar encuestas..." id="searchInput">
             </div>
 
-            <a href="{% url 'crear_encuesta' %}" class="btn-create">
-                <i class="fas fa-plus"></i>
-                Crear Encuesta
-            </a>
+            <a href="{% url 'crear_encuesta' %}" class="btn-create"><i class="fas fa-plus"></i> Crear Encuesta</a>
 
             {% if user.is_authenticated %}
             <div class="user-menu">
-                <div class="user-avatar" id="userMenuBtn">
-                    {{ user.username|first|upper }}
-                </div>
+                <div class="user-avatar" id="userMenuBtn">{{ user.username|first|upper }}</div>
                 <div class="user-dropdown" id="userDropdown">
-                    <a href="#" class="dropdown-item">
-                        <i class="fas fa-user"></i> {{ user.username }}
-                    </a>
-                    <a href="{% url 'logout' %}" class="dropdown-item">
-                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-                    </a>
+                    <a href="#" class="dropdown-item"><i class="fas fa-user"></i> {{ user.username }}</a>
+                    <a href="{% url 'logout' %}" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
                 </div>
             </div>
             {% endif %}
@@ -714,154 +194,143 @@
     <main class="main-content">
         <div class="page-header">
             <h1 class="page-title">Gestión de Encuestas</h1>
-            <p class="page-subtitle">Administra y visualiza todas tus encuestas activas</p>
+            <p class="page-subtitle">Administra y visualiza todas tus encuestas.</p>
         </div>
 
-        {% if encuestas %}
-        <div class="carousel-container">
-            <div class="carousel-wrapper" id="surveyCarousel">
-                <div class="survey-grid">
-                    {% for encuesta in encuestas %}
-                    <div class="survey-card" style="--card-index: {{ forloop.counter0 }}">
-                        <div class="card-header">
-                            <h3 class="card-title">{{ encuesta.titulo }}</h3>
-                            <p class="card-description">{{ encuesta.descripcion }}</p>
-                        </div>
-                        <div class="card-footer">
-                            <a href="{% url 'resultados' encuesta_id=encuesta.id %}" class="btn-results">
-                                <i class="fas fa-chart-bar"></i>
-                                Resultados
-                            </a>
-                            <div class="card-actions">
-                                <a href="{% url 'editar_encuesta' encuesta_id=encuesta.id %}" 
-                                   class="btn-action-text">
-                                    <i class="fas fa-edit"></i>
-                                    Editar
-                                </a>
-                                <a href="{% url 'lista_preguntas' encuesta_id=encuesta.id %}" 
-                                   class="btn-action-text">
-                                    <i class="fas fa-list"></i>
-                                    Preguntas
-                                </a>
-                                <button class="btn-action-text delete delete-survey-btn" 
-                                        data-survey-id="{{ encuesta.id }}">
-                                    <i class="fas fa-trash-alt"></i>
-                                    Eliminar
-                                </button>
+        {% if not encuestas and not encuestas_terminadas %}
+            <!-- EMPTY STATE GLOBAL (Si no hay nada de nada) -->
+            <div class="empty-state">
+                <div class="empty-icon"><i class="fas fa-clipboard-list"></i></div>
+                <h3 class="empty-title">No hay encuestas disponibles</h3>
+                <p class="empty-text">Parece que aún no has creado ninguna encuesta. ¡Empieza ahora!</p>
+                <a href="{% url 'crear_encuesta' %}" class="btn-create"><i class="fas fa-plus"></i> Crear Nueva Encuesta</a>
+            </div>
+        {% else %}
+
+            <!-- SECCIÓN 1: ACTIVAS -->
+            <div class="section-divider">
+                <h2 class="section-title">En Curso</h2>
+                <span class="section-badge badge-active">Activas</span>
+            </div>
+
+            {% if encuestas %}
+            <div class="carousel-container">
+                <div class="carousel-wrapper">
+                    <div class="survey-grid">
+                        {% for encuesta in encuestas %}
+                        <div class="survey-card">
+                            <div class="card-header">
+                                <div class="status-indicator status-active">
+                                    <div class="dot"></div> Activa
+                                </div>
+                                <h3 class="card-title">{{ encuesta.titulo }}</h3>
+                                <p class="card-description">{{ encuesta.descripcion }}</p>
+                            </div>
+                            <div class="card-footer">
+                                <a href="{% url 'resultados' encuesta_id=encuesta.id %}" class="btn-results"><i class="fas fa-chart-bar"></i> Resultados</a>
+                                <div class="card-actions">
+                                    <a href="{% url 'editar_encuesta' encuesta_id=encuesta.id %}" class="btn-action-text"><i class="fas fa-edit"></i> Editar</a>
+                                    <a href="{% url 'lista_preguntas' encuesta_id=encuesta.id %}" class="btn-action-text"><i class="fas fa-list"></i> Preguntas</a>
+                                    <button class="btn-action-text delete delete-survey-btn" data-survey-id="{{ encuesta.id }}"><i class="fas fa-trash-alt"></i> Eliminar</button>
+                                </div>
                             </div>
                         </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
                 </div>
             </div>
-        </div>
-        {% else %}
-        <div class="empty-state">
-            <div class="empty-icon">
-                <i class="fas fa-clipboard-list"></i>
+            {% else %}
+                <div class="empty-mini">No hay encuestas activas en este momento.</div>
+            {% endif %}
+
+            <!-- SECCIÓN 2: TERMINADAS -->
+            <div class="section-divider" style="margin-top: 60px;">
+                <h2 class="section-title">Historial</h2>
+                <span class="section-badge badge-terminated">Terminadas</span>
             </div>
-            <h3 class="empty-title">No hay encuestas disponibles</h3>
-            <p class="empty-text">Parece que aún no has creado ninguna encuesta. ¡Empieza ahora!</p>
-            <a href="{% url 'crear_encuesta' %}" class="btn-create">
-                <i class="fas fa-plus"></i>
-                Crear Nueva Encuesta
-            </a>
-        </div>
+
+            {% if encuestas_terminadas %}
+            <div class="carousel-container">
+                <div class="carousel-wrapper">
+                    <div class="survey-grid">
+                        {% for encuesta in encuestas_terminadas %}
+                        <div class="survey-card terminated-card">
+                            <div class="card-header">
+                                <div class="status-indicator status-terminated">
+                                    <div class="dot"></div> Terminada
+                                </div>
+                                <h3 class="card-title">{{ encuesta.titulo }}</h3>
+                                <p class="card-description">{{ encuesta.descripcion }}</p>
+                            </div>
+                            <div class="card-footer">
+                                <a href="{% url 'resultados' encuesta_id=encuesta.id %}" class="btn-results" style="opacity: 0.8;"><i class="fas fa-history"></i> Ver Resultados</a>
+                                <div class="card-actions">
+                                    <!-- En encuestas terminadas, quizás solo permitimos ver o eliminar, no editar. Pero dejo los botones por si acaso -->
+                                    <a href="{% url 'editar_encuesta' encuesta_id=encuesta.id %}" class="btn-action-text"><i class="fas fa-edit"></i> Editar</a>
+                                    <button class="btn-action-text delete delete-survey-btn" data-survey-id="{{ encuesta.id }}"><i class="fas fa-trash-alt"></i> Eliminar</button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+                <div class="empty-mini">No tienes encuestas terminadas.</div>
+            {% endif %}
+
         {% endif %}
     </main>
 
-    <!-- Delete Confirmation Modal -->
+    <!-- Delete Modal -->
     <div class="modal-overlay" id="deleteModal">
         <div class="modal-content">
-            <div class="modal-icon">
-                <i class="fas fa-exclamation-triangle"></i>
-            </div>
-            <h3 class="modal-title">Confirmar Eliminación</h3>
-            <p class="modal-text">
-                ¿Estás seguro de que quieres eliminar esta encuesta? Esta acción no se puede deshacer y se perderán todos los datos asociados.
-            </p>
+            <div class="modal-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <h3 class="modal-title" style="color: white; text-align: center;">Confirmar Eliminación</h3>
+            <p style="color: #94a3b8; text-align: center; margin-bottom: 20px;">¿Estás seguro de eliminar esta encuesta? Se perderán todos los datos.</p>
             <div class="modal-buttons">
-                <button class="btn-modal btn-cancel" id="cancelDeleteBtn">
-                    Cancelar
-                </button>
-                <button class="btn-modal btn-confirm" id="confirmDeleteBtn">
-                    Eliminar
-                </button>
+                <button class="btn-modal btn-cancel" id="cancelDeleteBtn">Cancelar</button>
+                <button class="btn-modal btn-confirm" id="confirmDeleteBtn">Eliminar</button>
             </div>
         </div>
     </div>
 
     <script>
-        // User Menu Dropdown
+        // Dropdown Menu
         const userMenuBtn = document.getElementById('userMenuBtn');
         const userDropdown = document.getElementById('userDropdown');
-
-        if (userMenuBtn && userDropdown) {
-            userMenuBtn.addEventListener('click', () => {
-                userDropdown.classList.toggle('show');
-            });
-
-            document.addEventListener('click', (e) => {
-                if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) {
-                    userDropdown.classList.remove('show');
-                }
+        if (userMenuBtn) {
+            userMenuBtn.addEventListener('click', () => userDropdown.classList.toggle('show'));
+            window.addEventListener('click', (e) => {
+                if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) userDropdown.classList.remove('show');
             });
         }
 
-        // Search Functionality
+        // Search Filter (Aplica a ambas listas)
         const searchInput = document.getElementById('searchInput');
-        const surveyCards = document.querySelectorAll('.survey-card');
-
-        if (searchInput && surveyCards.length > 0) {
+        if (searchInput) {
             searchInput.addEventListener('input', (e) => {
-                const searchTerm = e.target.value.toLowerCase();
-                
-                surveyCards.forEach(card => {
+                const term = e.target.value.toLowerCase();
+                document.querySelectorAll('.survey-card').forEach(card => {
                     const title = card.querySelector('.card-title').textContent.toLowerCase();
-                    const description = card.querySelector('.card-description').textContent.toLowerCase();
-                    
-                    if (title.includes(searchTerm) || description.includes(searchTerm)) {
-                        card.style.display = 'flex';
-                    } else {
-                        card.style.display = 'none';
-                    }
+                    const desc = card.querySelector('.card-description').textContent.toLowerCase();
+                    card.style.display = (title.includes(term) || desc.includes(term)) ? 'flex' : 'none';
                 });
             });
         }
 
-        // Delete Modal Functionality
+        // Delete Logic
         const deleteModal = document.getElementById('deleteModal');
-        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
-        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
-        const deleteButtons = document.querySelectorAll('.delete-survey-btn');
-        let surveyToDeleteId = null;
-
-        deleteButtons.forEach(button => {
-            button.addEventListener('click', (e) => {
-                e.preventDefault();
-                surveyToDeleteId = button.dataset.surveyId;
+        let deleteId = null;
+        document.querySelectorAll('.delete-survey-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                deleteId = btn.dataset.surveyId;
                 deleteModal.classList.add('show');
             });
         });
-
-        cancelDeleteBtn.addEventListener('click', () => {
-            deleteModal.classList.remove('show');
-            surveyToDeleteId = null;
-        });
-
-        confirmDeleteBtn.addEventListener('click', () => {
-            if (surveyToDeleteId) {
-                const deleteUrl = `/encuestas/eliminar/${surveyToDeleteId}/`;
-                window.location.href = deleteUrl;
-            }
-        });
-
-        // Close modal on overlay click
-        deleteModal.addEventListener('click', (e) => {
-            if (e.target === deleteModal) {
-                deleteModal.classList.remove('show');
-                surveyToDeleteId = null;
-            }
+        document.getElementById('cancelDeleteBtn').addEventListener('click', () => deleteModal.classList.remove('show'));
+        document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+            if (deleteId) window.location.href = `/encuestas/eliminar/${deleteId}/`;
         });
     </script>
 </body>

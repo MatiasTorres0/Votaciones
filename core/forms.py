@@ -11,11 +11,12 @@ logger = logging.getLogger(__name__)
 class EncuestaForm(forms.ModelForm):
     class Meta:
         model = Encuesta
-        fields = ['titulo', 'descripcion', 'streamer']
+        fields = ['titulo', 'descripcion', 'streamer', 'estado']
         widgets = {
             'titulo': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Título de la encuesta'}),
             'descripcion': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Descripción opcional'}),
             'streamer': forms.Select(attrs={'class': 'form-control'}),
+            'estado': forms.Select(attrs={'class': 'form-control'}),
         }
         labels = {
             'titulo': 'Título',
@@ -23,20 +24,26 @@ class EncuestaForm(forms.ModelForm):
             'streamer': 'Streamer',
         }
 
-# Formulario para Pregunta
 class PreguntaForm(forms.ModelForm):
     class Meta:
         model = Pregunta
         fields = ['pregunta', 'streamer']
         widgets = {
-            'pregunta': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Escribe la pregunta aquí'}),
-            'streamer': forms.Select(attrs={'class': 'form-control'}),
+            'pregunta': forms.Textarea(attrs={
+                'class': 'form-control', 
+                'placeholder': 'Escribe la pregunta aquí',
+                'rows': 3
+            }),
+            # AQUÍ ESTÁ EL CAMBIO IMPORTANTE:
+            'streamer': forms.Select(attrs={
+                'class': 'form-select'  # Usar form-select en lugar de form-control
+            }),
         }
         labels = {
             'pregunta': 'Pregunta',
-            'streamer': 'Streamer', 
+            'streamer': 'Streamer',
         }
-
+        
 # Formulario para Media
 class MediaForm(forms.ModelForm):
     class Meta:

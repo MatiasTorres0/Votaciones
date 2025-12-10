@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparar Resultados</title>
+    {% load static %}
+    <!-- Fuentes -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            /* Paleta Premium Dark */
+            --primary-purple: #8b5cf6;
+            --primary-blue: #3b82f6;
+            --primary-cyan: #06b6d4;
+            --success-green: #10b981;
+            --danger-red: #ef4444;
+            
+            --bg-dark: #0b0f19;
+            --bg-card: rgba(30, 41, 59, 0.6);
+            --bg-card-hover: rgba(30, 41, 59, 0.9);
+            
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --glow: 0 0 20px rgba(139, 92, 246, 0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 40%);
+            min-height: 100vh;
+            color: var(--text-main);
+            padding-bottom: 60px;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            position: fixed; top: 0; left: 0; right: 0;
+            padding: 15px 30px;
+            background: rgba(11, 15, 25, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-glass);
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 1000;
+        }
+
+        .brand { font-weight: 800; font-size: 1.2rem; display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; }
+        .brand i { color: var(--primary-purple); }
+
+        .back-btn {
+            background: rgba(255,255,255,0.05); color: var(--text-muted); padding: 8px 16px; border-radius: 10px; text-decoration: none; font-size: 0.9rem; font-weight: 600; border: 1px solid var(--border-glass); transition: 0.3s; display: flex; align-items: center; gap: 8px;
+        }
+        .back-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+
+        /* CONTAINER */
+        .container { max-width: 1000px; margin: 100px auto 0; padding: 0 20px; }
+
+        .page-header { text-align: center; margin-bottom: 50px; animation: fadeIn 0.8s ease-out; }
+        .page-badge { display: inline-block; background: rgba(6, 182, 212, 0.1); color: var(--primary-cyan); border: 1px solid rgba(6, 182, 212, 0.3); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+        .page-title { font-size: 3rem; font-weight: 800; background: linear-gradient(135deg, #fff 0%, #94a3b8 100%); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 15px; }
+        .page-desc { font-size: 1.1rem; color: var(--text-muted); max-width: 600px; margin: 0 auto; }
+
+        /* === FORMULARIO DE CARGA (Upload Card) === */
+        .upload-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 600px;
+            margin: 0 auto 60px;
+            box-shadow: 0 20px 50px -10px rgba(0,0,0,0.3);
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .form-group { margin-bottom: 25px; }
+        .form-label { display: block; margin-bottom: 10px; font-weight: 600; color: var(--text-main); }
+        
+        /* Select Personalizado */
+        .form-select {
+            width: 100%;
+            padding: 15px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .form-select:focus { border-color: var(--primary-purple); box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15); }
+
+        /* Área de Archivo (Drag & Drop visual) */
+        .file-drop-area {
+            position: relative;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 40px;
+            border: 2px dashed rgba(255,255,255,0.1);
+            border-radius: 16px;
+            background: rgba(255,255,255,0.02);
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .file-drop-area:hover { border-color: var(--primary-cyan); background: rgba(6, 182, 212, 0.05); }
+        
+        .file-icon { font-size: 2.5rem; color: var(--text-muted); margin-bottom: 15px; transition: 0.3s; }
+        .file-drop-area:hover .file-icon { color: var(--primary-cyan); transform: scale(1.1); }
+        
+        .file-input {
+            position: absolute; left: 0; top: 0; height: 100%; width: 100%;
+            opacity: 0; cursor: pointer;
+        }
+        
+        .file-msg { color: var(--text-muted); font-size: 0.9rem; text-align: center; }
+        .file-name { color: var(--primary-cyan); font-weight: 600; margin-top: 10px; display: none; }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--primary-cyan), #0891b2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(6, 182, 212, 0.3); }
+
+        /* === RESULTADOS AGRUPADOS === */
+        .results-section { animation: fadeIn 1s ease-out; }
+        .section-title { font-size: 1.5rem; font-weight: 700; border-left: 4px solid var(--primary-cyan); padding-left: 15px; }
+
+        .question-group-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            margin-bottom: 40px;
+            overflow: hidden;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .group-header {
+            padding: 25px;
+            background: rgba(255,255,255,0.02);
+            border-bottom: 1px solid var(--border-glass);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .group-title h3 { font-size: 1.3rem; margin: 0; color: white; font-weight: 700; }
+        .group-title span { font-size: 0.9rem; color: var(--text-muted); }
+
+        .comparison-table { width: 100%; border-collapse: collapse; }
+
+        .comparison-row { border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; }
+        .comparison-row:last-child { border-bottom: none; }
+        .comparison-row:hover { background: rgba(255,255,255,0.02); }
+
+        .col-option { padding: 20px 25px; width: 30%; color: var(--text-main); font-weight: 600; }
+        .col-visual { padding: 15px; width: 40%; vertical-align: middle; }
+        .col-stats { padding: 15px 25px; width: 30%; text-align: right; }
+
+        /* Barras Comparativas */
+        .comp-bar-container { display: flex; flex-direction: column; gap: 8px; }
+        .comp-bar-wrapper { display: flex; align-items: center; gap: 10px; font-size: 0.8rem; color: var(--text-muted); }
+        .comp-track { flex: 1; height: 6px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; }
+        .comp-fill-old { background: #64748b; height: 100%; border-radius: 4px; }
+        .comp-fill-new { background: var(--primary-cyan); height: 100%; border-radius: 4px; }
+
+        /* Indicadores de Tendencia */
+        .trend-indicator { display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; }
+        .trend-up { color: var(--success-green); background: rgba(16, 185, 129, 0.1); }
+        .trend-down { color: var(--danger-red); background: rgba(239, 68, 68, 0.1); }
+        .trend-flat { color: var(--text-muted); background: rgba(255, 255, 255, 0.05); }
+
+        @media (max-width: 768px) {
+            .comparison-row { display: flex; flex-direction: column; padding: 15px; }
+            .col-option, .col-visual, .col-stats { width: 100%; padding: 5px 0; text-align: left; }
+            .col-stats { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="{% url 'inicio' %}" class="brand">
+            <i class="fas fa-balance-scale"></i> Comparar
+        </a>
+        <a href="{% url 'lista_encuestas' %}" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver
+        </a>
+    </nav>
+
+    <div class="container">
+        
+        <!-- HEADER -->
+        <div class="page-header">
+            <div class="page-badge">Análisis Histórico</div>
+            <h1 class="page-title">Comparar Resultados</h1>
+            <p class="page-desc">Sube un archivo Excel de una votación pasada para compararla con los datos actuales de una encuesta activa.</p>
+        </div>
+
+        <!-- ALERTAS (Mensajes de Error/Éxito) -->
+        {% if messages %}
+            {% for message in messages %}
+            <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; padding: 15px; border-radius: 12px; margin-bottom: 30px; text-align: center;">
+                <i class="fas fa-exclamation-circle"></i> {{ message }}
+            </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- FORMULARIO DE CARGA (Solo si no hay resultados aún) -->
+        {% if not resultados_agrupados %}
+        <div class="upload-card">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-poll"></i> Selecciona Encuesta Actual</label>
+                    <select name="encuesta" class="form-select" required>
+                        <option value="" disabled selected>-- Elegir encuesta --</option>
+                        {% for encuesta in encuestas %}
+                        <option value="{{ encuesta.id }}">{{ encuesta.titulo }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label"><i class="fas fa-file-excel"></i> Archivo de Resultados Anteriores (.xlsx)</label>
+                    <div class="file-drop-area">
+                        <i class="fas fa-cloud-upload-alt file-icon"></i>
+                        <span class="file-msg">Arrastra tu archivo aquí o haz clic para buscar</span>
+                        <span class="file-name" id="fileName">nombre_archivo.xlsx</span>
+                        <input type="file" name="archivo" class="file-input" accept=".xlsx, .xls" required onchange="showFileName(this)">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    Comparar Datos
+                </button>
+            </form>
+        </div>
+        {% endif %}
+
+        <!-- RESULTADOS AGRUPADOS POR PREGUNTA -->
+        {% if resultados_agrupados %}
+        <div class="results-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <h2 class="section-title" style="margin-bottom: 0;">Análisis Comparativo</h2>
+                <a href="{% url 'comparar_resultados' %}" class="back-btn"><i class="fas fa-redo"></i> Nueva Comparación</a>
+            </div>
+
+            {% for grupo in resultados_agrupados %}
+            <div class="question-group-card">
+                <!-- Encabezado de la Pregunta -->
+                <div class="group-header">
+                    <div class="group-title">
+                        <h3>{{ grupo.titulo }}</h3>
+                        <span><i class="fas fa-chart-bar"></i> Comparando {{ grupo.opciones|length }} opciones</span>
+                    </div>
+                </div>
+
+                <!-- Tabla de Opciones -->
+                <div class="table-responsive">
+                    <table class="comparison-table">
+                        {% for opcion in grupo.opciones %}
+                        <tr class="comparison-row">
+                            <!-- Columna 1: Nombre Opción -->
+                            <td class="col-option">
+                                {{ opcion.texto }}
+                            </td>
+
+                            <!-- Columna 2: Barras Visuales -->
+                            <td class="col-visual">
+                                <div class="comp-bar-container">
+                                    <!-- Barra Archivo (Pasado) -->
+                                    <div class="comp-bar-wrapper">
+                                        <span style="width: 50px;">Antes</span>
+                                        <div class="comp-track">
+                                            <div class="comp-fill-old" style="width: {{ opcion.porcentaje_archivo }}%;"></div>
+                                        </div>
+                                        <span style="width: 40px; text-align: right;">{{ opcion.porcentaje_archivo }}%</span>
+                                    </div>
+                                    <!-- Barra Actual (Presente) -->
+                                    <div class="comp-bar-wrapper" style="color: white;">
+                                        <span style="width: 50px; font-weight: 600;">Ahora</span>
+                                        <div class="comp-track">
+                                            <div class="comp-fill-new" style="width: {{ opcion.porcentaje_actual }}%;"></div>
+                                        </div>
+                                        <span style="width: 40px; text-align: right; font-weight: 600;">{{ opcion.porcentaje_actual }}%</span>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <!-- Columna 3: Diferencia y Votos -->
+                            <td class="col-stats">
+                                <div style="margin-bottom: 5px;">
+                                    <span style="color: var(--text-muted); font-size: 0.85rem;">Diferencia</span>
+                                </div>
+                                
+                                {% if opcion.igual %}
+                                    <div class="trend-indicator trend-flat">
+                                        <i class="fas fa-minus"></i> 0%
+                                    </div>
+                                {% elif opcion.crecimiento %}
+                                    <div class="trend-indicator trend-up">
+                                        <i class="fas fa-arrow-up"></i> +{{ opcion.diferencia_porcentaje }}%
+                                    </div>
+                                {% else %}
+                                    <div class="trend-indicator trend-down">
+                                        <i class="fas fa-arrow-down"></i> {{ opcion.diferencia_porcentaje }}%
+                                    </div>
+                                {% endif %}
+
+                                <div style="margin-top: 8px; font-size: 0.8rem; color: var(--text-muted);">
+                                    {{ opcion.diferencia_votos }} votos de diferencia
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+    </div>
+
+    <script>
+        // Script simple para mostrar el nombre del archivo seleccionado
+        function showFileName(input) {
+            const fileNameSpan = document.getElementById('fileName');
+            const fileMsg = document.querySelector('.file-msg');
+            
+            if (input.files && input.files.length > 0) {
+                fileNameSpan.textContent = input.files[0].name;
+                fileNameSpan.style.display = 'block';
+                fileMsg.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
