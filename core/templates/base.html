@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Survey Manager{% endblock %}</title>
+    {% load static %}
+    
+    <!-- Fuentes -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Iconos Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Select2 (para formularios mejorados) -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    
+    <style>
+        :root {
+            --primary-purple: #8b5cf6;
+            --primary-blue: #3b82f6;
+            --danger-red: #ef4444;
+            --success-green: #10b981;
+            --warning-yellow: #f59e0b;
+            
+            --bg-dark: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.6);
+            --bg-card-hover: rgba(30, 41, 59, 0.8);
+            
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --border-light: rgba(255, 255, 255, 0.18);
+        }
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 25%),
+                radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.08) 0%, transparent 25%);
+            min-height: 100vh;
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        /* === NAVBAR PRINCIPAL === */
+        .navbar-wrapper {
+            position: fixed;
+            top: 20px;
+            left: 0; 
+            right: 0;
+            display: flex;
+            justify-content: center;
+            z-index: 1000;
+            padding: 0 20px;
+        }
+
+        .nav-capsule {
+            width: 100%;
+            max-width: 1400px;
+            height: 70px;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .brand-logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 24px;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-logo i { 
+            color: var(--primary-purple); 
+            font-size: 1.2rem; 
+        }
+
+        /* === BUSCADOR (Integrado de lista_encuestas.html) === */
+        .search-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .search-box {
+            position: relative;
+            min-width: 300px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 45px 12px 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border-glass);
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-purple);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* === MENÚ DE NAVEGACIÓN === */
+        .nav-menu {
+            display: flex;
+            gap: 15px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, 
+        .nav-link.active {
+            background: rgba(139, 92, 246, 0.2);
+            color: white;
+            text-decoration: none;
+        }
+
+        /* === DROPDOWN DE USUARIO === */
+        .user-dropdown {
+            position: relative;
+        }
+
+        .user-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-toggle:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--primary-purple);
+        }
+
+        .user-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            min-width: 200px;
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 8px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1001;
+        }
+
+        .user-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .user-menu-item {
+            display: block;
+            padding: 12px 20px;
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .user-menu-item:hover {
+            background: rgba(139, 92, 246, 0.2);
+            color: white;
+        }
+
+        .user-menu-divider {
+            height: 1px;
+            background: var(--border-glass);
+            margin: 8px 0;
+        }
+
+        /* === CONTENIDO PRINCIPAL === */
+        .main-content {
+            max-width: 1400px;
+            margin: 120px auto 60px;
+            padding: 0 40px;
+        }
+
+        /* === BLOQUE DE CONTENIDO PARA PÁGINAS HIJAS === */
+        {% block content %}
+        {% endblock %}
+
+        /* === ESTILOS PARA SELECT2 (Compatibilidad) === */
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: var(--primary-blue);
+            color: white;
+        }
+
+        .select2-container--default .select2-selection--single {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            color: var(--text-main);
+            height: 44px;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: var(--text-main);
+            line-height: 44px;
+            padding-left: 15px;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 44px;
+        }
+
+        /* === RESPONSIVIDAD === */
+        @media (max-width: 1024px) {
+            .nav-capsule {
+                padding: 0 20px;
+            }
+            
+            .search-box {
+                min-width: 250px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar-wrapper {
+                top: 10px;
+                padding: 0 15px;
+            }
+
+            .nav-capsule {
+                height: 60px;
+                padding: 0 15px;
+            }
+
+            .brand-logo {
+                font-size: 20px;
+            }
+
+            .search-box {
+                min-width: 200px;
+            }
+
+            .search-input {
+                padding: 10px 40px 10px 12px;
+                font-size: 13px;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .main-content {
+                padding: 0 20px;
+                margin-top: 100px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .search-box {
+                min-width: 150px;
+            }
+
+            .brand-logo span {
+                display: none;
+            }
+
+            .brand-logo i {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* === ANIMACIONES === */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR PRINCIPAL -->
+    <div class="navbar-wrapper">
+        <nav class="nav-capsule">
+            <!-- Logo -->
+            <a href="{% url 'inicio' %}" class="brand-logo">
+                <i class="fas fa-layer-group"></i>
+                <span>Survey Manager</span>
+            </a>
+
+            <!-- Buscador -->
+            <div class="search-container">
+                {% block search %}
+                <div class="search-box">
+                    <input type="search" class="search-input" placeholder="Buscar..." id="globalSearchInput">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+                {% endblock %}
+            </div>
+
+            <!-- Menú de Navegación -->
+            <ul class="nav-menu">
+                <li><a href="{% url 'inicio' %}" class="nav-link">Inicio</a></li>
+                <li><a href="{% url 'lista_encuestas' %}" class="nav-link">Encuestas</a></li>
+                <li><a href="{% url 'crear_encuesta' %}" class="nav-link">Crear</a></li>
+                
+                {% if user.is_authenticated %}
+                <li class="user-dropdown">
+                    <div class="user-toggle">
+                        <i class="fas fa-user-circle"></i>
+                        <span>{{ user.username }}</span>
+                        <i class="fas fa-chevron-down" style="font-size: 12px;"></i>
+                    </div>
+                    <div class="user-menu" id="userMenu">
+                        <a href="#" class="user-menu-item">
+                            <i class="fas fa-user"></i>
+                            Mi Perfil
+                        </a>
+                        <a href="#" class="user-menu-item">
+                            <i class="fas fa-cog"></i>
+                            Configuración
+                        </a>
+                        <div class="user-menu-divider"></div>
+                        <a href="{% url 'logout' %}" class="user-menu-item" style="color: var(--danger-red);">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Cerrar Sesión
+                        </a>
+                    </div>
+                </li>
+                {% else %}
+                <li><a href="{% url 'login' %}" class="nav-link">Iniciar Sesión</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+        {% block content %}
+        <!-- El contenido específico de cada página se insertará aquí -->
+        {% endblock %}
+    </main>
+
+    <!-- JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
+    <script>
+        // Funcionalidad del dropdown de usuario
+        const userToggle = document.querySelector('.user-toggle');
+        const userMenu = document.getElementById('userMenu');
+        
+        if (userToggle && userMenu) {
+            userToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userMenu.classList.toggle('show');
+            });
+
+            // Cerrar menú al hacer clic fuera
+            document.addEventListener('click', (e) => {
+                if (!userToggle.contains(e.target) && !userMenu.contains(e.target)) {
+                    userMenu.classList.remove('show');
+                }
+            });
+
+            // Prevenir que el clic en el menú lo cierre
+            userMenu.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        }
+
+        // Funcionalidad de búsqueda global
+        const searchInput = document.getElementById('globalSearchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase().trim();
+                
+                // Esta función se sobreescribirá en páginas específicas que necesiten búsqueda
+                if (typeof window.handleGlobalSearch === 'function') {
+                    window.handleGlobalSearch(searchTerm);
+                }
+            });
+
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    // Lógica para búsqueda al presionar Enter
+                    if (typeof window.handleSearchSubmit === 'function') {
+                        window.handleSearchSubmit(searchInput.value);
+                    }
+                }
+            });
+        }
+
+        // Inicializar Select2 en todos los selects
+        $(document).ready(function() {
+            $('select').select2({
+                theme: 'default',
+                width: '100%',
+                placeholder: 'Seleccionar...',
+                allowClear: true
+            });
+        });
+
+        // Manejar navegación activa
+        function setActiveNavLink() {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            navLinks.forEach(link => {
+                const linkPath = link.getAttribute('href');
+                if (linkPath && currentPath.includes(linkPath)) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+
+        // Ejecutar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            setActiveNavLink();
+            
+            // Añadir clase de carga completada para animaciones
+            setTimeout(() => {
+                document.body.classList.add('loaded');
+            }, 100);
+        });
+
+        // Manejar errores de carga de recursos
+        window.addEventListener('error', function(e) {
+            console.warn('Error loading resource:', e);
+        });
+    </script>
+
+    <!-- Scripts específicos de página -->
+    {% block scripts %}
+    {% endblock %}
+
+</body>
+</html>

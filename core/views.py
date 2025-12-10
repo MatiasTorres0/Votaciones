@@ -66,13 +66,13 @@ def crear_encuesta(request):
             return redirect('lista_encuestas')
     else:
         form = EncuestaForm()
-    return render(request, 'core/crear_encuesta.html', {'form': form})
+    return render(request, 'crear/crear_encuesta.html', {'form': form})
 @login_required
 def lista_encuestas(request):
     encuestas = Encuesta.objects.filter(estado='ACTIVA')
     encuestas_terminadas = Encuesta.objects.filter(estado='TERMINADA')
     
-    return render(request, 'core/lista_encuestas.html', {'encuestas': encuestas, 'encuestas_terminadas': encuestas_terminadas})
+    return render(request, 'listar/lista_encuestas.html', {'encuestas': encuestas, 'encuestas_terminadas': encuestas_terminadas})
 @login_required
 def editar_encuesta(request, encuesta_id):
     encuesta = get_object_or_404(Encuesta, id=encuesta_id)
@@ -83,7 +83,7 @@ def editar_encuesta(request, encuesta_id):
             return redirect('lista_encuestas')
     else:
         form = EncuestaForm(instance=encuesta)
-    return render(request, 'core/editar_encuesta.html', {'form': form, 'encuesta': encuesta})
+    return render(request, 'editar/editar_encuesta.html', {'form': form, 'encuesta': encuesta})
 @login_required
 def crear_pregunta(request, encuesta_id):
     encuesta = get_object_or_404(Encuesta, id=encuesta_id)
@@ -96,7 +96,7 @@ def crear_pregunta(request, encuesta_id):
             return redirect('editar_encuesta', encuesta_id=encuesta.id)
     else:
         form = PreguntaForm()
-    return render(request, 'core/crear_pregunta.html', {'form': form, 'encuesta': encuesta})
+    return render(request, 'crear/crear_pregunta.html', {'form': form, 'encuesta': encuesta})
 @login_required
 def editar_pregunta(request, pregunta_id):
     pregunta = get_object_or_404(Pregunta, id=pregunta_id)
@@ -107,7 +107,7 @@ def editar_pregunta(request, pregunta_id):
             return redirect('editar_encuesta', encuesta_id=pregunta.encuesta.id)
     else:
         form = PreguntaForm(instance=pregunta)
-    return render(request, 'core/editar_pregunta.html', {'form': form, 'pregunta': pregunta})
+    return render(request, 'editar/editar_pregunta.html', {'form': form, 'pregunta': pregunta})
 @login_required
 def crear_pregunta(request, encuesta_id):
     encuesta = get_object_or_404(Encuesta, id=encuesta_id)
@@ -120,7 +120,7 @@ def crear_pregunta(request, encuesta_id):
             return redirect('lista_preguntas', encuesta_id=encuesta.id)
     else:
         form = PreguntaForm()
-    return render(request, 'core/crear_pregunta.html', {'form': form, 'encuesta': encuesta})
+    return render(request, 'crear/crear_pregunta.html', {'form': form, 'encuesta': encuesta})
 @login_required
 def crear_media(request, pregunta_id):
     pregunta = get_object_or_404(Pregunta, id=pregunta_id)
@@ -131,7 +131,7 @@ def crear_media(request, pregunta_id):
             return redirect('lista_preguntas', encuesta_id=pregunta.encuesta.id)
     else:
         form = MediaForm()
-    return render(request, 'core/crear_media.html', {'form': form, 'pregunta': pregunta})
+    return render(request, 'crear/crear_media.html', {'form': form, 'pregunta': pregunta})
 @login_required
 def crear_opcion(request, pregunta_id):
     pregunta = get_object_or_404(Pregunta, id=pregunta_id)
@@ -145,7 +145,7 @@ def crear_opcion(request, pregunta_id):
             return redirect('lista_opciones', pregunta_id=pregunta.id)
     else:
         form = OpcionForm()
-    return render(request, 'core/crear_opcion.html', {'form': form, 'pregunta': pregunta})
+    return render(request, 'crear/crear_opcion.html', {'form': form, 'pregunta': pregunta})
 
 def votaciones(request, pregunta_id, opcion_id):
     """
@@ -277,12 +277,12 @@ def resultados(request, encuesta_id):
 def lista_preguntas(request, encuesta_id):
     encuesta = get_object_or_404(Encuesta, id=encuesta_id)
     preguntas = Pregunta.objects.filter(encuesta=encuesta)
-    return render(request, 'core/lista_preguntas.html', {'encuesta': encuesta, 'preguntas': preguntas})
+    return render(request, 'listar/lista_preguntas.html', {'encuesta': encuesta, 'preguntas': preguntas})
 @login_required
 def lista_opciones(request, pregunta_id):
     pregunta = get_object_or_404(Pregunta, id=pregunta_id)
     opciones = Opcion.objects.filter(pregunta=pregunta)
-    return render(request, 'core/lista_opciones.html', {'pregunta': pregunta, 'opciones': opciones})
+    return render(request, 'listar/lista_opciones.html', {'pregunta': pregunta, 'opciones': opciones})
 @login_required
 def editar_opcion(request, opcion_id):
     opcion = get_object_or_404(Opcion, id=opcion_id)
@@ -293,7 +293,7 @@ def editar_opcion(request, opcion_id):
             return redirect('lista_opciones', pregunta_id=opcion.pregunta.id)
     else:
         form = OpcionForm(instance=opcion)
-    return render(request, 'core/editar_opcion.html', {'form': form, 'opcion': opcion})
+    return render(request, 'editar/editar_opcion.html', {'form': form, 'opcion': opcion})
 
 def mantenimiento(request):
     return render(request, 'core/mantenimiento.html')
@@ -331,7 +331,7 @@ def eliminar_encuesta(request, encuesta_id):
 def lista_medias(request, pregunta_id):
     pregunta = get_object_or_404(Pregunta, id=pregunta_id)
     medias = Media.objects.filter(pregunta=pregunta)
-    return render(request, 'core/lista_medias.html', {'pregunta': pregunta, 'medias': medias})
+    return render(request, 'listar/lista_medias.html', {'pregunta': pregunta, 'medias': medias})
 
 @login_required
 def eliminar_media(request, media_id):
