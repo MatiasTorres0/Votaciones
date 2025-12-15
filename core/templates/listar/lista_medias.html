@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multimedia - {{ pregunta.texto|truncatechars:30 }}</title>
+    <title>Multimedia - {{ pregunta.pregunta|truncatechars:30 }}</title>
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
@@ -16,6 +16,7 @@
             --secondary-purple: #7c3aed;
             --primary-blue: #3b82f6;
             --primary-green: #10b981;
+            --primary-red: #ef4444;
             --dark-bg: #0f172a;
             --card-bg: #1e293b;
             --text-primary: #e2e8f0;
@@ -131,6 +132,34 @@
             line-height: 1.6;
         }
 
+        /* Botón para subir archivo */
+        .upload-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .btn-upload-main {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
+            color: white;
+            text-decoration: none;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-upload-main:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(139, 92, 246, 0.4);
+        }
+
         /* Grid de multimedia */
         .media-grid {
             display: grid;
@@ -174,7 +203,6 @@
             background: var(--dark-bg);
         }
 
-        /* Solución para video pixelado */
         .media-preview {
             width: 100%;
             height: 100%;
@@ -183,20 +211,36 @@
             justify-content: center;
         }
 
-        .video-player {
+        /* Estilos para YouTube */
+        .youtube-player {
             width: 100%;
             height: 100%;
             position: relative;
             background: #000;
         }
 
-        .video-player video {
+        .youtube-player iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Estilos para videos locales */
+        .local-video-player {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: #000;
+        }
+
+        .local-video-player video {
             width: 100%;
             height: 100%;
             object-fit: contain;
             background: #000;
         }
 
+        /* Estilos para imágenes */
         .media-preview img {
             width: 100%;
             height: 100%;
@@ -206,6 +250,25 @@
 
         .media-card:hover .media-preview img {
             transform: scale(1.05);
+        }
+
+        /* Placeholder para contenido no disponible */
+        .placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 20px;
+        }
+
+        .placeholder i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--primary-red);
         }
 
         /* Información del archivo */
@@ -246,13 +309,19 @@
             font-weight: 600;
         }
 
-        .type-video {
+        .type-youtube {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff0000;
+            border: 1px solid rgba(255, 0, 0, 0.3);
+        }
+
+        .type-local-video {
             background: rgba(59, 130, 246, 0.2);
             color: var(--primary-blue);
             border: 1px solid rgba(59, 130, 246, 0.3);
         }
 
-        .type-image {
+        .type-local-image {
             background: rgba(16, 185, 129, 0.2);
             color: var(--primary-green);
             border: 1px solid rgba(16, 185, 129, 0.3);
@@ -292,6 +361,17 @@
             box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
         }
 
+        .btn-youtube {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff0000;
+            border: 1px solid rgba(255, 0, 0, 0.3);
+        }
+
+        .btn-youtube:hover {
+            background: rgba(255, 0, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
         .btn-preview {
             background: rgba(148, 163, 184, 0.2);
             color: var(--text-primary);
@@ -300,6 +380,19 @@
 
         .btn-preview:hover {
             background: rgba(148, 163, 184, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Botón eliminar */
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-delete:hover {
+            background: rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
             transform: translateY(-2px);
         }
 
@@ -341,24 +434,6 @@
             font-size: 1rem;
         }
 
-        .btn-upload {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 25px;
-            background: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
-            color: white;
-            text-decoration: none;
-            border-radius: 12px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .btn-upload:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
-        }
-
         /* Modal para vista previa */
         .modal-overlay {
             display: none;
@@ -367,7 +442,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.95);
             z-index: 10000;
             align-items: center;
             justify-content: center;
@@ -426,6 +501,41 @@
             transform: scale(1.1);
         }
 
+        /* Mensajes de Django */
+        .messages {
+            max-width: 800px;
+            margin: 0 auto 30px;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid transparent;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .alert-info {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .media-grid {
@@ -441,6 +551,14 @@
                 height: 200px;
             }
             
+            .media-actions {
+                flex-wrap: wrap;
+            }
+            
+            .media-actions .btn {
+                flex: 0 0 calc(50% - 5px);
+            }
+            
             body {
                 padding: 20px 15px;
             }
@@ -449,10 +567,22 @@
 </head>
 <body>
     <div class="container">
+        <!-- Mostrar mensajes de Django -->
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %}"></i>
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
         <!-- Encabezado -->
         <div class="header-section">
-            <!-- Ajusta la URL según tu configuración de URLs -->
-            <a href="/" class="back-link" id="backButton">
+            <!-- Enlace para volver a la pregunta -->
+            <a href="{% url 'lista_preguntas' encuesta_id=pregunta.encuesta.id %}" class="back-link">
                 <i class="fas fa-arrow-left"></i>
                 Volver a la pregunta
             </a>
@@ -463,78 +593,146 @@
             
             <h1 class="page-title">Multimedia</h1>
             <p class="page-subtitle">
-                Archivos adjuntos para: "{{ pregunta.texto|truncatechars:50 }}"
+                Archivos adjuntos para: "{{ pregunta.pregunta|truncatechars:50 }}"
             </p>
+
+            <!-- Botón para subir nuevo archivo -->
+            <div class="upload-section">
+                <a href="{% url 'crear_media' pregunta_id=pregunta.id %}" class="btn-upload-main">
+                    <i class="fas fa-plus"></i>
+                    Agregar Multimedia
+                </a>
+            </div>
         </div>
 
         <!-- Grid de multimedia -->
-        <div class="media-grid" id="mediaGrid">
+        {% if medias %}
+        <div class="media-grid">
             {% for media in medias %}
             <div class="media-card">
                 <div class="media-preview-container">
                     <div class="media-preview">
-                        {% if media.archivo.url|lower|slice:'-4:' == '.mp4' or media.archivo.url|lower|slice:'-5:' == '.webm' or media.archivo.url|lower|slice:'-4:' == '.avi' or media.archivo.url|lower|slice:'-4:' == '.mov' %}
-                            <div class="video-player">
-                                <video preload="metadata" controls>
-                                    <source src="{{ media.archivo.url }}" type="video/mp4">
-                                    Tu navegador no soporta videos HTML5.
-                                </video>
+                        {% if media.tipo_media == 'YOUTUBE' and media.embed_url %}
+                            <!-- Video de YouTube -->
+                            <div class="youtube-player">
+                                <iframe 
+                                    src="{{ media.embed_url }}" 
+                                    frameborder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen
+                                    loading="lazy">
+                                </iframe>
                             </div>
+                        {% elif media.tipo_media == 'LOCAL' and media.archivo %}
+                            <!-- Archivo local -->
+                            {% if media.archivo.url|lower|slice:'-4:' == '.mp4' or media.archivo.url|lower|slice:'-5:' == '.webm' or media.archivo.url|lower|slice:'-4:' == '.avi' or media.archivo.url|lower|slice:'-4:' == '.mov' or media.archivo.url|lower|slice:'-4:' == '.mkv' %}
+                                <!-- Video local -->
+                                <div class="local-video-player">
+                                    <video controls preload="metadata">
+                                        <source src="{{ media.archivo.url }}" type="video/mp4">
+                                        Tu navegador no soporta este formato de video.
+                                    </video>
+                                </div>
+                            {% else %}
+                                <!-- Imagen local -->
+                                <img src="{{ media.archivo.url }}" 
+                                     alt="{{ media.nombre|default:'Imagen' }}" 
+                                     loading="lazy"
+                                     onclick="previewLocalMedia(this)">
+                            {% endif %}
                         {% else %}
-                            <img src="{{ media.archivo.url }}" alt="{{ media.nombre|default:media.archivo.name }}" loading="lazy">
+                            <!-- Contenido no disponible -->
+                            <div class="placeholder">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <p>Contenido no disponible</p>
+                            </div>
                         {% endif %}
                     </div>
                 </div>
                 
                 <div class="media-info">
                     <h3 class="media-title">
-                        <i class="fas {% if media.archivo.url|lower|slice:'-4:' == '.mp4' or media.archivo.url|lower|slice:'-5:' == '.webm' or media.archivo.url|lower|slice:'-4:' == '.avi' or media.archivo.url|lower|slice:'-4:' == '.mov' %}fa-video{% else %}fa-image{% endif %}"></i>
+                        <i class="fas {% if media.tipo_media == 'YOUTUBE' %}fa-youtube{% elif media.archivo.url|lower|slice:'-4:' == '.mp4' or media.archivo.url|lower|slice:'-5:' == '.webm' or media.archivo.url|lower|slice:'-4:' == '.avi' or media.archivo.url|lower|slice:'-4:' == '.mov' %}fa-video{% else %}fa-image{% endif %}"></i>
                         {{ media.nombre|default:media.archivo.name|truncatechars:30 }}
                     </h3>
                     
                     <div class="media-meta">
                         <span>
                             <i class="far fa-calendar"></i>
-                            {{ media.fecha_creacion|date:"d/m/Y" }}
+                            {{ media.fecha_creacion|date:"d/m/Y H:i" }}
                         </span>
-                        <span class="media-type {% if media.archivo.url|lower|slice:'-4:' == '.mp4' or media.archivo.url|lower|slice:'-5:' == '.webm' or media.archivo.url|lower|slice:'-4:' == '.avi' or media.archivo.url|lower|slice:'-4:' == '.mov' %}type-video{% else %}type-image{% endif %}">
-                            <i class="fas {% if media.archivo.url|lower|slice:'-4:' == '.mp4' or media.archivo.url|lower|slice:'-5:' == '.webm' or media.archivo.url|lower|slice:'-4:' == '.avi' or media.archivo.url|lower|slice:'-4:' == '.mov' %}fa-video{% else %}fa-image{% endif %}"></i>
-                            {% if media.archivo.url|lower|slice:'-4:' == '.mp4' or media.archivo.url|lower|slice:'-5:' == '.webm' or media.archivo.url|lower|slice:'-4:' == '.avi' or media.archivo.url|lower|slice:'-4:' == '.mov' %}
-                            Video
+                        <span class="media-type 
+                            {% if media.tipo_media == 'YOUTUBE' %}type-youtube
+                            {% elif media.archivo.url|lower|slice:'-4:' == '.mp4' or media.archivo.url|lower|slice:'-5:' == '.webm' or media.archivo.url|lower|slice:'-4:' == '.avi' or media.archivo.url|lower|slice:'-4:' == '.mov' %}type-local-video
+                            {% else %}type-local-image{% endif %}">
+                            <i class="fas 
+                                {% if media.tipo_media == 'YOUTUBE' %}fa-youtube
+                                {% elif media.archivo.url|lower|slice:'-4:' == '.mp4' or media.archivo.url|lower|slice:'-5:' == '.webm' or media.archivo.url|lower|slice:'-4:' == '.avi' or media.archivo.url|lower|slice:'-4:' == '.mov' %}fa-video
+                                {% else %}fa-image{% endif %}"></i>
+                            {% if media.tipo_media == 'YOUTUBE' %}
+                                YouTube
+                            {% elif media.archivo.url|lower|slice:'-4:' == '.mp4' or media.archivo.url|lower|slice:'-5:' == '.webm' or media.archivo.url|lower|slice:'-4:' == '.avi' or media.archivo.url|lower|slice:'-4:' == '.mov' %}
+                                Video
                             {% else %}
-                            Imagen
+                                Imagen
                             {% endif %}
                         </span>
                     </div>
                     
                     <div class="media-actions">
-                        <a href="{{ media.archivo.url }}" download class="btn btn-download">
-                            <i class="fas fa-download"></i>
-                            Descargar
-                        </a>
-                        <button class="btn btn-preview" onclick="previewMedia('{{ media.archivo.url }}', '{{ media.archivo.url|lower|slice:"-4:" }}')">
+                        {% if media.tipo_media == 'YOUTUBE' and media.url_youtube %}
+                            <!-- Botón para YouTube -->
+                            <a href="{{ media.url_youtube }}" target="_blank" class="btn btn-youtube">
+                                <i class="fab fa-youtube"></i>
+                                Ver en YouTube
+                            </a>
+                        {% elif media.tipo_media == 'LOCAL' and media.archivo %}
+                            <!-- Botón para archivos locales -->
+                            <a href="{{ media.archivo.url }}" download class="btn btn-download">
+                                <i class="fas fa-download"></i>
+                                Descargar
+                            </a>
+                        {% endif %}
+                        
+                        <!-- Botón de vista previa -->
+                        <button class="btn btn-preview" 
+                                onclick="previewMedia(this)" 
+                                data-media-type="{% if media.tipo_media == 'YOUTUBE' %}youtube{% else %}local{% endif %}"
+                                data-media-url="{% if media.tipo_media == 'YOUTUBE' %}{{ media.embed_url|default:'' }}{% else %}{{ media.archivo.url|default:'' }}{% endif %}"
+                                data-is-video="{% if media.tipo_media == 'YOUTUBE' %}true{% elif media.archivo.url|lower|slice:'-4:' == '.mp4' or media.archivo.url|lower|slice:'-5:' == '.webm' or media.archivo.url|lower|slice:'-4:' == '.avi' or media.archivo.url|lower|slice:'-4:' == '.mov' %}true{% else %}false{% endif %}">
                             <i class="fas fa-eye"></i>
                             Vista previa
                         </button>
+                        
+                        <!-- Botón de eliminar -->
+                        <form method="POST" action="{% url 'eliminar_media' media.id %}" 
+                              style="display: inline;" 
+                              onsubmit="return confirm('¿Estás seguro de eliminar este archivo?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-delete">
+                                <i class="fas fa-trash"></i>
+                                Eliminar
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
-            {% empty %}
-            <!-- Estado vacío -->
-            <div class="empty-state" id="emptyState">
-                <div class="empty-icon">
-                    <i class="fas fa-photo-video"></i>
-                </div>
-                <h3>No hay archivos multimedia</h3>
-                <p>Esta pregunta aún no tiene imágenes o videos adjuntos.</p>
-                <!-- Ajusta la URL para subir archivos según tu proyecto -->
-                <a href="#" class="btn-upload" id="uploadButton">
-                    <i class="fas fa-upload"></i>
-                    Subir archivo
-                </a>
-            </div>
             {% endfor %}
         </div>
+        {% else %}
+        <!-- Estado vacío -->
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-photo-video"></i>
+            </div>
+            <h3>No hay archivos multimedia</h3>
+            <p>Esta pregunta aún no tiene imágenes o videos adjuntos.</p>
+            <a href="{% url 'crear_media' pregunta_id=pregunta.id %}" class="btn-upload-main">
+                <i class="fas fa-plus"></i>
+                Agregar Multimedia
+            </a>
+        </div>
+        {% endif %}
     </div>
 
     <!-- Modal para vista previa -->
@@ -549,23 +747,71 @@
 
     <script>
         // Vista previa de multimedia
-        function previewMedia(url, extension) {
+        function previewMedia(button) {
+            const mediaType = button.getAttribute('data-media-type');
+            const mediaUrl = button.getAttribute('data-media-url');
+            const isVideo = button.getAttribute('data-is-video') === 'true';
+            
             const modal = document.getElementById('mediaModal');
             const modalMedia = document.getElementById('modalMedia');
             
-            // Limpiar extensión para comparación
-            extension = extension.toLowerCase();
+            // Limpiar contenido anterior
+            modalMedia.innerHTML = '';
             
-            if (extension === '.mp4' || extension === 'webm' || extension === '.avi' || extension === '.mov' || extension === '.mkv') {
-                modalMedia.innerHTML = `
-                    <video controls autoplay style="width:100%;height:100%;">
-                        <source src="${url}" type="video/mp4">
-                        Tu navegador no soporta videos HTML5.
-                    </video>
-                `;
+            if (mediaType === 'youtube' && mediaUrl) {
+                // Video de YouTube
+                const iframe = document.createElement('iframe');
+                iframe.src = mediaUrl;
+                iframe.width = '100%';
+                iframe.height = '80vh';
+                iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+                iframe.allowFullscreen = true;
+                iframe.style.border = 'none';
+                modalMedia.appendChild(iframe);
+            } else if (isVideo) {
+                // Video local
+                const video = document.createElement('video');
+                video.controls = true;
+                video.autoplay = true;
+                video.style.width = '100%';
+                video.style.maxHeight = '80vh';
+                
+                const source = document.createElement('source');
+                source.src = mediaUrl;
+                source.type = 'video/mp4';
+                video.appendChild(source);
+                
+                modalMedia.appendChild(video);
             } else {
-                modalMedia.innerHTML = `<img src="${url}" alt="Vista previa" style="width:100%;height:auto;">`;
+                // Imagen local
+                const img = document.createElement('img');
+                img.src = mediaUrl;
+                img.alt = 'Vista previa';
+                img.style.width = '100%';
+                img.style.maxHeight = '80vh';
+                img.style.objectFit = 'contain';
+                modalMedia.appendChild(img);
             }
+            
+            // Mostrar modal
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Vista previa para imágenes locales (clic directo en la imagen)
+        function previewLocalMedia(imgElement) {
+            const modal = document.getElementById('mediaModal');
+            const modalMedia = document.getElementById('modalMedia');
+            
+            modalMedia.innerHTML = '';
+            
+            const img = document.createElement('img');
+            img.src = imgElement.src;
+            img.alt = 'Vista previa';
+            img.style.width = '100%';
+            img.style.maxHeight = '80vh';
+            img.style.objectFit = 'contain';
+            modalMedia.appendChild(img);
             
             modal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
@@ -588,7 +834,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Cerrar modal
             document.getElementById('closeModal').addEventListener('click', closeModal);
-            document.getElementById('mediaModal').addEventListener('click', closeModal);
+            document.getElementById('mediaModal').addEventListener('click', function(e) {
+                if (e.target === this) closeModal();
+            });
             
             // Cerrar modal con ESC
             document.addEventListener('keydown', function(event) {
@@ -602,16 +850,23 @@
                 e.stopPropagation();
             });
             
-            // Botón de retroceso
-            document.getElementById('backButton').addEventListener('click', function(e) {
-                e.preventDefault();
-                window.history.back();
-            });
+            // Actualizar dinámicamente el título de la página cuando hay scroll
+            let lastScrollTop = 0;
+            const pageTitle = document.querySelector('.page-title');
+            const originalTitle = pageTitle.textContent;
             
-            // Botón de subir (ajusta la URL según tu proyecto)
-            document.getElementById('uploadButton')?.addEventListener('click', function(e) {
-                e.preventDefault();
-                alert('Funcionalidad de subida - En una app real, esto abriría un formulario para subir archivos');
+            window.addEventListener('scroll', function() {
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                
+                if (scrollTop > 100 && scrollTop > lastScrollTop) {
+                    // Scrolling down
+                    pageTitle.textContent = "Multimedia";
+                } else if (scrollTop < 50) {
+                    // At the top
+                    pageTitle.textContent = originalTitle;
+                }
+                
+                lastScrollTop = scrollTop;
             });
         });
     </script>

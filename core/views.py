@@ -2,77 +2,182 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.core.exceptions import ValidationError
 from .forms import EncuestaForm, PreguntaForm, OpcionForm, FormularioForm, MediaForm
 from .models import Encuesta, Pregunta, Opcion, Formulario, Media
-from django.contrib import messages  # Import messages
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
-from difflib import SequenceMatcher # Importante: Librería para comparar textos
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-
-#rest_framework
+from difflib import SequenceMatcher
 from rest_framework import viewsets
 from .serializers import PreguntaSerializer, OpcionSerializer
 import io
 from openpyxl import Workbook
 from django.http import HttpResponse
 import pandas as pd
-from django.shortcuts import render
-from django.contrib import messages
 
 def inicio(request):
     """
-    Displays the voting interface and handles the initial username submission.
+    Muestra la interfaz de votación y maneja el inicio de sesión con nombre de usuario.
     """
-    # Handle initial form submission and set session
+    # 1. LÓGICA DEL FORMULARIO DE LOGIN (POST)
     if request.method == 'POST':
-        nombre_twitch = request.POST.get('nombre_twitch')
+        nombre_usuario = request.POST.get('nombre_usuario')
         
-        if not nombre_twitch:
-            messages.error(request, "El nombre de Twitch es requerido")
-            return render(request, 'core/inicio.html')
+        if not nombre_usuario or nombre_usuario.strip() == "":
+            messages.error(request, "El nombre de usuario es requerido")
+            return render(request, 'core/inicio.html', {'user_name': None})
         
-        # Store username in session
-        request.session['twitch_name'] = nombre_twitch
+        # Guardamos el usuario en la sesión y limpiamos espacios
+        request.session['user_name'] = nombre_usuario.strip()
+        request.session.modified = True
+        
+        # Redirigimos a la misma vista para limpiar el método POST (Patrón PRG)
         return redirect('inicio')
 
-    # Get user information from the session
-    twitch_name = request.session.get('twitch_name')
-    preguntas = Pregunta.objects.all()
+    # 2. LÓGICA DE VISUALIZACIÓN (GET)
+    # Recuperamos el usuario de la sesión
+    user_name = request.session.get('user_name')
     
-    # Prepare preguntas
+    # Solo mostrar preguntas de encuestas activas
+    preguntas = Pregunta.objects.filter(encuesta__estado='ACTIVA')
     preguntas_con_voto = []
+    
+    # Variables para calcular si ha completado todo
+    total_preguntas = preguntas.count()
+    votos_usuario = 0
+
     for pregunta in preguntas:
-        ha_votado = pregunta.formulario_set.filter(usuario=twitch_name).exists() if twitch_name else False
+        ha_votado = False
+        if user_name:
+            # Comprobamos si este usuario ya votó en esta pregunta
+            ha_votado = Formulario.objects.filter(pregunta=pregunta, usuario=user_name).exists()
+            if ha_votado:
+                votos_usuario += 1
+        
         preguntas_con_voto.append({
             'pregunta': pregunta,
             'ha_votado': ha_votado
         })
 
-    # Render the page
+    # Calculamos si ha completado todas las preguntas
+    completed = (user_name is not None) and (total_preguntas > 0) and (votos_usuario == total_preguntas)
+
+    # 3. RENDERIZADO
     return render(
         request,
         'core/inicio.html',
         {
             'preguntas': preguntas_con_voto,
-            'twitch_name': twitch_name
+            'user_name': user_name,
+            'completed': completed
         }
     )
+
+def votaciones(request, pregunta_id, opcion_id):
+    """
+    Handles the voting process with proper user session management.
+    """
+    pregunta = get_object_or_404(Pregunta, pk=pregunta_id)
+    
+    # Verificar que la encuesta esté activa
+    if pregunta.encuesta.estado != 'ACTIVA':
+        messages.error(request, "Esta encuesta no está activa.")
+        return redirect('inicio')
+    
+    # Verificar que la opción pertenece a la pregunta
+    try:
+        opcion = Opcion.objects.get(pk=opcion_id, pregunta=pregunta)
+    except Opcion.DoesNotExist:
+        messages.error(request, "La opción seleccionada no pertenece a esta pregunta.")
+        return redirect('inicio')
+    
+    # Verificar si el usuario ya votó en esta pregunta
+    user_name = request.session.get('user_name')
+    if user_name and Formulario.objects.filter(pregunta=pregunta, usuario=user_name).exists():
+        messages.warning(request, "Ya has votado en esta pregunta.")
+        return redirect('inicio')
+    
+    has_session = 'user_name' in request.session
+    
+    if request.method == 'POST':
+        # Crear formulario con datos POST
+        form_data = request.POST.copy()
+        
+        # Si el usuario ya tiene sesión, usar el nombre de la sesión
+        if has_session:
+            form_data['nombre_usuario'] = request.session['user_name']
+        
+        form = FormularioForm(form_data, pregunta_id=pregunta_id)
+        
+        if form.is_valid():
+            try:
+                voto = form.save(commit=False)
+                
+                # Establecer usuario
+                if has_session:
+                    username = request.session['user_name']
+                else:
+                    username = form.cleaned_data['nombre_usuario']
+                    # Guardar en sesión
+                    request.session['user_name'] = username
+                    request.session.modified = True
+                
+                voto.usuario = username
+                voto.save()
+                
+                messages.success(request, "¡Gracias por tu voto!")
+                return redirect('inicio')
+                
+            except Exception as e:
+                messages.error(request, f"Error al guardar el voto: {str(e)}")
+        else:
+            # Mostrar errores específicos
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
+    
+    # GET request - mostrar formulario
+    initial_data = {
+        'pregunta': pregunta_id,
+        'opcion': opcion_id,
+    }
+    
+    if has_session:
+        initial_data['nombre_usuario'] = request.session['user_name']
+    
+    form = FormularioForm(initial=initial_data, pregunta_id=pregunta_id)
+    
+    return render(
+        request,
+        'core/votacion.html',
+        {
+            'form': form,
+            'pregunta': pregunta,
+            'first_time': not has_session,
+            'opcion': opcion
+        }
+    )
+
 @login_required
 def crear_encuesta(request):
     if request.method == 'POST':
         form = EncuestaForm(request.POST)
         if form.is_valid():
             form.save()
+            messages.success(request, "Encuesta creada exitosamente")
             return redirect('lista_encuestas')
     else:
         form = EncuestaForm()
     return render(request, 'crear/crear_encuesta.html', {'form': form})
+
 @login_required
 def lista_encuestas(request):
     encuestas = Encuesta.objects.filter(estado='ACTIVA')
     encuestas_terminadas = Encuesta.objects.filter(estado='TERMINADA')
     
-    return render(request, 'listar/lista_encuestas.html', {'encuestas': encuestas, 'encuestas_terminadas': encuestas_terminadas})
+    return render(request, 'listar/lista_encuestas.html', {
+        'encuestas': encuestas, 
+        'encuestas_terminadas': encuestas_terminadas
+    })
+
 @login_required
 def editar_encuesta(request, encuesta_id):
     encuesta = get_object_or_404(Encuesta, id=encuesta_id)
@@ -80,10 +185,12 @@ def editar_encuesta(request, encuesta_id):
         form = EncuestaForm(request.POST, instance=encuesta)
         if form.is_valid():
             form.save()
+            messages.success(request, "Encuesta actualizada exitosamente")
             return redirect('lista_encuestas')
     else:
         form = EncuestaForm(instance=encuesta)
     return render(request, 'editar/editar_encuesta.html', {'form': form, 'encuesta': encuesta})
+
 @login_required
 def crear_pregunta(request, encuesta_id):
     encuesta = get_object_or_404(Encuesta, id=encuesta_id)
@@ -93,10 +200,12 @@ def crear_pregunta(request, encuesta_id):
             pregunta = form.save(commit=False)
             pregunta.encuesta = encuesta
             pregunta.save()
-            return redirect('editar_encuesta', encuesta_id=encuesta.id)
+            messages.success(request, "Pregunta creada exitosamente")
+            return redirect('lista_preguntas', encuesta_id=encuesta.id)
     else:
         form = PreguntaForm()
     return render(request, 'crear/crear_pregunta.html', {'form': form, 'encuesta': encuesta})
+
 @login_required
 def editar_pregunta(request, pregunta_id):
     pregunta = get_object_or_404(Pregunta, id=pregunta_id)
@@ -104,34 +213,39 @@ def editar_pregunta(request, pregunta_id):
         form = PreguntaForm(request.POST, instance=pregunta)
         if form.is_valid():
             form.save()
-            return redirect('editar_encuesta', encuesta_id=pregunta.encuesta.id)
+            messages.success(request, "Pregunta actualizada exitosamente")
+            return redirect('lista_preguntas', encuesta_id=pregunta.encuesta.id)
     else:
         form = PreguntaForm(instance=pregunta)
     return render(request, 'editar/editar_pregunta.html', {'form': form, 'pregunta': pregunta})
-@login_required
-def crear_pregunta(request, encuesta_id):
-    encuesta = get_object_or_404(Encuesta, id=encuesta_id)
-    if request.method == 'POST':
-        form = PreguntaForm(request.POST)
-        if form.is_valid():
-            pregunta = form.save(commit=False)
-            pregunta.encuesta = encuesta
-            pregunta.save()
-            return redirect('lista_preguntas', encuesta_id=encuesta.id)
-    else:
-        form = PreguntaForm()
-    return render(request, 'crear/crear_pregunta.html', {'form': form, 'encuesta': encuesta})
+
 @login_required
 def crear_media(request, pregunta_id):
     pregunta = get_object_or_404(Pregunta, id=pregunta_id)
+    
     if request.method == 'POST':
         form = MediaForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            return redirect('lista_preguntas', encuesta_id=pregunta.encuesta.id)
+            try:
+                media = form.save(commit=False)
+                media.pregunta = pregunta
+                media.save()
+                messages.success(request, "✅ Archivo multimedia agregado correctamente")
+                return redirect('lista_medias', pregunta_id=pregunta.id)
+            except Exception as e:
+                messages.error(request, f"❌ Error al guardar: {str(e)}")
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"❌ {field}: {error}")
     else:
         form = MediaForm()
-    return render(request, 'crear/crear_media.html', {'form': form, 'pregunta': pregunta})
+    
+    return render(request, 'crear/crear_media.html', {
+        'form': form,
+        'pregunta': pregunta
+    })
+
 @login_required
 def crear_opcion(request, pregunta_id):
     pregunta = get_object_or_404(Pregunta, id=pregunta_id)
@@ -141,119 +255,16 @@ def crear_opcion(request, pregunta_id):
             opcion = form.save(commit=False)
             opcion.pregunta = pregunta
             opcion.save()
-            form.save_m2m()
+            messages.success(request, "Opción creada exitosamente")
             return redirect('lista_opciones', pregunta_id=pregunta.id)
     else:
         form = OpcionForm()
     return render(request, 'crear/crear_opcion.html', {'form': form, 'pregunta': pregunta})
 
-def votaciones(request, pregunta_id, opcion_id):
-    """
-    Handles the voting process with proper user session management.
-    
-    Args:
-        request: HttpRequest object
-        pregunta_id: ID of the question being voted on
-        opcion_id: ID of the selected option
-    """
-    # Get required objects
-    pregunta = get_object_or_404(Pregunta, pk=pregunta_id)
-    opcion = get_object_or_404(Opcion, pk=opcion_id)
-    
-    # First-time user handling
-    if 'twitch_name' not in request.session:
-        if request.method == 'POST':
-            # Process initial username submission
-            form = FormularioForm(request.POST, pregunta_id=pregunta_id)
-            if form.is_valid():
-                 try:
-                    # Get username from form
-                    twitch_name = form.cleaned_data['nombre_twitch']
-                    
-                    # Create and save the vote
-                    voto = form.save(commit=False)
-                    voto.usuario = twitch_name
-                    voto.nombre_twitch = twitch_name  # Set both fields
-                    voto.save()
-                    
-                    # Store in session after successful vote
-                    request.session['twitch_name'] = twitch_name
-                    messages.success(request, "¡Gracias por tu voto!")
-                    return redirect('inicio')
-                 except ValidationError as e:
-                    messages.error(request, f"Error al votar: {str(e)}")
-                    return redirect('inicio')
-            else:
-                #Form Invalid
-                messages.error(request, "Error al votar. Por favor, verifica el formulario.")
-        else:
-            # Initial form display
-            form = FormularioForm(
-                initial={'pregunta': pregunta_id, 'opcion': opcion_id},
-                pregunta_id=pregunta_id
-            )
-            
-        return render(
-            request,
-            'core/votacion.html',
-            {
-                'form': form,
-                'mensaje': '¡Bienvenido a las votaciones, para comenzar agrega tú nombre de twitch!',
-                'pregunta': pregunta,
-                'first_time': True,
-                'opcion': opcion
-            }
-        )
-    
-    # Returning user handling
-    if request.method == 'POST':
-        form = FormularioForm(request.POST, initial={'nombre_twitch': request.session.get('twitch_name')}, pregunta_id=pregunta_id)
-        if form.is_valid():
-            try:
-                # Use session username for the vote
-                twitch_name = request.session['twitch_name']
-                
-                # Create and save the vote with session username
-                voto = form.save(commit=False)
-                voto.usuario = twitch_name
-                voto.nombre_twitch = twitch_name  # Set both fields
-                voto.save()
-                
-                messages.success(request, "¡Gracias por tu voto!")
-                return redirect('inicio')
-                
-            except ValidationError as e:
-                messages.error(request, f"Error al votar: {str(e)}")
-                return redirect('inicio')
-        else:
-            #Form Invalid
-             messages.error(request, "Error al votar. Por favor, verifica el formulario.")
-    else:
-        # Display form for returning user
-        form = FormularioForm(
-            initial={
-                'pregunta': pregunta_id,
-                'opcion': opcion_id,
-                'nombre_twitch': request.session.get('twitch_name')  # Pre-fill username
-            },
-            pregunta_id=pregunta_id
-        )
-    
-    return render(
-        request,
-        'core/votacion.html',
-        {
-            'form': form,
-            'mensaje': '¡Ya puedes votar!',
-            'pregunta': pregunta,
-            'first_time': False,
-            'opcion': opcion
-        }
-    )
 @login_required
 def resultados(request, encuesta_id):
     encuesta = get_object_or_404(Encuesta, id=encuesta_id)
-    preguntas = encuesta.preguntas.all()
+    preguntas = encuesta.preguntas.all().prefetch_related('opciones')
     resultados_por_pregunta = []
 
     for pregunta in preguntas:
@@ -270,19 +281,35 @@ def resultados(request, encuesta_id):
                 'porcentaje': round(porcentaje, 2)
             })
 
-        resultados_por_pregunta.append({'pregunta': pregunta, 'resultados': resultados_opciones})
+        resultados_por_pregunta.append({
+            'pregunta': pregunta, 
+            'resultados': resultados_opciones,
+            'total_votos': total_votos
+        })
 
-    return render(request, 'core/resultados.html', {'encuesta': encuesta, 'resultados_por_pregunta': resultados_por_pregunta})
+    return render(request, 'core/resultados.html', {
+        'encuesta': encuesta, 
+        'resultados_por_pregunta': resultados_por_pregunta
+    })
+
 @login_required
 def lista_preguntas(request, encuesta_id):
     encuesta = get_object_or_404(Encuesta, id=encuesta_id)
     preguntas = Pregunta.objects.filter(encuesta=encuesta)
-    return render(request, 'listar/lista_preguntas.html', {'encuesta': encuesta, 'preguntas': preguntas})
+    return render(request, 'listar/lista_preguntas.html', {
+        'encuesta': encuesta, 
+        'preguntas': preguntas
+    })
+
 @login_required
 def lista_opciones(request, pregunta_id):
     pregunta = get_object_or_404(Pregunta, id=pregunta_id)
     opciones = Opcion.objects.filter(pregunta=pregunta)
-    return render(request, 'listar/lista_opciones.html', {'pregunta': pregunta, 'opciones': opciones})
+    return render(request, 'listar/lista_opciones.html', {
+        'pregunta': pregunta, 
+        'opciones': opciones
+    })
+
 @login_required
 def editar_opcion(request, opcion_id):
     opcion = get_object_or_404(Opcion, id=opcion_id)
@@ -290,6 +317,7 @@ def editar_opcion(request, opcion_id):
         form = OpcionForm(request.POST, instance=opcion)
         if form.is_valid():
             form.save()
+            messages.success(request, "Opción actualizada exitosamente")
             return redirect('lista_opciones', pregunta_id=opcion.pregunta.id)
     else:
         form = OpcionForm(instance=opcion)
@@ -299,45 +327,87 @@ def mantenimiento(request):
     return render(request, 'core/mantenimiento.html')
 
 def home(request):
-    return  render(request, 'core/home.html')
+    return render(request, 'core/home.html')
 
 def logout_view(request):
-    print("Proceso de cierre de sesión iniciado")
+    # Limpiar sesión de votación
+    if 'user_name' in request.session:
+        del request.session['user_name']
+    # Cerrar sesión de autenticación
     logout(request)
-    print("Función logout llamada, sesión limpiada")
-    return redirect('inicio')  # Redirige a la página de inicio
-
+    messages.info(request, "Has cerrado sesión exitosamente")
+    return redirect('inicio')
 
 def error_404(request, exception):
     return render(request, 'core/404.html', status=404)
+
 @login_required
 def eliminar_opcion(request, opcion_id):
     opcion = get_object_or_404(Opcion, id=opcion_id)
     pregunta_id = opcion.pregunta.id
     opcion.delete()
+    messages.success(request, "Opción eliminada exitosamente")
     return redirect('lista_opciones', pregunta_id=pregunta_id)
+
 @login_required
 def eliminar_pregunta(request, pregunta_id):
     pregunta = get_object_or_404(Pregunta, id=pregunta_id)
     encuesta_id = pregunta.encuesta.id
     pregunta.delete()
+    messages.success(request, "Pregunta eliminada exitosamente")
     return redirect('lista_preguntas', encuesta_id=encuesta_id)
+
 @login_required
 def eliminar_encuesta(request, encuesta_id):
     encuesta = get_object_or_404(Encuesta, id=encuesta_id)
     encuesta.delete()
+    messages.success(request, "Encuesta eliminada exitosamente")
     return redirect('lista_encuestas')
+
 @login_required
 def lista_medias(request, pregunta_id):
     pregunta = get_object_or_404(Pregunta, id=pregunta_id)
-    medias = Media.objects.filter(pregunta=pregunta)
-    return render(request, 'listar/lista_medias.html', {'pregunta': pregunta, 'medias': medias})
+    medias = Media.objects.filter(pregunta=pregunta).order_by('-fecha_creacion')
+    
+    # Pasar información sobre el tipo de cada media
+    media_list = []
+    for media in medias:
+        media_dict = {
+            'id': media.id,
+            'nombre': media.nombre,
+            'tipo_media': media.tipo_media,
+            'archivo': media.archivo,
+            'url_youtube': media.url_youtube,
+            'fecha_creacion': media.fecha_creacion,
+            'embed_url': None,
+        }
+        
+        if media.tipo_media == 'YOUTUBE':
+            media_dict['embed_url'] = media.get_youtube_embed_url()
+        
+        media_list.append(media_dict)
+    
+    return render(request, 'listar/lista_medias.html', {
+        'pregunta': pregunta,
+        'medias': media_list  # Pasar la lista procesada
+    })
 
 @login_required
 def eliminar_media(request, media_id):
     media = get_object_or_404(Media, id=media_id)
     pregunta_id = media.pregunta.id
-    media.delete()
+    
+    try:
+        # Si es un archivo local, eliminar el archivo físico
+        if media.tipo_media == 'LOCAL' and media.archivo:
+            if os.path.isfile(media.archivo.path):
+                os.remove(media.archivo.path)
+        
+        media.delete()
+        messages.success(request, "✅ Archivo multimedia eliminado correctamente")
+    except Exception as e:
+        messages.error(request, f"❌ Error al eliminar: {str(e)}")
+    
     return redirect('lista_medias', pregunta_id=pregunta_id)
 
 @login_required
@@ -346,7 +416,6 @@ def descargar_resultados(request, encuesta_id):
     Genera y descarga un archivo Excel con los resultados de la votación.
     """
     encuesta = get_object_or_404(Encuesta, id=encuesta_id)
-    # Usamos prefetch_related para optimizar la base de datos y que cargue más rápido
     preguntas = encuesta.preguntas.prefetch_related('opciones').all()
 
     # Crear el archivo en memoria
@@ -362,37 +431,32 @@ def descargar_resultados(request, encuesta_id):
     for pregunta_obj in preguntas:
         opciones = pregunta_obj.opciones.all()
         
-        # Contamos cuántos formularios (votos) existen para esta pregunta específica
         total_votos_pregunta = Formulario.objects.filter(pregunta=pregunta_obj).count()
 
         for opcion_obj in opciones:
-            # Contamos cuántos votos tiene esta opción específica
-            votos_opcion = Formulario.objects.filter(pregunta=pregunta_obj, opcion=opcion_obj).count()
+            votos_opcion = Formulario.objects.filter(
+                pregunta=pregunta_obj, 
+                opcion=opcion_obj
+            ).count()
             
-            # Calcular porcentaje evitando división por cero
             if total_votos_pregunta > 0:
                 porcentaje = (votos_opcion / total_votos_pregunta) * 100
             else:
                 porcentaje = 0
 
-            # Escribir fila en Excel
-            # CORRECCIÓN IMPORTANTE: Usamos .pregunta y .opcion (nombres reales de tus campos)
-            # en lugar de .texto
             worksheet.append([
-                pregunta_obj.pregunta,  # Antes decía .texto
-                opcion_obj.opcion,      # Antes decía .texto
+                pregunta_obj.pregunta,
+                opcion_obj.opcion,
                 votos_opcion,
                 f"{round(porcentaje, 2)}%"
             ])
         
-        # Agregamos una fila vacía entre preguntas para que se lea mejor
         worksheet.append([])
 
     # Guardar y preparar respuesta
     workbook.save(output)
     output.seek(0)
 
-    # Limpiar el nombre del archivo para evitar errores con espacios
     filename = f"Resultados_{encuesta.titulo.replace(' ', '_')}.xlsx"
 
     response = HttpResponse(
@@ -402,8 +466,6 @@ def descargar_resultados(request, encuesta_id):
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
     return response
 
-
-# --- FUNCIÓN AUXILIAR PARA BUSCAR SIMILITUDES ---
 def buscar_mejor_coincidencia(texto_buscado, lista_objetos, campo_comparar, umbral=0.8):
     """
     Busca en una lista de objetos Django cuál tiene el texto más parecido al buscado.
@@ -414,23 +476,25 @@ def buscar_mejor_coincidencia(texto_buscado, lista_objetos, campo_comparar, umbr
     texto_buscado = str(texto_buscado).lower().strip()
 
     for obj in lista_objetos:
-        # Obtenemos el texto del objeto de la BD (ej: obj.pregunta o obj.opcion)
         texto_obj = str(getattr(obj, campo_comparar)).lower().strip()
-        
-        # Calculamos similitud (Ratio de 0 a 1)
         similitud = SequenceMatcher(None, texto_buscado, texto_obj).ratio()
 
         if similitud > mayor_similitud:
             mayor_similitud = similitud
             mejor_objeto = obj
 
-    # Solo devolvemos si supera el umbral (ej: 80% de parecido)
     if mayor_similitud >= umbral:
         return mejor_objeto
     return None
 
-# --- VISTA PRINCIPAL ---
 def comparar_resultados(request):
+    encuestas = Encuesta.objects.all()
+    
+    if request.method == 'GET':
+        return render(request, 'core/comparar_resultados.html', {
+            'encuestas': encuestas
+        })
+    
     if request.method == 'POST' and request.FILES.get('archivo'):
         encuesta_id = request.POST.get('encuesta')
         
@@ -448,7 +512,6 @@ def comparar_resultados(request):
             messages.error(request, f"Error al leer el archivo Excel: {e}")
             return redirect('comparar_resultados')
 
-        # Validaciones de columnas
         col_votos = 'Votos' if 'Votos' in df.columns else 'Votos Totales' if 'Votos Totales' in df.columns else None
         
         if not col_votos:
@@ -459,13 +522,10 @@ def comparar_resultados(request):
             messages.error(request, "El archivo falta columnas. Requiere: Pregunta, Opción, Votos, Porcentaje")
             return redirect('comparar_resultados')
 
-        # Pre-cargar todas las preguntas de la encuesta actual para comparar rápido
         todas_preguntas_db = list(encuesta_actual.preguntas.all())
-
         comparacion_agrupada = {}
 
         for index, fila in df.iterrows():
-            # Datos del Excel
             pregunta_txt_excel = str(fila['Pregunta']).strip()
             opcion_txt_excel = str(fila['Opción']).strip()
             
@@ -479,39 +539,27 @@ def comparar_resultados(request):
             except:
                 porcentaje_archivo = 0.0
 
-            # ---------------------------------------------------------
-            # PASO 1: Buscar Pregunta Similar (Fuzzy Matching)
-            # ---------------------------------------------------------
-            # Buscamos en 'todas_preguntas_db' cual se parece más a 'pregunta_txt_excel'
             pregunta_db = buscar_mejor_coincidencia(
                 pregunta_txt_excel, 
                 todas_preguntas_db, 
                 'pregunta', 
-                umbral=0.7 # 70% de similitud mínima para preguntas
+                umbral=0.7
             )
 
             if not pregunta_db:
-                # Si no encontramos ninguna pregunta parecida, saltamos esta fila
-                continue 
+                continue
 
-            # ---------------------------------------------------------
-            # PASO 2: Buscar Opción Similar dentro de esa Pregunta
-            # ---------------------------------------------------------
             todas_opciones_pregunta = list(pregunta_db.opciones.all())
-            
             opcion_db = buscar_mejor_coincidencia(
                 opcion_txt_excel,
                 todas_opciones_pregunta,
                 'opcion',
-                umbral=0.75 # 75% de similitud para opciones (un poco más estricto)
+                umbral=0.75
             )
 
             if not opcion_db:
                 continue
 
-            # ---------------------------------------------------------
-            # PASO 3: Cálculos (Igual que antes)
-            # ---------------------------------------------------------
             votos_reales = Formulario.objects.filter(pregunta=pregunta_db, opcion=opcion_db).count()
             total_votos_pregunta = Formulario.objects.filter(pregunta=pregunta_db).count()
             
@@ -523,8 +571,7 @@ def comparar_resultados(request):
             diferencia_votos = votos_reales - votos_archivo
             diferencia_porcentaje = porcentaje_real - porcentaje_archivo
 
-            # Usamos el texto REAL de la BD para el título, para que se vea limpio
-            titulo_pregunta = pregunta_db.pregunta 
+            titulo_pregunta = pregunta_db.pregunta
 
             if titulo_pregunta not in comparacion_agrupada:
                 comparacion_agrupada[titulo_pregunta] = {
@@ -535,11 +582,11 @@ def comparar_resultados(request):
                 }
 
             comparacion_agrupada[titulo_pregunta]['total_votos_archivo'] += votos_archivo
-            comparacion_agrupada[titulo_pregunta]['total_votos_actual'] += votos_reales # Nota: esto suma parciales
+            comparacion_agrupada[titulo_pregunta]['total_votos_actual'] += votos_reales
 
             comparacion_agrupada[titulo_pregunta]['opciones'].append({
-                'texto': opcion_db.opcion, # Usamos el nombre actual de la opción
-                'texto_antiguo': opcion_txt_excel, # Guardamos el nombre viejo por si quieres mostrarlo
+                'texto': opcion_db.opcion,
+                'texto_antiguo': opcion_txt_excel,
                 'votos_archivo': votos_archivo,
                 'porcentaje_archivo': round(porcentaje_archivo, 1),
                 'votos_actual': votos_reales,
@@ -559,9 +606,9 @@ def comparar_resultados(request):
             'nombre_archivo': archivo.name
         })
 
-    encuestas = Encuesta.objects.all()
     return render(request, 'core/comparar_resultados.html', {'encuestas': encuestas})
 
+# REST Framework Viewsets
 class PreguntaViewSet(viewsets.ModelViewSet):
     queryset = Pregunta.objects.all()
     serializer_class = PreguntaSerializer
@@ -569,4 +616,3 @@ class PreguntaViewSet(viewsets.ModelViewSet):
 class OpcionViewSet(viewsets.ModelViewSet):
     queryset = Opcion.objects.all()
     serializer_class = OpcionSerializer
-

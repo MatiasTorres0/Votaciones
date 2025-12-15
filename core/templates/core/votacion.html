@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* Root Variables - Paleta Morado, Azul y Verde */
+        /* --- VARIABLES GLOBALES --- */
         :root {
             --primary-purple: #8b5cf6;
             --secondary-purple: #7c3aed;
@@ -44,10 +44,10 @@
             background-position: center;
             background-attachment: fixed;
             background-repeat: no-repeat;
-            background-image: url('{% static 'core/img/fondo.jpg' %}');
+            background-image: url('{% static "core/img/fondo.jpg" %}');
         }
 
-        /* Animated Background */
+        /* Fondo Animado */
         body::before {
             content: '';
             position: fixed;
@@ -69,7 +69,7 @@
             50% { opacity: 0.8; }
         }
 
-        /* Header Section */
+        /* --- HEADER --- */
         .header-section {
             text-align: center;
             padding: 3rem 1rem 2rem;
@@ -119,7 +119,7 @@
             animation: fadeIn 1s ease-out 0.3s both;
         }
 
-        /* Alert Messages */
+        /* --- ALERTAS --- */
         .alert-container {
             max-width: 600px;
             margin: 0 auto 2rem;
@@ -138,21 +138,11 @@
             backdrop-filter: blur(10px);
         }
 
-        .custom-alert.success {
-            border-color: var(--success);
-            box-shadow: 0 4px 24px rgba(0, 245, 147, 0.2);
-        }
+        .custom-alert.success { border-color: var(--success); box-shadow: 0 4px 24px rgba(0, 245, 147, 0.2); }
+        .custom-alert.error { border-color: var(--error); box-shadow: 0 4px 24px rgba(241, 60, 60, 0.2); }
+        .alert-icon { font-size: 1.5rem; }
 
-        .custom-alert.error {
-            border-color: var(--error);
-            box-shadow: 0 4px 24px rgba(241, 60, 60, 0.2);
-        }
-
-        .alert-icon {
-            font-size: 1.5rem;
-        }
-
-        /* Main Card */
+        /* --- TARJETA PRINCIPAL --- */
         .voting-card {
             max-width: 900px;
             margin: 0 auto 3rem;
@@ -165,14 +155,8 @@
         }
 
         @keyframes cardEntrance {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .card-header-custom {
@@ -209,7 +193,7 @@
             z-index: 1;
         }
 
-        /* Media Section */
+        /* --- SECCIÓN MULTIMEDIA --- */
         .media-section {
             padding: 2rem;
             background: linear-gradient(135deg, rgba(139, 92, 246, 0.05), rgba(16, 185, 129, 0.05));
@@ -233,17 +217,14 @@
             overflow: hidden;
             transition: transform 0.3s ease;
             box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
-        }
-
-        .media-container:hover {
-            transform: scale(1.02);
+            background: #000;
         }
 
         .media-container img,
         .media-container video {
             width: 100%;
-            max-width: 480px;
-            max-height: 600px;
+            max-width: 100%; /* Ajuste para que ocupe el ancho disponible */
+            max-height: 500px;
             display: block;
             margin: 0 auto;
             border-radius: 16px;
@@ -253,9 +234,7 @@
         .youtube-container {
             position: relative;
             width: 100%;
-            max-width: 560px;
-            margin: 0 auto;
-            padding-top: 56.25%;
+            padding-top: 56.25%; /* Ratio 16:9 */
             border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
@@ -270,11 +249,14 @@
             border-radius: 16px;
         }
 
-        /* Form Section */
-        .form-section {
-            padding: 2rem;
+        /* Clase para animar el cambio de video */
+        .media-group {
+            animation: fadeIn 0.5s ease-out;
         }
 
+        /* --- FORMULARIO --- */
+        .form-section { padding: 2rem; }
+        
         .form-label {
             color: var(--text-primary);
             font-weight: 600;
@@ -308,7 +290,7 @@
             margin-top: 0.5rem;
         }
 
-        /* Radio Options */
+        /* --- OPCIONES DE RADIO --- */
         .options-container {
             display: flex;
             flex-direction: column;
@@ -316,10 +298,8 @@
             margin-top: 1.5rem;
         }
 
-        .custom-radio {
-            position: relative;
-        }
-
+        .custom-radio { position: relative; }
+        
         .custom-radio input[type="radio"] {
             position: absolute;
             opacity: 0;
@@ -337,21 +317,6 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-        }
-
-        .radio-label::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(145, 70, 255, 0.1), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .radio-label:hover::before {
-            left: 100%;
         }
 
         .radio-label:hover {
@@ -407,7 +372,7 @@
             z-index: 1;
         }
 
-        /* Submit Button */
+        /* --- BOTÓN ENVIAR --- */
         .btn-submit {
             width: 100%;
             padding: 1rem 2rem;
@@ -432,44 +397,18 @@
             50% { background-position: 100% 50%; }
         }
 
-        .btn-submit::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s ease, height 0.6s ease;
-        }
-
-        .btn-submit:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-
         .btn-submit:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 32px rgba(16, 185, 129, 0.5);
         }
 
-        .btn-submit:active {
-            transform: translateY(0);
-        }
-
-        .btn-submit span {
-            position: relative;
-            z-index: 1;
-        }
-
         .btn-submit:disabled {
             opacity: 0.7;
             cursor: not-allowed;
+            transform: none;
         }
 
-        /* Success State */
+        /* --- ESTADO DE ÉXITO --- */
         .success-state {
             text-align: center;
             padding: 4rem 2rem;
@@ -496,89 +435,22 @@
             100% { transform: scale(1); }
         }
 
-        .success-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--success);
-            margin-bottom: 1rem;
-        }
+        .success-title { font-size: 2rem; font-weight: 700; color: var(--success); margin-bottom: 1rem; }
+        .success-message { font-size: 1.2rem; color: var(--text-secondary); }
 
-        .success-message {
-            font-size: 1.2rem;
-            color: var(--text-secondary);
-        }
-
-        /* Animations */
-        @keyframes titleSlide {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Responsive */
+        /* --- RESPONSIVE --- */
         @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-            }
-
-            .voting-card {
-                margin: 0 1rem 2rem;
-            }
-
-            .card-header-custom {
-                padding: 1.5rem;
-            }
-
-            .question-title {
-                font-size: 1.5rem;
-            }
-
-            .form-section,
-            .media-section {
-                padding: 1.5rem;
-            }
-
-            .btn-submit {
-                padding: 0.875rem 1.5rem;
-                font-size: 1rem;
-            }
-
-            .media-container img,
-            .media-container video {
-                max-width: 100%;
-                max-height: 500px;
-            }
+            h1 { font-size: 2rem; }
+            .voting-card { margin: 0 1rem 2rem; }
+            .card-header-custom { padding: 1.5rem; }
+            .question-title { font-size: 1.5rem; }
+            .form-section, .media-section { padding: 1.5rem; }
         }
-
-        /* Prevent video download */
-        video::-webkit-media-controls-enclosure {
-            overflow: hidden;
-        }
-
-        video::-webkit-media-controls-download-button {
-            display: none;
-        }
+        
+        /* Animaciones Genéricas */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes titleSlide { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -594,7 +466,7 @@
     </div>
 
     <main class="container">
-        <!-- Alert Messages -->
+        <!-- Alertas Django -->
         {% if messages %}
         <div class="alert-container">
             {% for message in messages %}
@@ -609,69 +481,81 @@
         {% endif %}
 
         {% if not pregunta %}
-            <!-- Success State -->
+            <!-- Estado cuando no hay más preguntas -->
             <div class="voting-card success-state">
                 <div class="success-icon">
                     <i class="fas fa-check"></i>
                 </div>
                 <h2 class="success-title">¡Gracias por participar!</h2>
-                <p class="success-message">Todas las preguntas han sido respondidas.</p>
+                <p class="success-message">Todas las preguntas han sido respondidas o no hay votaciones activas.</p>
             </div>
         {% else %}
-        <!-- Main Voting Card -->
+        <!-- Tarjeta de Votación -->
         <div class="voting-card">
             <div class="card-header-custom">
                 <h2 class="question-title">{{ pregunta.pregunta }}</h2>
             </div>
 
-            <!-- Media Section -->
-            {% if opcion.medias.all %}
+            <!-- SECCIÓN MEDIA MEJORADA -->
+            <!-- Esta sección contiene todos los videos de todas las opciones, ocultos por defecto -->
             <div class="media-section">
                 <div class="media-title">
                     <i class="fas fa-play-circle"></i>
                     Contenido relacionado
                 </div>
                 
-                <div class="row g-4 justify-content-center">
-                    {% for media in opcion.medias.all %}
-                    <div class="col-md-12">
-                        {% if media.tipo_media == 'LOCAL' %}
-                            {% if media.archivo.name|lower|slice:"-3:" in 'jpg,png,jpeg' or media.archivo.name|lower|slice:"-4:" == '.svg' %}
-                                <div class="media-container">
-                                    <img src="{{ media.archivo.url }}"
-                                         alt="Imagen relacionada a la opción de voto"
-                                         class="img-fluid">
-                                </div>
-                            {% elif media.archivo.name|lower|slice:"-3:" == 'mp4' %}
-                                <div class="media-container">
-                                    <video controls>
-                                        <source src="{{ media.archivo.url }}" type="video/mp4">
-                                        <p>Tu navegador no soporta el elemento de video.</p>
-                                    </video>
-                                </div>
-                            {% endif %}
-                        {% elif media.tipo_media == 'YOUTUBE' %}
-                            <div class="youtube-container">
-                                <iframe src="{{ media.get_youtube_embed_url }}"
-                                        title="Video de YouTube relacionado a la opción"
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                        allowfullscreen>
-                                </iframe>
+                <!-- Iteramos sobre TODAS las opciones posibles de la pregunta -->
+                {% for op in pregunta.opciones.all %}
+                <!-- El ID media-content-X nos permite mostrarlo con JS -->
+                <!-- Mostramos solo si coincide con la opción seleccionada actualmente en la URL -->
+                <div id="media-content-{{ op.id }}" class="media-group" style="display: {% if op.id == opcion.id %}block{% else %}none{% endif %};">
+                    
+                    {% if op.medias.all %}
+                        <div class="row g-4 justify-content-center">
+                            {% for media in op.medias.all %}
+                            <div class="col-md-12">
+                                {% if media.tipo_media == 'LOCAL' %}
+                                    {% if media.archivo.name|lower|slice:"-3:" in 'jpg,png,jpeg' or media.archivo.name|lower|slice:"-4:" == '.svg' %}
+                                        <div class="media-container">
+                                            <img src="{{ media.archivo.url }}" alt="Imagen opción">
+                                        </div>
+                                    {% elif media.archivo.name|lower|slice:"-3:" == 'mp4' %}
+                                        <div class="media-container">
+                                            <video controls id="video-{{ op.id }}">
+                                                <source src="{{ media.archivo.url }}" type="video/mp4">
+                                                <p>Tu navegador no soporta el elemento de video.</p>
+                                            </video>
+                                        </div>
+                                    {% endif %}
+                                {% elif media.tipo_media == 'YOUTUBE' %}
+                                    <div class="youtube-container">
+                                        <!-- enablejsapi=1 es útil para controlarlo si fuera necesario -->
+                                        <iframe src="{{ media.get_youtube_embed_url }}?enablejsapi=1" 
+                                                title="Video de YouTube"
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                allowfullscreen>
+                                        </iframe>
+                                    </div>
+                                {% endif %}
                             </div>
-                        {% endif %}
-                    </div>
-                    {% endfor %}
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                         <p style="text-align: center; color: var(--text-secondary); margin-top: 1rem;">
+                            No hay contenido multimedia para esta opción.
+                        </p>
+                    {% endif %}
                 </div>
+                {% endfor %}
             </div>
-            {% endif %}
 
-            <!-- Form Section -->
+            <!-- Sección del Formulario -->
             <div class="form-section">
                 <form method="POST" id="votingForm" novalidate class="needs-validation">
                     {% csrf_token %}
                     
                     {% if first_time %}
-                    <!-- Twitch Username Input -->
+                    <!-- Input Nombre Twitch (Solo si es primera vez) -->
                     <div class="mb-4">
                         <label for="{{ form.nombre_twitch.id_for_label }}" class="form-label">
                             <i class="fab fa-twitch"></i>
@@ -693,9 +577,27 @@
                     </div>
                     {% endif %}
 
+                    <!-- Campo Oculto ID Pregunta -->
                     {{ form.pregunta }}
 
-                    <!-- Voting Options -->
+                    <!-- Campo Streamer -->
+                    <div class="mb-4">
+                        <label for="{{ form.streamer.id_for_label }}" class="form-label">
+                            <i class="fas fa-user"></i>
+                            {{ form.streamer.label }}
+                            <span style="color: var(--error);">*</span>
+                        </label>
+                        {{ form.streamer }}
+                        {% if form.streamer.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in form.streamer.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Opciones de Voto -->
                     <div class="mb-4">
                         {% if form.opcion.errors %}
                         <div class="alert alert-danger" role="alert">
@@ -711,6 +613,7 @@
                         </label>
                         
                         <div class="options-container">
+                            <!-- Renderizado manual de Radios para control total -->
                             {% for radio in form.opcion %}
                             <div class="custom-radio">
                                 {{ radio.tag }}
@@ -723,7 +626,7 @@
                         </div>
                     </div>
 
-                    <!-- Submit Button -->
+                    <!-- Botón Enviar -->
                     <button type="submit" class="btn-submit">
                         <span>
                             <i class="fas fa-check-circle"></i>
@@ -739,31 +642,69 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            
+            // 1. LÓGICA PARA CAMBIAR EL VIDEO/IMAGEN AL SELECCIONAR OPCIÓN
+            const radios = document.querySelectorAll('input[name="opcion"]');
+            
+            radios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    // a. Ocultar todos los medios y pausar videos
+                    document.querySelectorAll('.media-group').forEach(group => {
+                        group.style.display = 'none';
+                        
+                        // Pausar videos HTML5
+                        const video = group.querySelector('video');
+                        if(video) video.pause();
+                        
+                        // "Pausar" YouTube (reiniciando el src para detener el audio)
+                        const iframe = group.querySelector('iframe');
+                        if(iframe) {
+                            const src = iframe.src;
+                            iframe.src = src; 
+                        }
+                    });
+
+                    // b. Mostrar el medio correspondiente al ID seleccionado
+                    // El value del radio button es el ID de la Opción en base de datos
+                    const selectedId = this.value;
+                    const contentToShow = document.getElementById('media-content-' + selectedId);
+                    
+                    if(contentToShow) {
+                        contentToShow.style.display = 'block';
+                    }
+                });
+            });
+
+
+            // 2. LÓGICA DE ENVÍO DE FORMULARIO (SOLUCIONADO EL BUG DE CARGA INFINITA)
             const form = document.getElementById('votingForm');
             
             if (form) {
                 form.addEventListener('submit', function(e) {
-                    e.preventDefault();
                     
+                    // Si ya se está enviando, prevenimos doble envío
                     if (form.classList.contains('submitting')) {
+                        e.preventDefault();
                         return;
                     }
                     
+                    // IMPORTANTE: NO usamos e.preventDefault() aquí.
+                    // Dejamos que el navegador envíe el formulario al servidor.
+                    
+                    // Solo cambiamos el aspecto visual del botón
                     form.classList.add('submitting');
                     const submitBtn = form.querySelector('.btn-submit');
-                    submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<span><i class="fas fa-spinner fa-spin"></i> Procesando...</span>';
-                    
-                    // Aquí iría tu lógica de envío real
-                    setTimeout(() => {
-                        form.classList.remove('submitting');
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = '<span><i class="fas fa-check-circle"></i> Enviar mi voto</span>';
-                    }, 2000);
+                    if(submitBtn) {
+                        // Deshabilitar visualmente, pero no el botón en sí mismo inmediatamente
+                        // para asegurar que el evento 'submit' se propague
+                        submitBtn.style.opacity = '0.7';
+                        submitBtn.style.pointerEvents = 'none';
+                        submitBtn.innerHTML = '<span><i class="fas fa-spinner fa-spin"></i> Enviando...</span>';
+                    }
                 });
             }
 
-            // Validación de username de Twitch
+            // 3. Validación de input Twitch (Solo alfanumérico)
             const twitchInput = document.querySelector('input[name="nombre_twitch"]');
             if (twitchInput) {
                 twitchInput.addEventListener('input', function(e) {
@@ -771,7 +712,7 @@
                 });
             }
 
-            // Prevenir menú contextual en videos
+            // 4. Prevenir clic derecho en videos (opcional)
             const videos = document.querySelectorAll('video');
             videos.forEach(video => {
                 video.addEventListener('contextmenu', function(e) {

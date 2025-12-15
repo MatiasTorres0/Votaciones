@@ -633,27 +633,44 @@
                         Resultados
                     </a>
                 </li>
+                
+                <!-- AQUI ESTÁ EL CAMBIO PARA MOSTRAR EL USUARIO TWITCH -->
                 {% if user.is_authenticated %}
-                <li>
-                    <a href="#" class="nav-link">
-                        {{ user.username }}
-                    </a>
-                </li>
+                    <li>
+                        <a href="#" class="nav-link">
+                            {{ user.username }}
+                        </a>
+                    </li>
+                {% elif twitch_name %}
+                    <li>
+                        <a href="#" class="nav-link" style="color: #c084fc;">
+                            <i class="fab fa-twitch" style="margin-right: 5px;"></i>
+                            {{ twitch_name }}
+                        </a>
+                    </li>
                 {% endif %}
 
             </ul>
 
-            <!-- BOTÓN CTA -->
+            <!-- BOTÓN CTA (LOGOUT / LOGIN) -->
+            <!-- MODIFICADO PARA RECONOCER TWITCH NAME -->
             {% if user.is_authenticated %}
-            <a href="{% url 'logout' %}" class="btn-action">
-                Cerrar Sesión
-                <i class="fas fa-sign-out-alt"></i>
-            </a>
+                <a href="{% url 'logout' %}" class="btn-action">
+                    Cerrar Sesión
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            {% elif twitch_name %}
+                <!-- Si ya tienes nombre de twitch, mostramos botón de salir que apunta al logout -->
+                <!-- Asumimos que tu vista de logout limpia la sesión -->
+                <a href="{% url 'logout' %}" class="btn-action">
+                    Salir
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
             {% else %}
-            <a href="{% url 'login' %}" class="btn-action">
-                Iniciar Sesión
-                <i class="fas fa-sign-in-alt"></i>
-            </a>
+                <a href="{% url 'login' %}" class="btn-action">
+                    Iniciar Sesión
+                    <i class="fas fa-sign-in-alt"></i>
+                </a>
             {% endif %}
 
             <!-- HAMBURGUESA -->
@@ -704,36 +721,36 @@
             </div>
         </div>
         {% elif twitch_name %}
-        {% if preguntas %}
-        <div class="questions-grid">
-            {% for item in preguntas %}
-            {% if not item.ha_votado %}
-            <div class="question-card animate-slide-up" style="--animation-delay: {{ forloop.counter0 }}00ms">
-                <div class="question-header">
-                    <span class="question-number">#{{ forloop.counter }}</span>
-                    <h2>{{ item.pregunta.pregunta }}</h2>
-                </div>
-                <div class="question-body">
-                    <div class="options-list">
-                        {% for opcion in item.pregunta.opciones.all %}
-                        <a href="{% url 'votaciones' pregunta_id=item.pregunta.id opcion_id=opcion.id %}"
-                            class="option-button" style="--option-delay: {{ forloop.counter0 }}00ms">
-                            <span class="option-text">{{ opcion.opcion }}</span>
-                            <span class="option-arrow">→</span>
-                        </a>
-                        {% endfor %}
+            {% if preguntas %}
+            <div class="questions-grid">
+                {% for item in preguntas %}
+                {% if not item.ha_votado %}
+                <div class="question-card animate-slide-up" style="--animation-delay: {{ forloop.counter0 }}00ms">
+                    <div class="question-header">
+                        <span class="question-number">#{{ forloop.counter }}</span>
+                        <h2>{{ item.pregunta.pregunta }}</h2>
+                    </div>
+                    <div class="question-body">
+                        <div class="options-list">
+                            {% for opcion in item.pregunta.opciones.all %}
+                            <a href="{% url 'votaciones' pregunta_id=item.pregunta.id opcion_id=opcion.id %}"
+                                class="option-button" style="--option-delay: {{ forloop.counter0 }}00ms">
+                                <span class="option-text">{{ opcion.opcion }}</span>
+                                <span class="option-arrow">→</span>
+                            </a>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state animate-fade-in">
+                <div class="empty-icon">❓</div>
+                <p>No hay preguntas disponibles en este momento.</p>
             </div>
             {% endif %}
-            {% endfor %}
-        </div>
-        {% else %}
-        <div class="empty-state animate-fade-in">
-            <div class="empty-icon">❓</div>
-            <p>No hay preguntas disponibles en este momento.</p>
-        </div>
-        {% endif %}
         {% else %}
         <div class="twitch-login-card animate-slide-up">
             <div class="login-header">
