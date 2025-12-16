@@ -52,6 +52,15 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# Configuración de seguridad para YouTube embeds
+# Prevenir error 153 de YouTube
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+
+# Headers de seguridad adicionales
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
 ROOT_URLCONF = 'votaciones.urls'
 
 TEMPLATES = [

@@ -104,12 +104,13 @@ class Media(models.Model):
             raise ValidationError("Se debe ingresar una URL de YouTube para esta opción.")
 
     def get_youtube_embed_url(self):
-        """Obtiene la URL de embed de YouTube de forma segura"""
+        """Obtiene la URL de embed de YouTube de forma segura con prevención de error 153"""
         if self.tipo_media != 'YOUTUBE' or not self.url_youtube:
             return None
         
         try:
             url = self.url_youtube.strip()
+            logger.info(f"Procesando URL de YouTube: {url}")
             
             # Patrones para diferentes formatos de URL de YouTube
             patterns = [
@@ -117,14 +118,16 @@ class Media(models.Model):
                 r'youtu\.be/([a-zA-Z0-9_-]{11})',
                 # youtube.com/watch?v=ID
                 r'youtube\.com/watch\?v=([a-zA-Z0-9_-]{11})',
-                # youtube.com/embed/ID
-                r'youtube\.com/embed/([a-zA-Z0-9_-]{11})',
                 # youtube.com/shorts/ID
                 r'youtube\.com/shorts/([a-zA-Z0-9_-]{11})',
+                # youtube.com/embed/ID
+                r'youtube\.com/embed/([a-zA-Z0-9_-]{11})',
                 # youtube.com/v/ID
                 r'youtube\.com/v/([a-zA-Z0-9_-]{11})',
                 # youtube.com/watch?v=ID&otros_parametros
-                r'youtube\.com/watch\?.*v=([a-zA-Z0-9_-]{11})'
+                r'youtube\.com/watch\?.*v=([a-zA-Z0-9_-]{11})',
+                # youtube-nocookie.com/embed/ID (ya procesado)
+                r'youtube-nocookie\.com/embed/([a-zA-Z0-9_-]{11})'
             ]
             
             video_id = None
@@ -132,14 +135,20 @@ class Media(models.Model):
                 match = re.search(pattern, url)
                 if match:
                     video_id = match.group(1)
+                    logger.info(f"ID de video encontrado: {video_id}")
                     break
             
             if video_id and len(video_id) == 11:  # Los IDs de YouTube tienen 11 caracteres
-                # URL de embed segura sin parámetros adicionales
-                return f'https://www.youtube.com/embed/{video_id}?rel=0'
+                # Usar youtube-nocookie.com para mejor privacidad y prevenir error 153
+                embed_url = f'https://www.youtube-nocookie.com/embed/{video_id}?rel=0&modestbranding=1'
+                logger.info(f"URL de embed generada: {embed_url}")
+                return embed_url
+            else:
+                logger.warning(f"No se pudo extraer ID válido de la URL: {url}")
         
         except Exception as e:
-            print(f"Error al procesar URL de YouTube: {e}")
+            logger.error(f"Error al procesar URL de YouTube: {e}")
+            logger.error(f"URL problemática: {self.url_youtube}")
         
         return None
 
