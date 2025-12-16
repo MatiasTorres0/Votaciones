@@ -12,7 +12,7 @@ import io
 from openpyxl import Workbook
 from django.http import HttpResponse
 import pandas as pd
-
+import os
 def inicio(request):
     """
     Muestra la interfaz de votación y maneja el inicio de sesión con nombre de usuario.
