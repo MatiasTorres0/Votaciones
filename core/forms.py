@@ -1,53 +1,56 @@
 from django import forms
-from .models import Encuesta, Pregunta, Opcion, Formulario, Media
 from django.core.exceptions import ValidationError
+from django.utils import timezone
+
+from .models import Encuesta, Pregunta, Opcion, Formulario, Media
+
 import logging
 import re
+
 logger = logging.getLogger(__name__)
 
 
 
-# Formulario para Encuesta
 class EncuestaForm(forms.ModelForm):
     class Meta:
-        model = Formulario
-        fields = ['pregunta', 'opcion', 'nombre_twitch']
+        model = Encuesta
+        fields = ['titulo', 'descripcion', 'fecha_inicio', 'fecha_fin']
         widgets = {
-            'opcion': forms.RadioSelect(),
-            'pregunta': forms.HiddenInput(),
-            'nombre_twitch': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Tu nombre de Twitch'
-            }),
+            'titulo': forms.TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Ej: Satisfacción del cliente 2024',
+                }
+            ),
+            'descripcion': forms.Textarea(
+                attrs={
+                    'class': 'form-control',
+                    'rows': 4,
+                    'placeholder': 'Describe el propósito de la encuesta (opcional)',
+                }
+            ),
+            'fecha_inicio': forms.DateTimeInput(
+                attrs={'class': 'form-control', 'type': 'datetime-local'},
+                format='%Y-%m-%dT%H:%M',
+            ),
+            'fecha_fin': forms.DateTimeInput(
+                attrs={'class': 'form-control', 'type': 'datetime-local'},
+                format='%Y-%m-%dT%H:%M',
+            ),
         }
-    
+
     def __init__(self, *args, **kwargs):
-        pregunta_id = kwargs.pop('pregunta_id', None)
         super().__init__(*args, **kwargs)
-        
-        # Hacer nombre_twitch no requerido si ya viene con valor inicial
-        if self.initial.get('nombre_twitch'):
-            self.fields['nombre_twitch'].required = False
-            self.fields['nombre_twitch'].widget = forms.HiddenInput()
-        else:
-            self.fields['nombre_twitch'].required = True
-        
-        if pregunta_id:
-            # Filtrar opciones válidas para esta pregunta
-            self.fields['opcion'].queryset = Opcion.objects.filter(pregunta_id=pregunta_id)
-            self.fields['pregunta'].initial = pregunta_id
-    
-    def clean(self):
-        cleaned_data = super().clean()
-        nombre_twitch = cleaned_data.get('nombre_twitch')
-        
-        # Si no hay nombre_twitch en los datos pero el usuario tiene sesión
-        if not nombre_twitch and 'instance' in self.__dict__:
-            # Esto es un usuario con sesión, el campo está oculto
-            # No necesitamos validarlo aquí, se maneja en la vista
-            pass
-        
-        return cleaned_data
+
+        for field_name in ['fecha_inicio', 'fecha_fin']:
+            value = self.initial.get(field_name)
+
+            if not value and getattr(self.instance, 'pk', None):
+                value = getattr(self.instance, field_name, None)
+
+            if value:
+                local_value = timezone.localtime(value) if timezone.is_aware(value) else value
+                self.initial[field_name] = local_value.strftime('%Y-%m-%dT%H:%M')
 
 class PreguntaForm(forms.ModelForm):
     class Meta:
