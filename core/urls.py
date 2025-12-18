@@ -13,7 +13,7 @@ router.register('opcion', views.OpcionViewSet)
 
 urlpatterns = [
     path('mantenimiento', views.mantenimiento, name="mantenimiento"),
-    path('inicio', views.inicio, name='inicio'), # Pagina de Inicio
+    path('', views.inicio, name='inicio'), # Pagina de Inicio
     path('crear_encuesta/', views.crear_encuesta, name='crear_encuesta'),  # Form para crear una encuesta
     path('lista_encuestas/', views.lista_encuestas, name='lista_encuestas'), # Muestra la lista de encuestas
     path('editar_encuesta/<int:encuesta_id>/', views.editar_encuesta, name='editar_encuesta'), # Muestra la lista de encuestas
@@ -26,7 +26,7 @@ urlpatterns = [
     path('crear_media/<int:pregunta_id>/', views.crear_media, name='crear_media'),
     path('lista_opciones/<int:pregunta_id>/', views.lista_opciones, name='lista_opciones'),
     path('editar_opcion/<int:opcion_id>/', views.editar_opcion, name='editar_opcion'),
-    path('', views.home, name='home'),
+    path('home', views.home, name='home'),
     path('logout/', views.logout_view, name='logout'),
     path('eliminar_encuesta/<int:encuesta_id>/', views.eliminar_encuesta, name='eliminar_encuesta'),
     path('eliminar_pregunta/<int:pregunta_id>/', views.eliminar_pregunta, name='eliminar_pregunta'),
