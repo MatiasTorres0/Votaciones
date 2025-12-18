@@ -16,6 +16,9 @@ import os
 from django.contrib import messages
 from django.db.models import Prefetch
 from django.utils.html import escape
+import logging
+
+logger = logging.getLogger(__name__)
 
 def inicio(request):
     """
@@ -114,11 +117,20 @@ def inicio(request):
     return render(request, 'core/inicio.html', context)
 
 
-
 def votaciones(request, pregunta_id, opcion_id):
     """
-    Handles the voting process with proper user session management.
+    Maneja el proceso de votación con gestión de sesión de usuario.
+    El usuario debe estar "logueado" (tener twitch_name en sesión).
     """
+    # Obtener el nombre de usuario de la sesión
+    twitch_name = request.session.get('twitch_name')
+    
+    # Si no hay usuario en sesión, redirigir al inicio para que haga login
+    if not twitch_name:
+        messages.error(request, "Debes iniciar sesión con tu nombre de Twitch primero.")
+        return redirect('inicio')
+    
+    # Obtener la pregunta
     pregunta = get_object_or_404(Pregunta, pk=pregunta_id)
     
     # Verificar que la encuesta esté activa
@@ -130,75 +142,63 @@ def votaciones(request, pregunta_id, opcion_id):
     try:
         opcion = Opcion.objects.get(pk=opcion_id, pregunta=pregunta)
     except Opcion.DoesNotExist:
-        messages.error(request, "La opción seleccionada no pertenece a esta pregunta.")
+        messages.error(request, "La opción seleccionada no es válida.")
         return redirect('inicio')
     
     # Verificar si el usuario ya votó en esta pregunta
-    user_name = request.session.get('user_name')
-    if user_name and Formulario.objects.filter(pregunta=pregunta, usuario=user_name).exists():
+    if Formulario.objects.filter(pregunta=pregunta, usuario=twitch_name).exists():
         messages.warning(request, "Ya has votado en esta pregunta.")
         return redirect('inicio')
     
-    has_session = 'user_name' in request.session
-    
+    # Manejar POST (envío del formulario)
     if request.method == 'POST':
-        # Crear formulario con datos POST
-        form_data = request.POST.copy()
-        
-        # Si el usuario ya tiene sesión, usar el nombre de la sesión
-        if has_session:
-            form_data['nombre_usuario'] = request.session['user_name']
-        
-        form = FormularioForm(form_data, pregunta_id=pregunta_id)
+        form = FormularioForm(request.POST, pregunta_id=pregunta_id)
         
         if form.is_valid():
             try:
+                # Crear el voto pero no guardarlo todavía
                 voto = form.save(commit=False)
                 
-                # Establecer usuario
-                if has_session:
-                    username = request.session['user_name']
-                else:
-                    username = form.cleaned_data['nombre_usuario']
-                    # Guardar en sesión
-                    request.session['user_name'] = username
-                    request.session.modified = True
+                # Asignar el nombre de twitch
+                voto.nombre_twitch = twitch_name
+                # El modelo automáticamente hace: self.usuario = self.nombre_twitch
                 
-                voto.usuario = username
+                # Guardar el voto
                 voto.save()
                 
-                messages.success(request, "¡Gracias por tu voto!")
+                logger.info(f"Voto guardado: Usuario={twitch_name}, Pregunta={pregunta.id}, Opción={voto.opcion.opcion}")
+                
+                messages.success(request, f"¡Gracias por tu voto! Has votado por: {voto.opcion.opcion}")
                 return redirect('inicio')
                 
+            except ValidationError as e:
+                messages.error(request, str(e))
+                logger.warning(f"Intento de voto duplicado: Usuario={twitch_name}, Pregunta={pregunta.id}")
             except Exception as e:
+                logger.error(f"Error al guardar voto: {str(e)}")
                 messages.error(request, f"Error al guardar el voto: {str(e)}")
         else:
-            # Mostrar errores específicos
+            # Mostrar errores del formulario
             for field, errors in form.errors.items():
                 for error in errors:
                     messages.error(request, f"{field}: {error}")
     
-    # GET request - mostrar formulario
+    # GET request - mostrar formulario con datos iniciales
     initial_data = {
         'pregunta': pregunta_id,
         'opcion': opcion_id,
     }
     
-    if has_session:
-        initial_data['nombre_usuario'] = request.session['user_name']
-    
     form = FormularioForm(initial=initial_data, pregunta_id=pregunta_id)
     
-    return render(
-        request,
-        'core/votacion.html',
-        {
-            'form': form,
-            'pregunta': pregunta,
-            'first_time': not has_session,
-            'opcion': opcion
-        }
-    )
+    context = {
+        'form': form,
+        'pregunta': pregunta,
+        'opcion': opcion,
+        'twitch_name': twitch_name,
+    }
+    
+    return render(request, 'core/votacion.html', context)
 
 @login_required
 def crear_encuesta(request):

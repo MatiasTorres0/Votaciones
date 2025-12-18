@@ -11,7 +11,6 @@ import re
 logger = logging.getLogger(__name__)
 
 
-
 class EncuestaForm(forms.ModelForm):
     class Meta:
         model = Encuesta
@@ -53,6 +52,7 @@ class EncuestaForm(forms.ModelForm):
                 local_value = timezone.localtime(value) if timezone.is_aware(value) else value
                 self.initial[field_name] = local_value.strftime('%Y-%m-%dT%H:%M')
 
+
 class PreguntaForm(forms.ModelForm):
     class Meta:
         model = Pregunta
@@ -67,8 +67,8 @@ class PreguntaForm(forms.ModelForm):
         labels = {
             'pregunta': 'Pregunta',
         }
-        
-# Formulario para Media
+
+
 class MediaForm(forms.ModelForm):
     class Meta:
         model = Media
@@ -172,7 +172,8 @@ class MediaForm(forms.ModelForm):
                 self.add_error('archivo', "No subas archivo cuando ingresas una URL de YouTube")
         
         return cleaned_data
-# Formulario para Opción
+
+
 class OpcionForm(forms.ModelForm):
     medias = forms.ModelMultipleChoiceField(
         queryset=Media.objects.all(),
@@ -193,35 +194,27 @@ class OpcionForm(forms.ModelForm):
             'color': 'Color de la Opción',
         }
 
+
 class FormularioForm(forms.ModelForm):
     """
-    Formulario para manejar los votos con la gestión adecuada del nombre de usuario.
+    Formulario para manejar los votos.
+    El nombre de Twitch se obtiene automáticamente de la sesión.
     """
-    nombre_twitch = forms.CharField(
-        label='Nombre de Twitch',
-        required=False,
-        widget=forms.TextInput(
-            attrs={
-                'class': 'form-control',
-                'placeholder': 'Ingrese su nombre de Twitch',
-                'pattern': '[A-Za-z0-9_]+',
-                'maxlength': '25'
-            }
-        )
-    )
-
+    
     class Meta:
         model = Formulario
-        fields = ['nombre_twitch', 'pregunta', 'opcion']
+        fields = ['pregunta', 'opcion']
         widgets = {
             'pregunta': forms.HiddenInput(),
-            'opcion': forms.RadioSelect(attrs={'class': 'form-check-input'}),
+            'opcion': forms.RadioSelect(attrs={
+                'class': 'form-check-input'
+            }),
         }
 
-    def __init__(self, *args, **kwargs):
-        pregunta_id = kwargs.pop('pregunta_id', None)
+    def __init__(self, *args, pregunta_id=None, **kwargs):
         super().__init__(*args, **kwargs)
         
+        # Configurar opciones según la pregunta
         if pregunta_id:
             try:
                 pregunta_object = Pregunta.objects.get(pk=pregunta_id)
@@ -229,60 +222,23 @@ class FormularioForm(forms.ModelForm):
                 self.fields['opcion'].queryset = pregunta_object.opciones.all()
             except Pregunta.DoesNotExist:
                 raise forms.ValidationError("Pregunta no encontrada")
+        
+        # Label personalizado
+        self.fields['opcion'].label = 'Selecciona tu opción'
 
     def clean(self):
         """
-        Valida los datos del formulario y asegura que el nombre de usuario se gestione correctamente.
+        Validación del formulario.
         """
         cleaned_data = super().clean()
-        nombre_twitch = cleaned_data.get('nombre_twitch', '').strip()
         pregunta = cleaned_data.get('pregunta')
         opcion = cleaned_data.get('opcion')
 
-        logger.debug(f"Form Clean: nombre_twitch={nombre_twitch}, pregunta={pregunta}, opcion={opcion}")
+        logger.debug(f"Form Clean: pregunta={pregunta}, opcion={opcion}")
 
-        # Requiere el nombre de usuario condicionalmente basado en la sesión
-        if not self.initial.get('nombre_twitch') and not nombre_twitch:
-            raise forms.ValidationError("El nombre de Twitch es requerido para votar por primera vez.")
-
-        if nombre_twitch and pregunta and opcion:
-            # Verifica si ya existe un voto con este nombre de usuario para esta pregunta y opción específicas
-            existing_vote = Formulario.objects.filter(
-                pregunta=pregunta,
-                usuario=nombre_twitch,
-                opcion=opcion
-            ).exists()
-
-            if existing_vote:
-                logger.debug(f"Form Clean: Usuario {nombre_twitch} ya ha votado para esta pregunta con esta opción")
-                raise ValidationError(
-                        "Ya has votado en esta pregunta con esta opción."
-                    )
-            
-            logger.debug(f"Form Clean: Usuario {nombre_twitch} no ha votado antes para esta pregunta con esta opción")
-            cleaned_data['nombre_twitch'] = nombre_twitch
+        # Validar que la opción pertenece a la pregunta
+        if pregunta and opcion:
+            if opcion.pregunta != pregunta:
+                raise forms.ValidationError("La opción seleccionada no pertenece a esta pregunta.")
         
         return cleaned_data
-
-    def save(self, commit=True):
-        """
-        Anula el método save para asegurar que el nombre de usuario se guarde correctamente.
-        """
-        instance = super().save(commit=False)
-        
-        # Asegura que ambos campos de nombre de usuario estén establecidos
-        twitch_name = self.cleaned_data.get('nombre_twitch')
-        
-        # Utiliza el nombre de usuario inicial si no se proporcionó un nuevo nombre de usuario
-        if not twitch_name:
-            twitch_name = self.initial.get('nombre_twitch')
-
-        instance.usuario = twitch_name
-        instance.nombre_twitch = twitch_name
-
-        logger.debug(f"Form Save: Usuario {twitch_name} está guardando un voto")
-        
-        if commit:
-            instance.save()
-        
-        return instance
