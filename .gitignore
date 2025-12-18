@@ -1,0 +1,43 @@
+# Base de datos
+*.sqlite3
+*.db
+db.sqlite3
+
+# Archivos de Python
+*.py[cod]
+*$py.class
+*.so
+__pycache__/
+*.pyc
+
+# Entorno virtual
+venv/
+env/
+ENV/
+.venv
+
+# Variables de entorno
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Estáticos
+staticfiles/
+static_root/
+media/
+
+# Logs
+*.log
+
+# Cache
+.pytest_cache/
+htmlcov/
+.coverage

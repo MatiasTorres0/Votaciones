@@ -13,63 +13,107 @@ from openpyxl import Workbook
 from django.http import HttpResponse
 import pandas as pd
 import os
+from django.contrib import messages
+from django.db.models import Prefetch
+from django.utils.html import escape
+
 def inicio(request):
     """
     Muestra la interfaz de votación y maneja el inicio de sesión con nombre de usuario.
+    Versión corregida con nombres de variables consistentes.
     """
     # 1. LÓGICA DEL FORMULARIO DE LOGIN (POST)
     if request.method == 'POST':
-        nombre_usuario = request.POST.get('nombre_usuario')
+        # CORRECCIÓN: Cambiado de 'nombre_usuario' a 'nombre_twitch' para coincidir con el template
+        nombre_twitch = request.POST.get('nombre_twitch', '').strip()
         
-        if not nombre_usuario or nombre_usuario.strip() == "":
+        # Validaciones mejoradas
+        if not nombre_twitch:
             messages.error(request, "El nombre de usuario es requerido")
-            return render(request, 'core/inicio.html', {'user_name': None})
+            return render(request, 'core/inicio.html', {'twitch_name': None})
         
-        # Guardamos el usuario en la sesión y limpiamos espacios
-        request.session['user_name'] = nombre_usuario.strip()
+        if len(nombre_twitch) < 3:
+            messages.error(request, "El nombre debe tener al menos 3 caracteres")
+            return render(request, 'core/inicio.html', {'twitch_name': None})
+        
+        if len(nombre_twitch) > 50:
+            messages.error(request, "El nombre es demasiado largo (máximo 50 caracteres)")
+            return render(request, 'core/inicio.html', {'twitch_name': None})
+        
+        # Sanitización básica
+        nombre_twitch_limpio = escape(nombre_twitch)
+        
+        # CORRECCIÓN: Guardamos con la clave 'twitch_name' para coincidir con el template
+        request.session['twitch_name'] = nombre_twitch_limpio
         request.session.modified = True
         
-        # Redirigimos a la misma vista para limpiar el método POST (Patrón PRG)
+        messages.success(request, f"¡Bienvenido, {nombre_twitch_limpio}!")
+        
+        # Redirigimos a la misma vista (Patrón PRG - Post/Redirect/Get)
         return redirect('inicio')
 
     # 2. LÓGICA DE VISUALIZACIÓN (GET)
-    # Recuperamos el usuario de la sesión
-    user_name = request.session.get('user_name')
+    # CORRECCIÓN: Cambiado de 'user_name' a 'twitch_name'
+    twitch_name = request.session.get('twitch_name')
     
-    # Solo mostrar preguntas de encuestas activas
-    preguntas = Pregunta.objects.filter(encuesta__estado='ACTIVA')
-    preguntas_con_voto = []
+    # Obtenemos solo preguntas de encuestas activas con select_related
+    preguntas = Pregunta.objects.filter(
+        encuesta__estado='ACTIVA'
+    ).select_related('encuesta').prefetch_related('opciones').order_by('id')
     
-    # Variables para calcular si ha completado todo
     total_preguntas = preguntas.count()
-    votos_usuario = 0
-
+    
+    # Caso especial: no hay preguntas activas
+    if total_preguntas == 0:
+        messages.info(request, "No hay encuestas activas en este momento")
+        return render(request, 'core/inicio.html', {
+            'preguntas': [],
+            'twitch_name': twitch_name,
+            'completed': False,
+            'no_preguntas': True
+        })
+    
+    # OPTIMIZACIÓN: Una sola consulta para obtener todos los votos del usuario
+    votos_realizados = set()
+    if twitch_name:
+        votos_realizados = set(
+            Formulario.objects.filter(
+                pregunta__in=preguntas,
+                usuario=twitch_name
+            ).values_list('pregunta_id', flat=True)
+        )
+    
+    # Construimos la lista de preguntas con información de voto
+    preguntas_con_voto = []
     for pregunta in preguntas:
-        ha_votado = False
-        if user_name:
-            # Comprobamos si este usuario ya votó en esta pregunta
-            ha_votado = Formulario.objects.filter(pregunta=pregunta, usuario=user_name).exists()
-            if ha_votado:
-                votos_usuario += 1
-        
+        ha_votado = pregunta.id in votos_realizados
         preguntas_con_voto.append({
             'pregunta': pregunta,
             'ha_votado': ha_votado
         })
-
+    
     # Calculamos si ha completado todas las preguntas
-    completed = (user_name is not None) and (total_preguntas > 0) and (votos_usuario == total_preguntas)
+    votos_usuario = len(votos_realizados)
+    completed = (twitch_name is not None) and (votos_usuario == total_preguntas)
+    
+    # Calculamos el porcentaje de progreso
+    progreso = 0
+    if twitch_name and total_preguntas > 0:
+        progreso = int((votos_usuario / total_preguntas) * 100)
 
     # 3. RENDERIZADO
-    return render(
-        request,
-        'core/inicio.html',
-        {
-            'preguntas': preguntas_con_voto,
-            'user_name': user_name,
-            'completed': completed
-        }
-    )
+    context = {
+        'preguntas': preguntas_con_voto,
+        'twitch_name': twitch_name,  # CORRECCIÓN: Cambiado de 'user_name'
+        'completed': completed,
+        'total_preguntas': total_preguntas,
+        'votos_realizados': votos_usuario,
+        'progreso': progreso,
+    }
+    
+    return render(request, 'core/inicio.html', context)
+
+
 
 def votaciones(request, pregunta_id, opcion_id):
     """
