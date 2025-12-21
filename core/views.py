@@ -19,7 +19,7 @@ from django.utils.html import escape
 import logging
 
 logger = logging.getLogger(__name__)
-
+@login_required
 def inicio(request):
     """
     Muestra la interfaz de votación y maneja el inicio de sesión con nombre de usuario.
@@ -116,7 +116,7 @@ def inicio(request):
     
     return render(request, 'core/inicio.html', context)
 
-
+@login_required
 def votaciones(request, pregunta_id, opcion_id):
     """
     Maneja el proceso de votación con gestión de sesión de usuario.
